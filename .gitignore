@@ -1,0 +1,64 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+
+# === Virtual environments ===
+.env
+.venv
+env/
+venv/
+
+# === Environment variables ===
+.env.*
+!.env.example
+
+# === Logs ===
+*.log
+
+# === Packaging / build ===
+build/
+dist/
+*.egg-info/
+
+# === Unit test / coverage ===
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+
+# === IDEs ===
+.vscode/
+.idea/
+*.swp
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === SQLite ===
+*.sqlite3
+
+# === Jupyter ===
+.ipynb_checkpoints/
+
+# === PyCharm ===
+*.iml
+
+# === Django ===
+staticfiles/
+media/
+local_settings.py
+
+# === Celery / Redis dumps ===
+celerybeat-schedule
+dump.rdb
+
+# === Node (если фронт рядом) ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === Docker ===
+*.tar
