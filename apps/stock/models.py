@@ -9,6 +9,7 @@ class Product(models.Model):
         ('ACCESSORY', 'Accessory'),
         ('DRINKWARE', 'Drinkware'),
         ('OTHER', 'Other'),
+        ('CLOTHES', 'Clothes'),
 
 
 
