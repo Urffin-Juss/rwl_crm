@@ -5,6 +5,7 @@ from django.db import models
 class Client(models.Model):
     name = models.CharField(max_length=200)
     phone = models.CharField(max_length=25, unique=True, db_index=True)
+    city = models.CharField(max_length=50, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     address = models.TextField(null=True, blank=True)

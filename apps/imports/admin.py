@@ -12,7 +12,7 @@ class ImportBatchAdmin(admin.ModelAdmin):
 @admin.register(RawExcelRow)
 class RawExcelRowAdmin(admin.ModelAdmin):
     list_display = ('batch', 'row_number', 'error_message')
-    list_filter = ('batch')
+    list_filter = ('batch', 'error_message')
     search_fields = ('batch__file_name', 'linked_client__phone')
 
 
