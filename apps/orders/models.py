@@ -35,7 +35,7 @@ class Order(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     assigned_packer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     status = models.CharField(choices=STATUS_CHOICES, default='new', verbose_name='Status')
-    payment_status = models.CharField(choices=PAYMENT_STATUS_CHOICES, default='cash', verbose_name='Payment Status')
+    payment_status = models.CharField(choices=PAYMENT_STATUS_CHOICES, default='NOT_PAID', verbose_name='Payment Status')
     payment_type = models.CharField(choices=PAYMENT_TYPE_CHOICES, default='cash', verbose_name='Payment Type')
     registration_date = models.DateTimeField(blank=True, null=True)
     distance_text = models.CharField(null=True, blank=True, max_length=250)
@@ -52,4 +52,3 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     price = models.PositiveIntegerField(default=0)
-    discount = models.PositiveIntegerField(default=0)

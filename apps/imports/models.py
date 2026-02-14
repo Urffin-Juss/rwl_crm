@@ -38,8 +38,8 @@ class RawExcelRow(models.Model):
     batch = models.ForeignKey(ImportBatch, on_delete=models.CASCADE)
     row_number = models.IntegerField()
     raw_data = models.JSONField()
-    linked_client = models.ForeignKey('clients.Client', on_delete=models.CASCADE, null=True)
-    linked_order = models.ForeignKey('orders.Order', on_delete=models.CASCADE, null=True)
+    linked_client = models.ForeignKey('clients.Client', on_delete=models.SET_NULL, null=True)
+    linked_order = models.ForeignKey('orders.Order', on_delete=models.SET_NULL, null=True)
     error_message = models.TextField(null=True, blank=True)
 
     def __str__(self):

@@ -18,8 +18,8 @@ class Product(models.Model):
 
     type = models.CharField(max_length=20, choices=type_choices)
     name = models.CharField(max_length=200)
-    variant = models.CharField(max_length=200, null=True)
-    size = models.CharField(max_length=200, null=True)
+    variant = models.CharField(max_length=200, null=True, blank=True)
+    size = models.CharField(max_length=200, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -38,7 +38,7 @@ class StockLocation(models.Model):
 class StockItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     location = models.ForeignKey(StockLocation, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.product.name

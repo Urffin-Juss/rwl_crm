@@ -5,18 +5,8 @@ from apps.clients.models import Client
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'phone', 'created_at',)
+    list_display = ('name', 'email', 'phone', 'created_at', 'dob')
     search_fields = ('name', 'phone')
-    fieldsets = (
-        ('Основная информация', {
-            'fields': ('name', 'client_group', 'status')
-        }),
-        ('Контакты', {
-            'fields': ('email', 'phone', 'address')
-        }),
-        ('Дополнительно', {
-            'fields': ('notes', 'birth_date', 'is_active')
-        }),
-    )
+    list_filter = ('city', 'created_at')
 
 
