@@ -1,6 +1,7 @@
 from django.db import models
 
 
+
 class Client(models.Model):
     name = models.CharField(max_length=200)
     phone = models.CharField(max_length=25, unique=True, db_index=True)
@@ -14,7 +15,7 @@ class Client(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.phone
+        return self.name
 
 
 

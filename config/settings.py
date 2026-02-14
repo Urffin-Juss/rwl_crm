@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('1', 'true', 'yes', 'on')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 
 
@@ -115,3 +115,7 @@ USE_TZ = True
 
 
 STATIC_URL = 'static/'
+
+
+AUTH_USER_MODEL = 'django.contrib.auth.User'
+

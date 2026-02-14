@@ -2,10 +2,16 @@ from django.db import models
 
 
 class Event(models.Model):
+
+    STATUS_CHOICES = (
+    ('OPEN', 'OPEN'),
+    ('CLOSED', 'CLOSED'),
+    )
+
     name = models.CharField(max_length=200)
     city = models.CharField(max_length=200)
     date = models.DateField()
-    status = models.BooleanField(default=False)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=200, default='OPEN')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -19,4 +25,4 @@ class Event(models.Model):
 
 
 
-# Create your models here.
+
