@@ -7,7 +7,7 @@ class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
 
-    def _has_full_access(self, request):
+    def _has_full_access(self, request, obj=None):
         """True если пользователь имеет полный доступ"""
         return any([
             request.user.is_superuser,
@@ -15,7 +15,7 @@ class OrderItemInline(admin.TabularInline):
             request.user.groups.filter(name='Admin').exists()
         ])
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return self._has_full_access(request)
 
     def has_delete_permission(self, request, obj=None):
