@@ -53,3 +53,39 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     price = models.PositiveIntegerField(default=0)
+
+    def reserve_stock(self):
+        """Зарезервировать товар (для новых заказов)"""
+        if self.product.quantity < self.quantity:
+            raise ValueError(f"Недостаточно товара {self.product.name}")
+        self.product.quantity -= self.quantity
+        self.product.save()
+
+    def release_stock(self):
+        """Освободить товар (при отмене заказа)"""
+        self.product.quantity += self.quantity
+        self.product.save()
+
+    def change_quantity(self, new_quantity):
+        """Изменить количество"""
+        if new_quantity < 0:
+            raise ValueError("Количество не может быть отрицательным")
+
+        delta = new_quantity - self.quantity
+
+        if delta > 0:
+            if self.product.quantity < delta:
+                raise ValueError(f"Недостаточно товара. Доступно: {self.product.quantity}")
+            self.product.quantity -= delta
+        else:
+            self.product.quantity += abs(delta)
+
+        self.product.save()
+        self.quantity = new_quantity
+        self.save()
+
+    def save(self, *args, **kwargs):
+
+        if not self.pk and self.price == 0:
+            self.price = self.product.price
+        super().save(*args, **kwargs)
