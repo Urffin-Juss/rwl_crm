@@ -4,9 +4,13 @@ from apps.stock.models import Product, StockItem, StockLocation
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'type', 'variant', 'size')
+    list_display = ('name', 'type', 'variant', 'size', 'total_stock')
     list_filter = ('type', 'variant')
     search_fields = ('name', 'type', 'variant')
+
+    @admin.display(description="Всего на складе")
+    def total_stock(self, obj):
+        return sum(item.quantity for item in obj.stockitem_set.all())
 
 
 @admin.register(StockItem)
