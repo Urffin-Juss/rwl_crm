@@ -54,38 +54,74 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     price = models.PositiveIntegerField(default=0)
 
-    def reserve_stock(self):
-        """Зарезервировать товар (для новых заказов)"""
-        if self.product.quantity < self.quantity:
-            raise ValueError(f"Недостаточно товара {self.product.name}")
-        self.product.quantity -= self.quantity
-        self.product.save()
-
-    def release_stock(self):
-        """Освободить товар (при отмене заказа)"""
-        self.product.quantity += self.quantity
-        self.product.save()
-
-    def change_quantity(self, new_quantity):
-        """Изменить количество"""
-        if new_quantity < 0:
-            raise ValueError("Количество не может быть отрицательным")
-
-        delta = new_quantity - self.quantity
-
-        if delta > 0:
-            if self.product.quantity < delta:
-                raise ValueError(f"Недостаточно товара. Доступно: {self.product.quantity}")
-            self.product.quantity -= delta
-        else:
-            self.product.quantity += abs(delta)
-
-        self.product.save()
-        self.quantity = new_quantity
-        self.save()
-
     def save(self, *args, **kwargs):
+        """
+        MVP-логика:
+        - при создании позиции списываем со склада
+        - изменение quantity запрещено
+        """
 
-        if not self.pk and self.price == 0:
-            self.price = self.product.price
-        super().save(*args, **kwargs)
+        if self.pk:
+            old = type(self).objects.only("quantity").get(pk=self.pk)
+            if old.quantity != self.quantity:
+                raise ValidationError(
+                    "Изменение количества запрещено. Удалите позицию и создайте заново."
+                )
+            return super().save(*args, **kwargs)
+
+        # Создание новой позиции => списание
+        if not getattr(self.order, "stock_location", None):
+            raise ValidationError("У заказа не выбрана точка склада (stock_location).")
+
+        if self.quantity is None or self.quantity <= 0:
+            raise ValidationError("Количество должно быть положительным числом.")
+
+        with transaction.atomic():
+            try:
+                stock = (
+                    StockItem.objects
+                    .select_for_update()
+                    .get(location=self.order.stock_location, product=self.product)
+                )
+            except StockItem.DoesNotExist:
+                raise ValidationError(
+                    f"На точке '{self.order.stock_location}' нет остатков для товара '{self.product}'."
+                )
+
+            if stock.quantity < self.quantity:
+                raise ValidationError(
+                    f"Недостаточно товара '{self.product}'. Доступно: {stock.quantity}, нужно: {self.quantity}."
+                )
+
+            stock.quantity -= self.quantity
+            stock.save(update_fields=["quantity"])
+
+            return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """
+        При удалении позиции возвращаем товар на склад.
+        """
+        # Если вдруг у заказа нет stock_location — просто удаляем (не ломаемся)
+        if not getattr(self.order, "stock_location", None):
+            return super().delete(*args, **kwargs)
+
+        with transaction.atomic():
+            try:
+                stock = (
+                    StockItem.objects
+                    .select_for_update()
+                    .get(location=self.order.stock_location, product=self.product)
+                )
+            except StockItem.DoesNotExist:
+
+                return super().delete(*args, **kwargs)
+
+            stock.quantity += self.quantity
+            stock.save(update_fields=["quantity"])
+
+            return super().delete(*args, **kwargs)
+
+
+
+
