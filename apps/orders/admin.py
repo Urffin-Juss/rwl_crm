@@ -66,11 +66,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 
     def get_readonly_fields(self, request, obj=None):
-        if request.user.is_superuser:
-            return []
-        elif request.user.groups.filter(name='Owner').exists():
-            return []
-        elif request.user.groups.filter(name='Admin').exists():
+        if self._has_full_access(request):
             return []
         else:
             return [field.name for field in self.model._meta.fields]

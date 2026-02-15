@@ -33,9 +33,17 @@ class TaskAdmin(admin.ModelAdmin):
 
         if self._has_full_access(request):
             return True
-        if hasattr(obj, 'assigned') and obj.assigned == request.user:
+        if obj is None:
+            return True
+        if obj.assigned == request.user:
             return True
 
         return False
+
+    def get_readonly_fields(self, request, obj=None):
+        if self._has_full_access(request):
+            return []
+        else:
+            return [field.name for field in self.model._meta.fields]
 
 
