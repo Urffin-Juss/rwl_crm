@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 
 class Product(models.Model):
 
@@ -46,3 +47,8 @@ class StockItem(models.Model):
 
     class Meta:
         unique_together = (('product', 'location'),)
+
+
+    def clean(self):
+        if self.quantity < 0:
+            raise ValidationError("Количество не может быть отрицательным")

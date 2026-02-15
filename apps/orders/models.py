@@ -1,6 +1,6 @@
 from django.db import models
 from apps.clients.models import Client
-from apps.stock.models import Product, StockLocation
+from apps.stock.models import Product, StockLocation, StockItem
 from apps.events.models import Event
 from django.conf import settings
 from django.core.exceptions import ValidationError
