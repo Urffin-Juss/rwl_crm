@@ -38,7 +38,14 @@ class OrderAdmin(admin.ModelAdmin):
 
 
     def has_change_permission(self, request, obj=None):
-      return self._has_full_access(request)
+
+      if self._has_full_access(request):
+          return True
+      if hasattr(obj, 'assigned_packer') and obj.assigned_packer == request.user:
+          return True
+
+      return False
+
 
 
     def get_readonly_fields(self, request, obj=None):
