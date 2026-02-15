@@ -42,6 +42,7 @@ class Order(models.Model):
     comments = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+    stock_location = models.ForeignKey(StockLocation, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.client)
