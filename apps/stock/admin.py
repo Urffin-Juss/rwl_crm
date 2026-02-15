@@ -18,7 +18,7 @@ class StockItemAdmin(admin.ModelAdmin):
 
 @admin.register(StockLocation)
 class StockLocationAdmin(admin.ModelAdmin):
-    list_display = ('product', 'location',)
-    list_filter = ('location',)
+    list_display = ('name', 'location', 'created_at')
+    list_filter = ('location', 'name')
 
 
