@@ -50,7 +50,7 @@ class OrderAdmin(admin.ModelAdmin):
         return self._has_full_access(request)
 
     def has_delete_permission(self, request, obj=None):
-        return self._has_full_access(request)
+        return request.user.is_superuser
 
 
     def has_change_permission(self, request, obj=None):
@@ -71,6 +71,10 @@ class OrderAdmin(admin.ModelAdmin):
             return []
         else:
             return [field.name for field in self.model._meta.fields]
+
+
+
+
 
 
 
