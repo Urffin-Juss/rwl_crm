@@ -110,7 +110,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+AUTH_USER_MODEL = 'auth.User'
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
