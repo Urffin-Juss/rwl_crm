@@ -169,7 +169,7 @@ def build_address(row_data: Dict[str, Any]) -> str:
     if delivery:
         return delivery
 
-    # сборка по частям (подстрой EXACT в rules.py)
+
     idx = _s(pick_any(row_data, exact=EXACT.get("postal_index", [])))
     region = _s(pick_any(row_data, exact=EXACT.get("region", [])))
     city = _s(pick_any(row_data, exact=EXACT.get("city", [])))
@@ -203,7 +203,7 @@ class ExcelProcessor:
         updated_clients = 0
         errors = 0
 
-        # чистим старые строки под этот batch
+
         RawExcelRow.objects.filter(batch=batch).delete()
 
         for row_num, values in rows:
@@ -216,7 +216,7 @@ class ExcelProcessor:
             )
             created_rows += 1
 
-            # телефон — ключевое поле
+
             phone = normalize_phone(pick_any(row_data, exact=EXACT["phone"]))
             if not phone:
                 raw.error_message = "Пустой/некорректный телефон"
@@ -224,7 +224,7 @@ class ExcelProcessor:
                 errors += 1
                 continue
 
-            # базовые поля
+
             full_name = build_full_name(row_data) or phone
             email = _s(pick_any(row_data, exact=EXACT["email"]))
             contact = _s(pick_any(row_data, contains=CONTAINS["contact_text"]))
@@ -234,11 +234,11 @@ class ExcelProcessor:
             dob_value = pick_any(row_data, exact=EXACT["dob"])
             dob = normalize_date(dob_value)
 
-            # defaults под твою модель Client — поправь по своим полям
+
             defaults = {
                 "name": full_name,
             }
-            # дальше — только если эти поля реально есть в Client (лучше не hasattr, но оставлю мягко)
+
             if hasattr(Client, "email"):
                 defaults["email"] = email or ""
             if hasattr(Client, "address"):
