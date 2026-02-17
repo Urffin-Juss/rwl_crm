@@ -20,11 +20,15 @@ def _s(val: Any) -> str:
     return str(val).strip()
 
 
-def normalize_header(text: Any) -> str:
-    # приводим заголовки к “сравнимому” виду
-    t = _s(text).lower()
-    t = re.sub(r"\s+", " ", t)
-    return t
+def normalize_header(text: str) -> str:
+    if not text:
+        return ""
+    text = str(text).lower().strip()
+
+    text = re.sub(r"[^0-9a-zа-яё]+", " ", text, flags=re.IGNORECASE)
+
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
 
 
 def normalize_cell_value(val: Any) -> Any:
@@ -128,14 +132,18 @@ def build_full_name(row: Dict[str, Any]) -> str:
 
 
 def build_address(row: Dict[str, Any]) -> str:
-    # можно собрать из “Регион/Город/Улица/Дом/Квартира”, если они есть
-    region = _s(pick_any(row, exact=EXACT.get("region", [])))
-    city = _s(pick_any(row, exact=EXACT.get("city", [])))
-    street = _s(pick_any(row, exact=EXACT.get("street", [])))
-    house = _s(pick_any(row, exact=EXACT.get("house", [])))
-    flat = _s(pick_any(row, exact=EXACT.get("flat", [])))
 
-    parts = [p for p in [region, city, street, house, flat] if p]
+    delivery = _s(pick_any(row, contains=CONTAINS["delivery_address_text"]))
+    if delivery:
+        return delivery
+
+
+    city = _s(pick_any(row, exact=EXACT["city"]))
+    street = _s(pick_any(row, exact=EXACT["street"]))
+    house = _s(pick_any(row, exact=EXACT["house"]))
+    flat = _s(pick_any(row, exact=EXACT["flat"]))
+
+    parts = [p for p in [city, street, house, flat] if p]
     return ", ".join(parts)
 
 def is_empty_row(values) -> bool:
