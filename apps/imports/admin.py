@@ -3,36 +3,43 @@ from django.contrib import messages
 from apps.imports.models import ImportBatch, RawExcelRow
 
 
-@admin.register(ImportBatch)
 class ImportBatchAdmin(admin.ModelAdmin):
     list_display = ('event', 'uploaded_by', 'status', 'created_at')
-    search_fields = ('file_name', 'uploaded_by', 'status')
-    actions = ['process_batch']
+    search_fields = ('file_name', 'uploaded_by__username', 'status')
+    actions = ['process_batches']
 
-    def process_batch(self, request, queryset):
+    @admin.action(description="Process selected batches")
+    def process_batches(self, request, queryset):
         processed_count = 0
         errors = []
 
-
-
         for batch in queryset:
             try:
-                batch.process_batch()
+                batch.process()   # <-- ВАЖНО
                 processed_count += 1
             except Exception as e:
-                errors.append(f'{batch.file_name} - {e}')
+                errors.append(f"{getattr(batch, 'file_name', batch.pk)} - {e}")
 
-            if processed_count:
-                self.message_user(request,
-                                  f'Successfully processed {processed_count} batches.',
-                                  level=messages.SUCCESS)
+        if processed_count:
+            self.message_user(
+                request,
+                f"Successfully processed {processed_count} batches.",
+                level=messages.SUCCESS
+            )
 
-            if not processed_count and errors:
-                self.message_user(request,
-                                  'No batches were processed.',
-                                  level=messages.WARNING)
+        if errors:
+            self.message_user(
+                request,
+                "Errors:\n" + "\n".join(errors[:10]),
+                level=messages.ERROR
+            )
 
-        return
+        if not processed_count and not errors:
+            self.message_user(
+                request,
+                "No batches were processed.",
+                level=messages.WARNING
+            )
 
 
 
