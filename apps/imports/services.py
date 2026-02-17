@@ -12,6 +12,9 @@ from apps.clients.models import Client
 from apps.imports.models import RawExcelRow, ImportBatch
 
 from datetime import date, datetime
+from apps.imports.mapping import pick_any
+from apps.imports.rules import EXACT, CONTAINS
+
 
 COL_PHONE = "Мобильный телефон"
 COL_EMAIL = "Электронная почта"
