@@ -2,6 +2,7 @@ from django.db import models
 from config import settings
 
 
+
 class ImportBatch(models.Model):
 
     STATUS_CHOICES = [
@@ -31,6 +32,10 @@ class ImportBatch(models.Model):
                 name='unique_event_file_hash'
             )
         ]
+
+    def process(self):
+        from apps.imports.services import ExcelProcessor
+        return ExcelProcessor.process_batch(self)
 
 
 class RawExcelRow(models.Model):
