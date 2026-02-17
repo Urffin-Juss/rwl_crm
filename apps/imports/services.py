@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import os
 import re
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple
 
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, FieldDoesNotExist
 from django.db import transaction
 from openpyxl import load_workbook
 
 from apps.clients.models import Client
 from apps.imports.models import RawExcelRow, ImportBatch
-from apps.imports.rules import EXACT, CONTAINS  # оставим твой подход
+from apps.imports.rules import EXACT, CONTAINS
 
 
 def _s(val: Any) -> str:
@@ -88,6 +88,13 @@ def pick_any(row: dict, exact=None, contains=None):
 
     return None
 
+def model_has_field(model, field_name: str) -> bool:
+    try:
+        model._meta.get_field(field_name)
+        return True
+    except FieldDoesNotExist:
+        return False
+
 def _is_empty_row(values) -> bool:
     def _empty(v):
         if v is None:
@@ -122,6 +129,45 @@ def normalize_phone(val: Any) -> str:
     return ""
 
 
+def normalize_date(val: Any) -> str:
+    """
+    Приводит дату к формату YYYY-MM-DD
+    Поддерживает: число из Excel, строки DD.MM.YYYY, DD/MM/YYYY
+    """
+    raw = _s(val)
+    if not raw:
+        return ""
+
+    # Если число из Excel
+    if isinstance(val, (int, float)) and not isinstance(val, bool):
+        try:
+            from datetime import datetime, timedelta
+            excel_epoch = datetime(1899, 12, 30)
+            date = excel_epoch + timedelta(days=int(val))
+            return date.strftime("%Y-%m-%d")
+        except:
+            pass
+
+    # Если строка с точками или слешами
+    if isinstance(raw, str):
+        raw = raw.strip()
+
+        # Ищем дату вида DD.MM.YYYY или DD/MM/YYYY
+        match = re.search(r'(\d{1,2})[./](\d{1,2})[./](\d{4})', raw)
+        if match:
+            day, month, year = match.groups()
+            return f"{year:04d}-{int(month):02d}-{int(day):02d}"
+
+        # Ищем дату вида DD.MM.YY
+        match = re.search(r'(\d{1,2})[./](\d{1,2})[./](\d{2})', raw)
+        if match:
+            day, month, year = match.groups()
+            year = int(year) + 2000 if int(year) < 70 else int(year) + 1900
+            return f"{year:04d}-{int(month):02d}-{int(day):02d}"
+
+    return ""
+
+
 def build_full_name(row: Dict[str, Any]) -> str:
     last_name = _s(pick_any(row, exact=EXACT["last_name"]))
     first_name = _s(pick_any(row, exact=EXACT["first_name"]))
@@ -133,15 +179,11 @@ def build_full_name(row: Dict[str, Any]) -> str:
 
 def build_address(row: Dict[str, Any]) -> str:
 
-    delivery = _s(pick_any(row, contains=CONTAINS["delivery_address_text"]))
-    if delivery:
-        return delivery
-
-
     city = _s(pick_any(row, exact=EXACT["city"]))
     street = _s(pick_any(row, exact=EXACT["street"]))
     house = _s(pick_any(row, exact=EXACT["house"]))
     flat = _s(pick_any(row, exact=EXACT["flat"]))
+    address = _s(pick_any(row, contains=CONTAINS["delivery_address_text"]))
 
     parts = [p for p in [city, street, house, flat] if p]
     return ", ".join(parts)
@@ -216,15 +258,37 @@ class ExcelProcessor:
                 errors += 1
                 continue
 
-            full_name = build_full_name(data) or phone
+            city = _s(pick_any(data, exact=EXACT["city"]))
+            contact = _s(pick_any(data, contains=CONTAINS["contact_text"]))
+            pets = _s(pick_any(data, contains=CONTAINS["pets_text"]))
             email = _s(pick_any(data, exact=EXACT["email"]))
-            address = build_address(data)  # или pick_any(... contains=...) если надо
+            address = build_address(data)
+            full_name = build_full_name(data)
+
+
+
+            dob_value = pick_any(data, exact=EXACT["dob"])  # может быть datetime/date/строка
+            dob = normalize_date(dob_value)
 
             defaults = {"name": full_name}
-            if hasattr(Client, "email"):
+
+            if model_has_field(Client, "email"):
                 defaults["email"] = email
-            if hasattr(Client, "address"):
+
+            if model_has_field(Client, "city"):
+                defaults["city"] = city
+
+            if model_has_field(Client, "address"):
                 defaults["address"] = address
+
+            if model_has_field(Client, "contact"):
+                defaults["contact"] = contact
+
+            if model_has_field(Client, "pets"):
+                defaults["pets"] = pets
+
+            if model_has_field(Client, "dob"):
+                defaults["dob"] = dob or None
 
             client, created = Client.objects.update_or_create(
                 phone=phone,
