@@ -31,7 +31,8 @@ INSTALLED_APPS = [
     'apps.orders',
     'apps.stock',
     'apps.tasks',
-    'apps.clients'
+    'apps.clients',
+    'import_export',
 
     
 ]

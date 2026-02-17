@@ -4,6 +4,7 @@ import os
 import re
 from typing import Any, Dict, List, Tuple, Optional
 
+
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from openpyxl import load_workbook
@@ -68,45 +69,53 @@ def row_to_dict(headers: List[str], values: Tuple[Any, ...]) -> Dict[str, Any]:
     return data
 
 
-def pick_any(row: Dict[str, Any], *, exact: Optional[List[str]] = None, contains: Optional[List[str]] = None) -> Any:
-    """
-    exact: список “точных” названий колонок (как в rules.py), но сравнение нормализованное
-    contains: список подстрок (тоже нормализованных)
-    """
-    exact = exact or []
-    contains = contains or []
-
-    exact_norm = [normalize_header(x) for x in exact]
-    contains_norm = [normalize_header(x) for x in contains]
+def pick_any(row: dict, exact=None, contains=None):
+    exact = [normalize_header(x) for x in (exact or [])]
+    contains = [normalize_header(x) for x in (contains or [])]
 
     for key, value in row.items():
-        k = normalize_header(key)
+        normalized = normalize_header(key)
 
-        if k in exact_norm:
+        if normalized in exact:
             return value
 
-        if any(part and part in k for part in contains_norm):
+        if any(c in normalized for c in contains):
             return value
 
     return None
 
+def _is_empty_row(values) -> bool:
+    def _empty(v):
+        if v is None:
+            return True
+        if isinstance(v, str) and not v.strip():
+            return True
+        return False
+    return all(_empty(v) for v in values)
 
 def normalize_phone(val: Any) -> str:
+
     raw = _s(val)
     if not raw:
         return ""
 
-    raw = raw.replace(".0", "")  # если прилетело как 7916...0
+    # Excel-числа типа 79161234567.0
+    if raw.endswith(".0"):
+        raw = raw[:-2]
+
     digits = re.sub(r"\D+", "", raw)
 
-    # MVP-валидация: РФ обычно 11 цифр (7XXXXXXXXXX)
-    if len(digits) == 11 and digits.startswith("8"):
-        digits = "7" + digits[1:]
 
-    if len(digits) < 10:
-        return ""
+    if len(digits) == 10:
+        digits = "7" + digits
 
-    return digits
+
+    if len(digits) == 11 and digits[0] in ("7", "8"):
+        if digits[0] == "8":
+            digits = "7" + digits[1:]
+        return digits
+
+    return ""
 
 
 def build_full_name(row: Dict[str, Any]) -> str:
@@ -129,11 +138,36 @@ def build_address(row: Dict[str, Any]) -> str:
     parts = [p for p in [region, city, street, house, flat] if p]
     return ", ".join(parts)
 
+def is_empty_row(values) -> bool:
+    """
+    Проверяем, полностью ли строка пустая.
+    Пустая = все ячейки None или пустые строки.
+    """
+    for v in values:
+        if v is None:
+            continue
+        if str(v).strip() != "":
+            return False
+    return True
+
+
 
 class ExcelProcessor:
     @staticmethod
     @transaction.atomic
     def process_batch(batch: ImportBatch) -> dict:
+        headers = []
+        rows = []
+
+        for row_num, values in rows:
+            data = row_to_dict(headers, values)
+
+            raw = RawExcelRow.objects.create(
+                batch=batch,
+                row_number=row_num,
+                raw_data=data,
+            )
+
         if not batch.file:
             raise ValidationError("Файл не загружен.")
 
@@ -143,7 +177,7 @@ class ExcelProcessor:
 
         headers, rows = read_xlsx(batch.file.path)
 
-        # чистим строки этого батча (клиентов НЕ трогаем)
+
         RawExcelRow.objects.filter(batch=batch).delete()
 
         created_rows = 0
