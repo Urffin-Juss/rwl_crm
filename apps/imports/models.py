@@ -1,6 +1,4 @@
 from django.db import models
-
-from apps.events.models import Event
 from config import settings
 
 
@@ -20,6 +18,7 @@ class ImportBatch(models.Model):
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='PROCESSING')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    file = models.FileField(upload_to='imports/')
 
 
     def __str__(self):
