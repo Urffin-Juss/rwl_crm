@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib import messages
 from apps.imports.models import ImportBatch, RawExcelRow
 
-
+@admin.register(ImportBatch)
 class ImportBatchAdmin(admin.ModelAdmin):
     list_display = ('event', 'uploaded_by', 'status', 'created_at')
     search_fields = ('file_name', 'uploaded_by__username', 'status')

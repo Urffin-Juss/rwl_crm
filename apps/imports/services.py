@@ -1,8 +1,4 @@
-# apps/imports/services.py
-
 from __future__ import annotations
-
-from dataclasses import dataclass
 import os
 import re
 from typing import Any, Dict, List, Tuple
@@ -15,7 +11,7 @@ from openpyxl import load_workbook
 from apps.clients.models import Client
 from apps.imports.models import RawExcelRow, ImportBatch
 
-
+from datetime import date, datetime
 
 COL_PHONE = "Мобильный телефон"
 COL_EMAIL = "Электронная почта"
@@ -60,6 +56,12 @@ def normalize_phone(val: Any) -> str:
     return digits
 
 
+def _normalize_cell_value(value):
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    return value
+
+
 def build_full_name(row: Dict[str, Any]) -> str:
     parts = [
         _s(row.get(COL_LAST_NAME)),
@@ -93,11 +95,16 @@ def read_xlsx(file_path: str) -> Tuple[List[str], List[Tuple[int, Tuple[Any, ...
 
 def row_to_dict(headers: List[str], values: Tuple[Any, ...]) -> Dict[str, Any]:
     data: Dict[str, Any] = {}
-    for i, h in enumerate(headers):
-        if not h:
+
+    for i, header in enumerate(headers):
+        if not header:
             continue
-        data[h] = values[i] if i < len(values) else None
+
+        value = values[i] if i < len(values) else None
+        data[header] = _normalize_cell_value(value)
+
     return data
+
 
 
 class ExcelProcessor:
