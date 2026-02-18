@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'apps.tasks',
     'apps.clients',
     'import_export',
+    'webui',
 
     
 ]
