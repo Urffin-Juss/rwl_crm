@@ -140,7 +140,7 @@ class OrderItem(models.Model):
 
 
 
-class ArchiveOrder(Orderl):
+class ArchiveOrder(Order):
     class Meta:
         proxy = True
         verbose_name = "Archive Order"
