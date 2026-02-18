@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from apps.stock.models import Product
 import os
 import re
 from typing import Any, Dict, List, Tuple
@@ -11,7 +11,7 @@ from openpyxl import load_workbook
 
 from apps.clients.models import Client
 from apps.imports.models import RawExcelRow, ImportBatch
-from apps.imports.rules import EXACT, CONTAINS
+from apps.imports.rules import EXACT, CONTAINS, PRODUCT_KEYWORDS
 
 
 def _s(val: Any) -> str:
@@ -235,12 +235,103 @@ def is_empty_row(values) -> bool:
 
 
 
+
+def parse_product_column(header: str, value: Any) -> Optional[Dict]:
+    """
+    Парсит колонку с товаром.
+    Возвращает словарь с типом товара, размером, цветом и количеством
+    """
+    if not value or str(value).strip() == "":
+        return None
+
+    header_lower = header.lower()
+    value_str = str(value).strip()
+
+    # Определяем тип товара
+    product_type = None
+    for ptype, keywords in PRODUCT_KEYWORDS.items():
+        if any(kw in header_lower for kw in keywords):
+            product_type = ptype
+            break
+
+    if not product_type:
+        return None
+
+    result = {
+        'type': product_type,
+        'name': header[:200],  # обрезаем длинное название
+        'size': None,
+        'color': None,
+        'quantity': 1  # по умолчанию 1, если не указано иное
+    }
+
+    # Пытаемся извлечь размер
+    size_match = re.search(r'размер\s+([\d\-SML\/]+)', header_lower, re.IGNORECASE)
+    if size_match:
+        result['size'] = size_match.group(1)
+
+    # Пытаемся извлечь цвет
+    color_match = re.search(r'цвет\s+([а-яё]+)', header_lower, re.IGNORECASE)
+    if color_match:
+        result['color'] = color_match.group(1)
+
+    # Если значение - число, это может быть количество
+    if value_str.isdigit() and int(value_str) > 0:
+        result['quantity'] = int(value_str)
+
+    return result
+
+
+def build_order_items(row: Dict[str, Any]) -> List[Dict]:
+    """
+    Собирает все товары из строки Excel
+    """
+    items = []
+
+    for header, value in row.items():
+        # Проверяем, похоже ли на товарную колонку
+        if any(kw in header.lower() for kw in ['носок', 'носки', 'повязк', 'пояс', 'кружк', 'донат']):
+            product_data = parse_product_column(header, value)
+            if product_data:
+                items.append(product_data)
+
+    return items
+
+
+def get_or_create_product(product_data: Dict) -> Product:
+    """
+    Находит или создает товар по данным из Excel
+    """
+    # Формируем название товара
+    name_parts = [product_data['name']]
+    if product_data.get('size'):
+        name_parts.append(f"размер {product_data['size']}")
+    if product_data.get('color'):
+        name_parts.append(f"цвет {product_data['color']}")
+
+    product_name = ", ".join(name_parts)[:200]
+
+    # Пытаемся найти существующий
+    product, created = Product.objects.get_or_create(
+        name=product_name,
+        defaults={
+            'type': product_data['type'],
+            'variant': product_data.get('color', ''),
+            'size': product_data.get('size', ''),
+        }
+    )
+
+    return product
+
+
+
 class ExcelProcessor:
     @staticmethod
     @transaction.atomic
     def process_batch(batch: ImportBatch) -> dict:
         headers = []
         rows = []
+
 
         for row_num, values in rows:
             data = row_to_dict(headers, values)
@@ -250,6 +341,8 @@ class ExcelProcessor:
                 row_number=row_num,
                 raw_data=data,
             )
+
+
 
         if not batch.file:
             raise ValidationError("Файл не загружен.")
@@ -348,10 +441,52 @@ class ExcelProcessor:
             else:
                 updated_clients += 1
 
+
+
+        distance = _s(pick_any(data, exact=EXACT["distance"]))
+        bib = _s(pick_any(data, exact=EXACT["bib_number"]))
+        chip = _s(pick_any(data, exact=EXACT["chip_number"]))
+
+        # Создаем заказ
+        order = Order.objects.create(
+            client=client,
+            event=batch.event,  # предполагаем, что ImportBatch связан с Event
+            distance_text=distance,
+            status='new',
+            payment_status='NOT_PAID',
+            payment_type='cash',
+            registration_date=datetime.now().date(),
+            comments=f"Номер: {bib}, Чип: {chip}".strip(", "),
+            # stock_location можно будет добавить позже
+        )
+
+        # 3. СОЗДАЕМ ТОВАРЫ В ЗАКАЗЕ (новое!)
+        items_data = build_order_items(data)
+        for item_data in items_data:
+            product = get_or_create_product(item_data)
+
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=item_data['quantity'],
+                price=0,  # цена будет проставлена позже
+            )
+
+        # Связываем сырую строку с клиентом и заказом
+        raw.linked_client = client
+        raw.linked_order = order  # нужно добавить поле в RawExcelRow
+        raw.save(update_fields=["linked_client", "linked_order"])
+
+        if created:
+            created_clients += 1
+        else:
+            updated_clients += 1
+
         return {
             "rows_saved": created_rows,
             "clients_created": created_clients,
             "clients_updated": updated_clients,
+            "orders_created": created_rows - errors,
             "errors": errors,
             "skipped_empty_rows": skipped_empty,
-        }
+    }
