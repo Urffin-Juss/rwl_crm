@@ -1,6 +1,5 @@
 from django.db import models
 from config import settings
-from django.db.models import JSONField
 from django.utils import timezone
 
 
@@ -23,7 +22,7 @@ class ImportBatch(models.Model):
     uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     file_name = models.CharField(max_length=255)
     file_hash = models.CharField(max_length=255)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     file = models.FileField(upload_to='imports/')
