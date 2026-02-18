@@ -1,0 +1,27 @@
+{% extends 'webui/base.html' %}
+
+{% block title %}CRM Workspace{% endblock %}
+
+{% block content %}
+<section class="workspace-grid">
+  <article class="metric-card red">
+    <h2>CRM</h2>
+    <p>Рабочая зона управления забегами, заказами и складом.</p>
+    <a href="/api/docs/" class="ghost-btn">Swagger API</a>
+  </article>
+  <article class="metric-card">
+    <h3>Профиль</h3>
+    <p>{{ request.user.first_name }} {{ request.user.last_name }}</p>
+    <p>@{{ request.user.telegram_username|default:'no_username' }}</p>
+    <p>Роль: {{ request.user.role|upper }}</p>
+  </article>
+  <article class="metric-card">
+    <h3>Быстрые переходы</h3>
+    <div class="quick-links">
+      <a href="/admin/">Админка</a>
+      <a href="/api/dashboard/">Dashboard API</a>
+      <a href="{{ shop_url }}">Магазин</a>
+    </div>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'webui/base.html' %}
+{% load static %}
+
+{% block title %}Вход | Run With Love CRM{% endblock %}
+
+{% block content %}
+<section class="login-grid">
+  <article class="login-panel">
+
+
+</section>
+<script>window.NEXT_URL = "{{ next_url|escapejs }}";</script>
+<script src="{% static 'webui/auth.js' %}"></script>
+{% endblock %}
