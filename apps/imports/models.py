@@ -1,6 +1,6 @@
 from django.db import models
 from config import settings
-
+from django.db.models import JSONField
 
 
 class ImportBatch(models.Model):
@@ -20,6 +20,9 @@ class ImportBatch(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     file = models.FileField(upload_to='imports/')
+    processed_at = models.DateTimeField(null=True, blank=True)
+    result = models.JSONField(null=True, blank=True, default=dict)
+    error = models.TextField(blank=True, default="")
 
 
     def __str__(self):
