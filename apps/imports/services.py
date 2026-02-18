@@ -1,9 +1,12 @@
 from __future__ import annotations
+
+from datetime import datetime
+
+from apps.orders.models import OrderItem, Order
 from apps.stock.models import Product
 import os
 import re
-from typing import Any, Dict, List, Tuple
-
+from typing import Any, Dict, List, Tuple, Optional
 
 from django.core.exceptions import ValidationError, FieldDoesNotExist
 from django.db import transaction
@@ -443,44 +446,45 @@ class ExcelProcessor:
 
 
 
-        distance = _s(pick_any(data, exact=EXACT["distance"]))
-        bib = _s(pick_any(data, exact=EXACT["bib_number"]))
-        chip = _s(pick_any(data, exact=EXACT["chip_number"]))
+            distance = _s(pick_any(data, exact=EXACT["distance"]))
+            bib = _s(pick_any(data, exact=EXACT["bib_number"]))
+            chip = _s(pick_any(data, exact=EXACT["chip_number"]))
 
-        # Создаем заказ
-        order = Order.objects.create(
-            client=client,
-            event=batch.event,  # предполагаем, что ImportBatch связан с Event
-            distance_text=distance,
-            status='new',
-            payment_status='NOT_PAID',
-            payment_type='cash',
-            registration_date=datetime.now().date(),
-            comments=f"Номер: {bib}, Чип: {chip}".strip(", "),
-            # stock_location можно будет добавить позже
-        )
 
-        # 3. СОЗДАЕМ ТОВАРЫ В ЗАКАЗЕ (новое!)
-        items_data = build_order_items(data)
-        for item_data in items_data:
-            product = get_or_create_product(item_data)
+            order = Order.objects.create(
+                client=client,
+                event=batch.event,
+                distance_text=distance,
+                status='new',
+                payment_status='NOT_PAID',
+                payment_type='cash',
+                registration_date=datetime.now().date(),
+                comments=f"Номер: {bib}, Чип: {chip}".strip(", "),
 
-            OrderItem.objects.create(
-                order=order,
-                product=product,
-                quantity=item_data['quantity'],
-                price=0,  # цена будет проставлена позже
             )
 
-        # Связываем сырую строку с клиентом и заказом
-        raw.linked_client = client
-        raw.linked_order = order  # нужно добавить поле в RawExcelRow
-        raw.save(update_fields=["linked_client", "linked_order"])
 
-        if created:
-            created_clients += 1
-        else:
-            updated_clients += 1
+            items_data = build_order_items(data)
+            for item_data in items_data:
+                product = get_or_create_product(item_data)
+
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=item_data['quantity'],
+                    price=0,
+                )
+
+
+            raw.linked_client = client
+            raw.linked_order = order
+            raw.save(update_fields=["linked_client", "linked_order"])
+
+            if created:
+                created_clients += 1
+            else:
+                updated_clients += 1
+
 
         return {
             "rows_saved": created_rows,
@@ -489,4 +493,4 @@ class ExcelProcessor:
             "orders_created": created_rows - errors,
             "errors": errors,
             "skipped_empty_rows": skipped_empty,
-    }
+        }

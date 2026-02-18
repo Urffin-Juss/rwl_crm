@@ -1,7 +1,6 @@
 EXACT = {
     "phone": ["мобильный телефон"],
     "email": ["электронная почта"],
-    "address":["Улица"],
     "last_name": ["фамилия"],
     "first_name": ["имя"],
     "middle_name": ["отчество"],
@@ -15,13 +14,16 @@ EXACT = {
     "distance": ["дистанция"],
     "bib_number": ["ст.номер", "ст.ном"],
     "chip_number": ["номер чипа"],
+    "registration_date":["дата регистрации"],
+    "payment_status":["статус оплаты"],
+    "payment_type":["тип оплаты"],
 }
 
 CONTAINS = {
     "delivery_address_text": ["укажите адрес для доставки"],
     "contact_text": ["как и где с вами связаться"],
     "pets_text": ["у вас есть кошечки", "кошечки", "собачки"],
-    "distance_text": ["дистанция"],
+
 }
 
 
