@@ -117,5 +117,6 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_ROOT = BASE_DIR / 'media'
+
 DEFAULT_TECH_STOCK_LOCATION_NAME = 'Tech_stock'
 

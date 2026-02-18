@@ -66,9 +66,9 @@ class OrderItem(models.Model):
         if not loc:
             raise ValidationError("У заказа не выбрана точка склада (stock_location)!")
 
-        if getattr(loc, "name", "") == "TECH / Inbound":
-            # позиции можно создавать, но остатки не трогаем
+        if self.order.stock_location.name == "Tech_stock":
             return super().save(*args, **kwargs)
+
 
 
         if self.pk:
@@ -114,6 +114,9 @@ class OrderItem(models.Model):
         """
         # Если вдруг у заказа нет stock_location — просто удаляем (не ломаемся)
         if not getattr(self.order, "stock_location", None):
+            return super().delete(*args, **kwargs)
+
+        if self.order.stock_location.name == "Tech_stock":
             return super().delete(*args, **kwargs)
 
         with transaction.atomic():

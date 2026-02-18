@@ -166,6 +166,8 @@ def normalize_date(val: Any) -> str:
     return ""
 
 
+
+
 def build_full_name(row: Dict[str, Any]) -> str:
     last_name = _s(pick_any(row, exact=EXACT["last_name"]))
     first_name = _s(pick_any(row, exact=EXACT["first_name"]))
@@ -285,6 +287,42 @@ def parse_product_column(header: str, value: Any) -> Optional[Dict]:
 
     return result
 
+def make_product_title(p: dict) -> str:
+    """
+    p: {type, size, color, name, quantity}
+    """
+    t = p.get("type")
+
+    if t == "socks":
+        base = "Носки беговые"
+    elif t == "headband":
+        base = "Повязка спортивная"
+    elif t == "belt":
+        base = "Пояс для соревнований"
+    elif t == "mug":
+        base = "Кружка"
+    elif t == "donation":
+        base = "Донат в приют"
+    elif t == "insurance":
+        base = "Страховка"
+    elif t == "sticker":
+        base = "Наклейка"
+    else:
+        base = "Товар"
+
+    parts = [base]
+
+    size = p.get("size")
+    color = p.get("color")
+
+    if size:
+        parts.append(str(size))
+    if color:
+        parts.append(str(color))
+
+    return ", ".join(parts)[:200]
+
+
 
 def build_order_items(row: Dict[str, Any]) -> List[Dict]:
     """
@@ -313,7 +351,7 @@ def get_or_create_product(product_data: Dict) -> Product:
     if product_data.get('color'):
         name_parts.append(f"цвет {product_data['color']}")
 
-    product_name = ", ".join(name_parts)[:200]
+    product_name = make_product_title(product_data)
 
     # Пытаемся найти существующий
     product, created = Product.objects.get_or_create(
@@ -450,6 +488,7 @@ class ExcelProcessor:
             distance = _s(pick_any(data, exact=EXACT["distance"]))
             bib = _s(pick_any(data, exact=EXACT["bib_number"]))
             chip = _s(pick_any(data, exact=EXACT["chip_number"]))
+            product = make_product_title(data)
 
 
             order = Order.objects.create(
