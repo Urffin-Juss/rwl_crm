@@ -19,6 +19,7 @@
     </a>
     <nav class="header-nav">
       <a href="/workspace/">CRM</a>
+
       {% if request.user.is_authenticated %}
       <form action="/logout/" method="post">
         {% csrf_token %}

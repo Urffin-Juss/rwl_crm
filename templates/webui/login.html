@@ -1,14 +1,37 @@
 {% extends 'webui/base.html' %}
-{% load static %}
 
 {% block title %}Вход | Run With Love CRM{% endblock %}
 
 {% block content %}
 <section class="login-grid">
   <article class="login-panel">
+    <h2>Вход</h2>
 
+    {% if form.errors %}
+      <p class="warn">Неверный логин или пароль.</p>
+    {% endif %}
 
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-row">
+        <label>Логин</label>
+        {{ form.username }}
+      </div>
+      <div class="form-row">
+        <label>Пароль</label>
+        {{ form.password }}
+      </div>
+      <button class="primary-btn" type="submit">Войти</button>
+    </form>
+  </article>
+
+  <aside class="side-card">
+    <h3>RWL // ACCESS</h3>
+    <ul>
+      <li>Owner/Admin работают через Django Admin</li>
+      <li>Packer — read-only по правилам админки</li>
+      <li>Стилизация — в одном стиле с CRM</li>
+    </ul>
+  </aside>
 </section>
-<script>window.NEXT_URL = "{{ next_url|escapejs }}";</script>
-<script src="{% static 'webui/auth.js' %}"></script>
 {% endblock %}

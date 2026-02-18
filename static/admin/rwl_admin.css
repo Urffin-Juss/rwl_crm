@@ -1,0 +1,68 @@
+:root {
+  --rwl-bg: #0b0b0c;
+  --rwl-panel: #141417;
+  --rwl-text: #f2f2f2;
+  --rwl-muted: #b6b6b6;
+  --rwl-red: #ff2e2e;
+  --rwl-red-2: #b90f0f;
+  --rwl-border: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  background: radial-gradient(1200px 700px at 50% 0%, #1b1b22 0%, var(--rwl-bg) 60%, #050506 100%);
+  color: var(--rwl-text);
+}
+
+#header {
+  background: linear-gradient(90deg, #09090a, #111117);
+  border-bottom: 1px solid var(--rwl-border);
+}
+
+#header, #header a:link, #header a:visited {
+  color: var(--rwl-text);
+}
+
+#site-name a {
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+a:link, a:visited {
+  color: var(--rwl-red);
+}
+
+a:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.module h2, .module caption, .inline-group h2 {
+  background: var(--rwl-panel);
+  color: var(--rwl-text);
+  border-bottom: 1px solid var(--rwl-border);
+}
+
+#content-main .object-tools a,
+.button, input[type=submit], input[type=button], .submit-row input, .submit-row a {
+  background: var(--rwl-red);
+  border: 1px solid var(--rwl-red-2);
+  color: #fff;
+  border-radius: 10px;
+}
+
+.button:hover, input[type=submit]:hover, .submit-row input:hover, .object-tools a:hover {
+  background: #ff4a4a;
+}
+
+fieldset, .aligned .form-row, .inline-related {
+  border-color: var(--rwl-border);
+}
+
+.dashboard .module table th {
+  color: var(--rwl-muted);
+}
+
+#nav-sidebar {
+  background: rgba(20, 20, 23, 0.65);
+  border-right: 1px solid var(--rwl-border);
+}

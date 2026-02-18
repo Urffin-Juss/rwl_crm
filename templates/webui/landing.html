@@ -1,17 +1,16 @@
 {% extends 'webui/base.html' %}
 
-{% block title %}Run With Love | Launch{% endblock %}
+{% block title %}Run With Love | CRM{% endblock %}
 
 {% block content %}
 <section class="hero">
   <div class="hero-badge">Run With Love CRM</div>
   <h1>RUN <span>WITH</span> LOVE</h1>
   <p>
-    Внутренняя система команды забегов. Выберите, куда перейти: в магазин или в CRM.
+    Внутренняя система команды забегов. Перейдите в CRM.
   </p>
   <div class="hero-actions">
-    <a class="primary-btn" href="{{ shop_url }}">Перейти в магазин сейчас</a>
-    <a class="ghost-btn" href="/workspace/">Открыть CRM</a>
+    <a class="primary-btn" href="/workspace/">Открыть CRM</a>
   </div>
 </section>
 {% endblock %}
