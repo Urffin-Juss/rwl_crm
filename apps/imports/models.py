@@ -6,6 +6,7 @@ from django.db.models import JSONField
 class ImportBatch(models.Model):
 
     STATUS_CHOICES = [
+        ('NEW', 'New'),
         ('PROCESSING', 'Processing'),
         ('DONE', 'Done'),
         ('FAILED', 'Failed'),
@@ -16,7 +17,7 @@ class ImportBatch(models.Model):
     uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     file_name = models.CharField(max_length=255)
     file_hash = models.CharField(max_length=255)
-    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='PROCESSING')
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='New')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     file = models.FileField(upload_to='imports/')
