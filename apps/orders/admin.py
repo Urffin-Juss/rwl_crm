@@ -43,6 +43,8 @@ class OrderAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        qs = qs.exclude(status="done")
+
         if self._has_full_access(request):
             return qs
         return qs.filter(assigned_packer=request.user)
@@ -85,7 +87,12 @@ class ArchiveOrderAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.filter(status="completed")
+        qs = qs.filter(status="done")
+
+        if self.has_full_access(request):
+            return qs
+
+        return qs.filter(assigned_packer=request.user)
 
 
 
