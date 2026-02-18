@@ -131,39 +131,33 @@ def normalize_phone(val: Any) -> str:
 
 def normalize_date(val: Any) -> str:
     """
-    Приводит дату к формату YYYY-MM-DD
-    Поддерживает: число из Excel, строки DD.MM.YYYY, DD/MM/YYYY
+    Преобразует дату в YYYY-MM-DD
+    Принимает: datetime, date, ISO строку, строку DD.MM.YYYY
     """
+    if val is None:
+        return ""
+
+    # Если это datetime/date объект
+    if hasattr(val, 'strftime'):
+        return val.strftime('%Y-%m-%d')
+
     raw = _s(val)
     if not raw:
         return ""
 
-    # Если число из Excel
-    if isinstance(val, (int, float)) and not isinstance(val, bool):
-        try:
-            from datetime import datetime, timedelta
-            excel_epoch = datetime(1899, 12, 30)
-            date = excel_epoch + timedelta(days=int(val))
-            return date.strftime("%Y-%m-%d")
-        except:
-            pass
+    # Если это ISO строка с временем (1996-05-27T00:00:00)
+    if 'T' in raw:
+        return raw.split('T')[0]
 
-    # Если строка с точками или слешами
-    if isinstance(raw, str):
-        raw = raw.strip()
 
-        # Ищем дату вида DD.MM.YYYY или DD/MM/YYYY
-        match = re.search(r'(\d{1,2})[./](\d{1,2})[./](\d{4})', raw)
-        if match:
-            day, month, year = match.groups()
-            return f"{year:04d}-{int(month):02d}-{int(day):02d}"
+    if re.match(r'^\d{4}-\d{2}-\d{2}$', raw):
+        return raw
 
-        # Ищем дату вида DD.MM.YY
-        match = re.search(r'(\d{1,2})[./](\d{1,2})[./](\d{2})', raw)
-        if match:
-            day, month, year = match.groups()
-            year = int(year) + 2000 if int(year) < 70 else int(year) + 1900
-            return f"{year:04d}-{int(month):02d}-{int(day):02d}"
+
+    match = re.search(r'^(\d{1,2})\.(\d{1,2})\.(\d{4})$', raw.strip())
+    if match:
+        day, month, year = match.groups()
+        return f"{year}-{int(month):02d}-{int(day):02d}"
 
     return ""
 
@@ -177,15 +171,54 @@ def build_full_name(row: Dict[str, Any]) -> str:
     return " ".join(parts)
 
 
+def build_notes(row: Dict[str, Any]) -> str:
+    """Собирает все дополнительные поля в одну строку для notes"""
+    parts = []
+
+    # Профессия
+    profession = _s(pick_any(row, exact=EXACT["profession"]))
+    if profession:
+        parts.append(f"Профессия: {profession}")
+
+    # Клуб
+    club = _s(pick_any(row, exact=EXACT["club"]))
+    if club:
+        parts.append(f"Клуб: {club}")
+
+
+
+    return " | ".join(parts)
+
+
 def build_address(row: Dict[str, Any]) -> str:
+    """Собирает полный адрес из составных частей"""
+    parts = []
+
 
     city = _s(pick_any(row, exact=EXACT["city"]))
-    street = _s(pick_any(row, exact=EXACT["street"]))
-    house = _s(pick_any(row, exact=EXACT["house"]))
-    flat = _s(pick_any(row, exact=EXACT["flat"]))
-    address = _s(pick_any(row, contains=CONTAINS["delivery_address_text"]))
+    if city:
+        parts.append(f"г. {city}")
 
-    parts = [p for p in [city, street, house, flat] if p]
+
+    street = _s(pick_any(row, exact=EXACT["street"]))
+    if street:
+        parts.append(f"ул. {street}")
+
+    # Дом
+    house = _s(pick_any(row, exact=EXACT["house"]))
+    if house:
+        parts.append(f"д. {house}")
+
+    # Квартира
+    flat = _s(pick_any(row, exact=EXACT["flat"]))
+    if flat:
+        parts.append(f"кв. {flat}")
+
+    # Если есть готовый адрес (например, из поля "Укажите адрес для доставки")
+    full_address = _s(pick_any(row, contains=CONTAINS.get("delivery_address_text", [])))
+    if full_address and not parts:  # используем только если нет составных частей
+        return full_address
+
     return ", ".join(parts)
 
 def is_empty_row(values) -> bool:
@@ -264,13 +297,22 @@ class ExcelProcessor:
             email = _s(pick_any(data, exact=EXACT["email"]))
             address = build_address(data)
             full_name = build_full_name(data)
+            notes = build_notes(data)
 
 
 
-            dob_value = pick_any(data, exact=EXACT["dob"])  # может быть datetime/date/строка
-            dob = normalize_date(dob_value)
+            dob = normalize_date(pick_any(data, exact=EXACT["dob"]))
 
-            defaults = {"name": full_name}
+            defaults = {
+                "name": full_name,
+                "email": email,
+                "city": city,
+                "address": address,  # ← исправленный адрес
+                "contact": contact,
+                "pets": pets,
+                "notes": notes,  # ← новые заметки
+                "dob": dob or None,
+            }
 
             if model_has_field(Client, "email"):
                 defaults["email"] = email
@@ -289,6 +331,9 @@ class ExcelProcessor:
 
             if model_has_field(Client, "dob"):
                 defaults["dob"] = dob or None
+
+            if model_has_field(Client, "notes"):
+                defaults["notes"] = notes or None
 
             client, created = Client.objects.update_or_create(
                 phone=phone,

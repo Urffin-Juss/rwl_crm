@@ -10,6 +10,8 @@ EXACT = {
     "street": ["улица"],
     "house": ["дом"],
     "flat": ["квартира"],
+    "profession":["профессия"],
+    "club":["клуб"]
 }
 
 CONTAINS = {
