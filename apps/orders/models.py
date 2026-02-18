@@ -50,6 +50,8 @@ class Order(models.Model):
         return str(self.client)
 
 
+
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -138,3 +140,8 @@ class OrderItem(models.Model):
 
 
 
+class ArchiveOrder(Orderl):
+    class Meta:
+        proxy = True
+        verbose_name = "Archive Order"
+        verbose_name_plural = "Archive Orders"
