@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from apps.imports.utils import get_tech_stock_location
 from apps.orders.models import OrderItem, Order
 from apps.stock.models import Product
 import os
@@ -445,7 +446,7 @@ class ExcelProcessor:
                 updated_clients += 1
 
 
-
+            tech_loc = get_tech_stock_location()
             distance = _s(pick_any(data, exact=EXACT["distance"]))
             bib = _s(pick_any(data, exact=EXACT["bib_number"]))
             chip = _s(pick_any(data, exact=EXACT["chip_number"]))
@@ -460,6 +461,7 @@ class ExcelProcessor:
                 payment_type='cash',
                 registration_date=datetime.now().date(),
                 comments=f"Номер: {bib}, Чип: {chip}".strip(", "),
+                stock_location=tech_loc,
 
             )
 

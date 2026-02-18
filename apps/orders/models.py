@@ -62,6 +62,14 @@ class OrderItem(models.Model):
         - при создании позиции списываем со склада
         - изменение quantity запрещено
         """
+        loc = getattr(self.order, "stock_location", None)
+        if not loc:
+            raise ValidationError("У заказа не выбрана точка склада (stock_location)!")
+
+        if getattr(loc, "name", "") == "TECH / Inbound":
+            # позиции можно создавать, но остатки не трогаем
+            return super().save(*args, **kwargs)
+
 
         if self.pk:
             old = type(self).objects.only("quantity").get(pk=self.pk)
