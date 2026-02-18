@@ -43,7 +43,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.exclude(status="done")
+        qs = qs.exclude(status="completed")
 
         if self._has_full_access(request):
             return qs
@@ -85,11 +85,20 @@ class ArchiveOrderAdmin(admin.ModelAdmin):
     search_fields = ('client__phone', 'client__name', 'event__name')
 
 
+    def _has_full_access(self, request):
+        """True если пользователь имеет полный доступ"""
+        return any([
+            request.user.is_superuser,
+            request.user.groups.filter(name='Owner').exists(),
+            request.user.groups.filter(name='Admin').exists()
+        ])
+
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.filter(status="done")
+        qs = qs.filter(status="completed")
 
-        if self.has_full_access(request):
+        if self._has_full_access(request):
             return qs
 
         return qs.filter(assigned_packer=request.user)
