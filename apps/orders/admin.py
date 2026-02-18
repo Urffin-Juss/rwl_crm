@@ -1,6 +1,5 @@
 from django.contrib import admin
-from apps.orders.models import Order, OrderItem
-
+from apps.orders.models import Order, OrderItem, ArchiveOrder
 
 
 class OrderItemInline(admin.TabularInline):
@@ -31,6 +30,8 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ('status','event', 'assigned_packer')
     search_fields = ('client__phone', 'client__name', 'event__name')
     inlines = [OrderItemInline]
+    list_per_page = 50
+    date_hierarchy = 'created_at'
 
     def _has_full_access(self, request):
         """True если пользователь имеет полный доступ"""
@@ -72,6 +73,19 @@ class OrderAdmin(admin.ModelAdmin):
         else:
             return [field.name for field in self.model._meta.fields]
 
+
+
+
+@admin.register(ArchiveOrder)
+class ArchiveOrderAdmin(admin.ModelAdmin):
+    list_display = ('client', 'event', 'assigned_packer', 'status', 'payment_status', 'stock_location', 'created_at')
+    list_filter = ('payment_status','event', 'assigned_packer')
+    search_fields = ('client__phone', 'client__name', 'event__name')
+
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(status="completed")
 
 
 
