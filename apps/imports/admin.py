@@ -12,6 +12,11 @@ class ImportBatchAdmin(admin.ModelAdmin):
 
     @admin.action(description="Process selected batches")
     def process_batches(self, request, queryset):
+        self.status = self.STATUS_PROCESSING
+        self.save(update_fields=["status"])
+        process_import_batch_task.delay(self.id)
+
+
         processed = 0
         failed = 0
 
