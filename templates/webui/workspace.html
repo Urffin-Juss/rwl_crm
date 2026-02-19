@@ -7,7 +7,10 @@
   <article class="metric-card red">
     <h2>CRM</h2>
     <p>Рабочая зона управления забегами, заказами и складом.</p>
-    <a href="/admin/" class="ghost-btn">Админка</a>
+    <div class="quick-links">
+      <a href="/admin/" class="ghost-btn">Админка</a>
+      <a href="{% url 'mobile_workspace' %}" class="ghost-btn">Мобильная версия</a>
+    </div>
   </article>
 
   <article class="metric-card">
@@ -20,7 +23,9 @@
     <h3>Быстрые переходы</h3>
     <div class="quick-links">
       <a href="/admin/">Админка</a>
+      <a href="{% url 'mobile_workspace' %}">Мобильная версия</a>
     </div>
   </article>
 </section>
 {% endblock %}
+

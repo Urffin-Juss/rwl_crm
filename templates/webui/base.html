@@ -18,6 +18,7 @@
       <img src="{% static 'images/rwl-logo.jpg' %}" alt="Run With Love" class="logo" />
     </a>
     <nav class="header-nav">
+      {% block header_extra %}{% endblock %}
       <a href="{% url 'workspace' %}">CRM</a>
 
       {% if request.user.is_authenticated %}

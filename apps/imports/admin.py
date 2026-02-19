@@ -3,6 +3,7 @@ from django.db import transaction
 from django.contrib import admin
 from apps.imports.services import ExcelProcessor
 from apps.imports.models import ImportBatch, RawExcelRow
+from apps.imports.celery_task import process_import_batch_task
 
 @admin.register(ImportBatch)
 class ImportBatchAdmin(admin.ModelAdmin):

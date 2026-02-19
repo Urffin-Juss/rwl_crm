@@ -13,6 +13,7 @@ urlpatterns = [
 
     path('', webui_views.landing, name='landing'),
     path('workspace/', webui_views.workspace, name='workspace'),
+    path('workspace/mobile/', webui_views.mobile_workspace, name='mobile_workspace'),
 
     path('login/', auth_views.LoginView.as_view(template_name='webui/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),

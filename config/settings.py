@@ -113,6 +113,8 @@ USE_L10N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = 'auth.User'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/workspace/'
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'

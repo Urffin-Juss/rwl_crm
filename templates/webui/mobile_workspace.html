@@ -1,0 +1,97 @@
+{% extends 'webui/base.html' %}
+
+{% block title %}Мобильная версия | CRM{% endblock %}
+
+{% block header_extra %}
+  <div class="mobile-nav-tabs">
+    <a href="{% url 'mobile_workspace' %}?tab=orders" class="mobile-nav-tab {% if active_tab == 'orders' %}active{% endif %}">Orders</a>
+    <a href="{% url 'mobile_workspace' %}?tab=tasks" class="mobile-nav-tab {% if active_tab == 'tasks' %}active{% endif %}">Tasks</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+<section class="mobile-page">
+  <header class="mobile-page-header">
+    <h1>Мобильная версия</h1>
+    <p>Orders / Tasks и быстрое обновление статусов.</p>
+  </header>
+
+  {% if messages %}
+    <section class="mobile-feedbacks">
+      {% for message in messages %}
+        <div class="mobile-feedback {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  {% if active_tab == "orders" %}
+    <section class="mobile-section">
+      <div class="mobile-section-head">
+        <h2>Orders</h2>
+      </div>
+
+      {% for order in orders %}
+        <article class="mobile-item-card">
+          <div class="mobile-item-main">
+            <h3>Заказ #{{ order.id }}</h3>
+            <p><strong>Кто купил:</strong> {{ order.client.name }}</p>
+            <p><strong>Куда отправлять:</strong> {{ order.client.address|default:"Не указан адрес" }}</p>
+            <p><strong>Контакты:</strong> {{ order.client.phone }}{% if order.client.email %}, {{ order.client.email }}{% endif %}</p>
+            <p><strong>Статус:</strong> {{ order.get_status_display }}</p>
+          </div>
+          <form method="post" class="mobile-status-form">
+            {% csrf_token %}
+            <input type="hidden" name="entity" value="order" />
+            <input type="hidden" name="object_id" value="{{ order.id }}" />
+            <input type="hidden" name="tab" value="orders" />
+            <label for="order-status-{{ order.id }}">Новый статус</label>
+            <select id="order-status-{{ order.id }}" name="status">
+              {% for value, label in order_status_choices %}
+                <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="primary-btn">Обновить</button>
+          </form>
+        </article>
+      {% empty %}
+        <p class="muted">Заказы не найдены.</p>
+      {% endfor %}
+    </section>
+  {% else %}
+    <section class="mobile-section">
+      <div class="mobile-section-head">
+        <h2>Tasks</h2>
+      </div>
+
+      {% for task in tasks %}
+        <article class="mobile-item-card">
+          <div class="mobile-item-main">
+            <h3>Task #{{ task.id }}: {{ task.title }}</h3>
+            <p><strong>Тип:</strong> {{ task.get_type_display }}</p>
+            <p><strong>Исполнитель:</strong> {{ task.assigned.get_username }}</p>
+            {% if task.order %}
+              <p><strong>Заказ:</strong> #{{ task.order.id }}</p>
+            {% endif %}
+            <p><strong>Статус:</strong> {{ task.get_status_display }}</p>
+          </div>
+          <form method="post" class="mobile-status-form">
+            {% csrf_token %}
+            <input type="hidden" name="entity" value="task" />
+            <input type="hidden" name="object_id" value="{{ task.id }}" />
+            <input type="hidden" name="tab" value="tasks" />
+            <label for="task-status-{{ task.id }}">Новый статус</label>
+            <select id="task-status-{{ task.id }}" name="status">
+              {% for value, label in task_status_choices %}
+                <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="primary-btn">Обновить</button>
+          </form>
+        </article>
+      {% empty %}
+        <p class="muted">Задачи не найдены.</p>
+      {% endfor %}
+    </section>
+  {% endif %}
+</section>
+{% endblock %}
