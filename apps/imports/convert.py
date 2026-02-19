@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 
-def convert_xls_ro_xlsx(src_path: str) -> str:
+def convert_xls_to_xlsx(src_path: str) -> str:
         """
         Конвертирует .xls -> .xlsx
         Возвращает путь до нового .xlsx
