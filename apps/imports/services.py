@@ -400,12 +400,15 @@ class ExcelProcessor:
 
         if not batch.file:
             raise ValidationError("Файл не загружен.")
-
         ext = os.path.splitext(batch.file.name)[1].lower()
-        if ext != ".xlsx":
-            raise ValidationError("Поддерживается только .xlsx (сохраните файл как .xlsx).")
+        file_path = batch.file.path
+        if ext == ".xls":
+            from apps.imports.convert import convert_xls_to_xlsx
+            file_path = convert_xls_to_xlsx(file_path)
+        elif ext != ".xlsx":
+            raise ValidationError("Поддерживается только .xls или .xlsx")
 
-        headers, rows = read_xlsx(batch.file.path)
+        headers, rows = read_xlsx(file_path)
 
 
         RawExcelRow.objects.filter(batch=batch).delete()
@@ -547,3 +550,4 @@ class ExcelProcessor:
             "errors": errors,
             "skipped_empty_rows": skipped_empty,
         }
+
