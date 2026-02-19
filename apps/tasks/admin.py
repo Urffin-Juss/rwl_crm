@@ -71,6 +71,6 @@ class ArchiveTaskAdmin(admin.ModelAdmin):
         if self._has_full_access(request):
             return qs
 
-        return qs.filter(assigned_packer=request.user)
+        return qs.filter(assigned=request.user)
 
 

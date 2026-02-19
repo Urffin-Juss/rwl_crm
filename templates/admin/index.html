@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static log dashboard_tags %}
+{% load i18n static log dashboard_tags l10n %}
 
 {% block extrastyle %}
   {{ block.super }}
@@ -78,9 +78,9 @@
         <div
           class="rwl-donut-wrap"
           style="
-            --orders-deg: {{ breakdown.order_deg }}deg;
-            --tasks-deg: {{ breakdown.task_deg }}deg;
-            --events-deg: {{ breakdown.event_deg }}deg;
+            --orders-deg: {{ breakdown.order_deg|unlocalize }}deg;
+            --tasks-deg: {{ breakdown.task_deg|unlocalize }}deg;
+            --events-deg: {{ breakdown.event_deg|unlocalize }}deg;
           "
         >
           <div class="rwl-donut">

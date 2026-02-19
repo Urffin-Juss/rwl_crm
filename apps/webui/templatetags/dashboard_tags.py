@@ -13,6 +13,7 @@ def latest_tasks(limit=8):
     return (
         Task.objects
         .select_related("assigned")
+        .exclude(status="DONE")
         .order_by("-created_at")[:limit]
     )
 
@@ -22,6 +23,7 @@ def latest_orders(limit=8):
     return (
         Order.objects
         .select_related("client", "event", "assigned_packer", "stock_location")
+        .exclude(status="completed")
         .order_by("-created_at")[:limit]
     )
 
@@ -52,9 +54,10 @@ def dashboard_breakdown():
             "event_deg": 120,
         }
 
-    order_deg = round((active_orders / total) * 360, 2)
-    task_deg = round((open_tasks / total) * 360, 2)
-    event_deg = round(360 - order_deg - task_deg, 2)
+    # Keep integer angles to avoid locale-dependent decimal rendering in CSS vars.
+    order_deg = round((active_orders / total) * 360)
+    task_deg = round((open_tasks / total) * 360)
+    event_deg = max(0, 360 - order_deg - task_deg)
 
     return {
         "active_orders": active_orders,
