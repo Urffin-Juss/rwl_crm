@@ -20,6 +20,7 @@ class TaskAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
+        qs = qs.exclude(status="DONE")
         if self._has_full_access(request):
             return qs
         return qs.filter(assigned=request.user)
@@ -65,7 +66,7 @@ class ArchiveTaskAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.filter(status="completed")
+        qs = qs.filter(status="DONE")
 
         if self._has_full_access(request):
             return qs
