@@ -1,11 +1,18 @@
 :root {
   --rwl-bg: #0b0b0c;
   --rwl-panel: #141417;
+  --rwl-panel-2: #101013;
   --rwl-text: #f2f2f2;
   --rwl-muted: #b6b6b6;
+  --rwl-muted-2: #8e8e8e;
   --rwl-red: #ff2e2e;
   --rwl-red-2: #b90f0f;
   --rwl-border: rgba(255, 255, 255, 0.08);
+  --rwl-border-2: rgba(255, 255, 255, 0.12);
+}
+
+html, body {
+  height: 100%;
 }
 
 body {
@@ -13,12 +20,15 @@ body {
   color: var(--rwl-text);
 }
 
+/* Header */
 #header {
   background: linear-gradient(90deg, #09090a, #111117);
   border-bottom: 1px solid var(--rwl-border);
 }
 
-#header, #header a:link, #header a:visited {
+#header,
+#header a:link,
+#header a:visited {
   color: var(--rwl-text);
 }
 
@@ -27,42 +37,181 @@ body {
   letter-spacing: 0.5px;
 }
 
-a:link, a:visited {
-  color: var(--rwl-red);
+/* Base panels */
+#content,
+#content-main,
+#content-related,
+.module,
+.inline-group,
+.dashboard .module {
+  background: transparent;
 }
 
-a:hover {
-  color: #ffffff;
-  text-decoration: none;
+.module {
+  border: 1px solid var(--rwl-border);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.module h2, .module caption, .inline-group h2 {
-  background: var(--rwl-panel);
+/* Module headers */
+.module h2,
+.module caption,
+.inline-group h2 {
+  background: linear-gradient(180deg, var(--rwl-panel), var(--rwl-panel-2));
   color: var(--rwl-text);
   border-bottom: 1px solid var(--rwl-border);
 }
 
-#content-main .object-tools a,
-.button, input[type=submit], input[type=button], .submit-row input, .submit-row a {
-  background: var(--rwl-red);
-  border: 1px solid var(--rwl-red-2);
-  color: #fff;
-  border-radius: 10px;
+/* Text colors */
+h1, h2, h3, h4, h5, h6,
+label,
+.help,
+p,
+span,
+th, td {
+  color: var(--rwl-text);
 }
 
-.button:hover, input[type=submit]:hover, .submit-row input:hover, .object-tools a:hover {
-  background: #ff4a4a;
+/* Links: WHITE by default (no more red everywhere) */
+#content a:link,
+#content a:visited,
+.module a:link,
+.module a:visited,
+#nav-sidebar a:link,
+#nav-sidebar a:visited,
+.breadcrumbs a:link,
+.breadcrumbs a:visited,
+.dashboard a:link,
+.dashboard a:visited {
+  color: var(--rwl-text);
 }
 
-fieldset, .aligned .form-row, .inline-related {
-  border-color: var(--rwl-border);
+#content a:hover,
+.module a:hover,
+#nav-sidebar a:hover,
+.breadcrumbs a:hover,
+.dashboard a:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
-.dashboard .module table th {
-  color: var(--rwl-muted);
+/* Muted utility links in changelist (Add/Change etc.) */
+.addlink,
+.changelink,
+.deletelink {
+  color: var(--rwl-muted) !important;
 }
 
+.addlink:hover,
+.changelink:hover,
+.deletelink:hover {
+  color: #ffffff !important;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  background: rgba(20, 20, 23, 0.55);
+  border: 1px solid var(--rwl-border);
+  border-radius: 12px;
+}
+
+/* Sidebar */
 #nav-sidebar {
   background: rgba(20, 20, 23, 0.65);
   border-right: 1px solid var(--rwl-border);
+}
+
+#nav-sidebar .current-app .section:link,
+#nav-sidebar .current-app .section:visited {
+  color: #ffffff;
+}
+
+/* Tables */
+#changelist table,
+.dashboard .module table {
+  border-color: var(--rwl-border);
+}
+
+#changelist table thead th,
+.dashboard .module table th {
+  color: var(--rwl-muted);
+  background: rgba(20, 20, 23, 0.55);
+  border-bottom: 1px solid var(--rwl-border);
+}
+
+#changelist table tbody td,
+#changelist table tbody th {
+  border-top: 1px solid var(--rwl-border);
+}
+
+#changelist table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Form chrome */
+fieldset,
+.aligned .form-row,
+.inline-related,
+.form-row {
+  border-color: var(--rwl-border);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+textarea,
+select {
+  background: rgba(10, 10, 12, 0.7);
+  color: var(--rwl-text);
+  border: 1px solid var(--rwl-border-2);
+  border-radius: 10px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: rgba(255, 46, 46, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 46, 46, 0.18);
+}
+
+/* Buttons: red as accent only */
+#content-main .object-tools a,
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input,
+.submit-row a {
+  background: var(--rwl-red);
+  border: 1px solid var(--rwl-red-2);
+  color: #fff !important;
+  border-radius: 10px;
+}
+
+.button:hover,
+input[type=submit]:hover,
+.submit-row input:hover,
+.object-tools a:hover {
+  background: #ff4a4a;
+}
+
+/* Messages */
+.messagelist .success {
+  background: rgba(0, 255, 120, 0.10);
+  border: 1px solid rgba(0, 255, 120, 0.22);
+  color: var(--rwl-text);
+}
+
+.messagelist .warning {
+  background: rgba(255, 200, 0, 0.12);
+  border: 1px solid rgba(255, 200, 0, 0.25);
+  color: var(--rwl-text);
+}
+
+.messagelist .error {
+  background: rgba(255, 46, 46, 0.12);
+  border: 1px solid rgba(255, 46, 46, 0.25);
+  color: var(--rwl-text);
 }

@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'apps.tasks',
     'apps.clients',
     'import_export',
-    'webui',
+    'apps.webui',
 
     
 ]
@@ -116,8 +116,11 @@ AUTH_USER_MODEL = 'auth.User'
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_ROOT = BASE_DIR / 'media'
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
 
 DEFAULT_TECH_STOCK_LOCATION_NAME = 'Tech_stock'
 
