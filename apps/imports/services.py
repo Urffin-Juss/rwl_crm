@@ -374,6 +374,18 @@ class ExcelProcessor:
         headers = []
         rows = []
 
+        ext = os.path.splitext(batch.file.name)[1].lower()
+
+        file_path = batch.file.path
+        if ext == ".xls":
+            from apps.imports.convert import convert_xls_to_xlsx
+            file_path = convert_xls_to_xlsx(file_path)
+
+        elif ext != ".xlsx":
+            raise ValidationError("Поддерживается только .xls или .xlsx")
+
+        headers, rows = read_xlsx(file_path)
+
 
         for row_num, values in rows:
             data = row_to_dict(headers, values)
