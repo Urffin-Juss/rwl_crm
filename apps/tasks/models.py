@@ -31,5 +31,9 @@ class Task(models.Model):
         return str(self.assigned)
 
 
-
+class ArchiveTask(Task):
+    class Meta:
+        proxy = True
+        verbose_name = "Archive Task"
+        verbose_name_plural = "Archive Tasks"
 
