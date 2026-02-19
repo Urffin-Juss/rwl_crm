@@ -1,13 +1,42 @@
-{% extends "admin/base_site.html" %}
-{% load static %}
+{% extends "admin/base.html" %}
+{% load i18n static %}
 
 {% block extrahead %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static 'admin/rwl_admin.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/rwl_admin.css' %}?v=20260219-11">
 {% endblock %}
 
 {% block branding %}
   <h1 id="site-name">
-    <a href="{% url 'admin:index' %}">Run With Love CRM — Admin</a>
+    <a class="rwl-brand" href="{% url 'admin:index' %}">
+      <img src="{% static 'images/rwl-logo.jpg' %}" alt="Run With Love" class="rwl-brand__logo">
+      <span class="rwl-brand__text">RUN WITH LOVE CRM</span>
+    </a>
   </h1>
+{% endblock %}
+
+{% block usertools %}
+  {% if has_permission %}
+    <div id="user-tools" class="rwl-user-tools">
+      ДОБРО ПОЖАЛОВАТЬ, <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+      {% if site_url %}
+        <a href="{{ site_url }}">ОТКРЫТЬ САЙТ</a> /
+      {% endif %}
+      {% if user.has_usable_password %}
+        <a href="{% url 'admin:password_change' %}">ИЗМЕНИТЬ ПАРОЛЬ</a> /
+      {% endif %}
+      <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+        {% csrf_token %}
+        <button type="submit">ВЫЙТИ</button>
+      </form>
+      {% include "admin/color_theme_toggle.html" %}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block nav-global %}
+  <nav class="rwl-nav-global" aria-label="{% trans 'Global navigation' %}">
+    <a href="{% url 'workspace' %}">Workspace</a>
+    <a href="{% url 'landing' %}">Landing</a>
+  </nav>
 {% endblock %}

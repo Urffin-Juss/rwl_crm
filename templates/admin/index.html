@@ -1,0 +1,165 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static log dashboard_tags %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'admin/css/dashboard.css' %}">
+  <style>
+    .rwl-dashboard {
+      display: grid !important;
+      grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1fr) minmax(320px, 1fr) !important;
+      gap: 16px;
+      align-items: start;
+    }
+    .rwl-dashboard > * {
+      float: none !important;
+      width: auto !important;
+      margin: 0 !important;
+      min-width: 0 !important;
+    }
+    #content .rwl-dashboard #content-main {
+      float: none !important;
+      width: auto !important;
+    }
+    @media (max-width: 1200px) {
+      .rwl-dashboard {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+    @media (max-width: 900px) {
+      .rwl-dashboard {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+<div class="rwl-dashboard">
+  <div id="content-main" class="app-list rwl-app-list">
+    {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+  </div>
+
+  <div class="rwl-middle-column">
+    <div class="module" id="recent-actions-module">
+      <h2>{% translate 'Recent actions' %}</h2>
+      <div class="rwl-recent-with-chart">
+        <div class="rwl-recent-list">
+          <h3>{% translate 'My actions' %}</h3>
+          {% get_admin_log 7 as admin_log for_user user %}
+          {% if not admin_log %}
+            <p>{% translate 'None available' %}</p>
+          {% else %}
+            <ul class="actionlist">
+              {% for entry in admin_log %}
+                <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                  {% if entry.is_deletion or not entry.get_admin_url %}
+                    {{ entry.object_repr }}
+                  {% else %}
+                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                  {% endif %}
+                  <br>
+                  {% if entry.content_type %}
+                    <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                  {% else %}
+                    <span class="mini quiet">{% translate 'Unknown content' %}</span>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+
+        {% dashboard_breakdown as breakdown %}
+        <div
+          class="rwl-donut-wrap"
+          style="
+            --orders-deg: {{ breakdown.order_deg }}deg;
+            --tasks-deg: {{ breakdown.task_deg }}deg;
+            --events-deg: {{ breakdown.event_deg }}deg;
+          "
+        >
+          <div class="rwl-donut">
+            <div class="rwl-donut-center">актив</div>
+          </div>
+          <div class="rwl-donut-legend">
+            <div><i class="dot dot-orders"></i> Действующие заказы: <strong>{{ breakdown.active_orders }}</strong></div>
+            <div><i class="dot dot-tasks"></i> Невыполненные задачи: <strong>{{ breakdown.open_tasks }}</strong></div>
+            <div><i class="dot dot-events"></i> Незакрытые ивенты: <strong>{{ breakdown.open_events }}</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rwl-capsule-column">
+    <section class="module rwl-capsule-module">
+      <h2>Задачи</h2>
+      {% latest_tasks 4 as task_items %}
+      {% if task_items %}
+        <div class="rwl-card-list">
+          {% for task in task_items %}
+            <article class="rwl-object-card">
+              <header class="rwl-object-card__title">
+                <a href="{% url 'admin:tasks_task_change' task.id %}">
+                  {% if task.title %}{{ task.title }}{% else %}Task #{{ task.id }}{% endif %}
+                </a>
+              </header>
+              <div class="rwl-object-card__meta">{{ task.status }}{% if task.assigned %} • {{ task.assigned.username }}{% endif %}</div>
+              <div class="rwl-object-card__meta">{{ task.created_at|date:"d.m.Y H:i" }}</div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>{% translate 'None available' %}</p>
+      {% endif %}
+    </section>
+
+    <section class="module rwl-capsule-module">
+      <h2>Заказы</h2>
+      {% latest_orders 4 as order_items %}
+      {% if order_items %}
+        <div class="rwl-card-list">
+          {% for order in order_items %}
+            <article class="rwl-object-card">
+              <header class="rwl-object-card__title">
+                <a href="{% url 'admin:orders_order_change' order.id %}">Order #{{ order.id }}</a>
+              </header>
+              <div class="rwl-object-card__meta">
+                {{ order.client.name|default:"Без клиента" }} • {{ order.status }}
+              </div>
+              <div class="rwl-object-card__meta">{{ order.created_at|date:"d.m.Y H:i" }}</div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>{% translate 'None available' %}</p>
+      {% endif %}
+    </section>
+
+    <section class="module rwl-capsule-module">
+      <h2>Папка Импорта</h2>
+      {% latest_imports 2 as import_items %}
+      {% if import_items %}
+        <div class="rwl-card-list">
+          {% for item in import_items %}
+            <article class="rwl-object-card">
+              <header class="rwl-object-card__title">
+                <a href="{% url 'admin:imports_importbatch_change' item.id %}">Import #{{ item.id }}</a>
+              </header>
+              <div class="rwl-object-card__meta">{{ item.file.name|default:"Файл не указан" }}</div>
+              <div class="rwl-object-card__meta">{{ item.status }} • {{ item.created_at|date:"d.m.Y H:i" }}</div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>{% translate 'None available' %}</p>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}
