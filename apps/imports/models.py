@@ -18,23 +18,25 @@ class ImportBatch(models.Model):
     ]
 
 
-    event = models.ForeignKey('events.Event', on_delete=models.CASCADE)
-    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    file_name = models.CharField(max_length=255)
-    file_hash = models.CharField(max_length=255)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    file = models.FileField(upload_to='imports/')
-    processed_at = models.DateTimeField(null=True, blank=True)
-    result = models.JSONField(null=True, blank=True, default=dict)
-    error = models.TextField(blank=True, default="")
+    event = models.ForeignKey('events.Event', on_delete=models.CASCADE, verbose_name="Ивент")
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Кто загрузил")
+    file_name = models.CharField(max_length=255, verbose_name="Имя файла")
+    file_hash = models.CharField(max_length=255, verbose_name="Хеш файла")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_NEW, verbose_name="Статус")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создан")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлен")
+    file = models.FileField(upload_to='imports/', verbose_name="Файл")
+    processed_at = models.DateTimeField(null=True, blank=True, verbose_name="Обработан")
+    result = models.JSONField(null=True, blank=True, default=dict, verbose_name="Результат")
+    error = models.TextField(blank=True, default="", verbose_name="Ошибка")
 
 
     def __str__(self):
         return str(self.event)
 
     class Meta:
+        verbose_name = "Пакет импорта"
+        verbose_name_plural = "Пакеты импорта"
         constraints = [
             models.UniqueConstraint(
                 fields=['event', 'file_hash'],
@@ -71,17 +73,19 @@ class ImportBatch(models.Model):
 
 
 class RawExcelRow(models.Model):
-    batch = models.ForeignKey(ImportBatch, on_delete=models.CASCADE)
-    row_number = models.IntegerField()
-    raw_data = models.JSONField()
-    linked_client = models.ForeignKey('clients.Client', on_delete=models.SET_NULL, null=True)
-    linked_order = models.ForeignKey('orders.Order', on_delete=models.SET_NULL, null=True)
-    error_message = models.TextField(null=True, blank=True)
+    batch = models.ForeignKey(ImportBatch, on_delete=models.CASCADE, verbose_name="Пакет импорта")
+    row_number = models.IntegerField(verbose_name="Номер строки")
+    raw_data = models.JSONField(verbose_name="Сырые данные")
+    linked_client = models.ForeignKey('clients.Client', on_delete=models.SET_NULL, null=True, verbose_name="Связанный клиент")
+    linked_order = models.ForeignKey('orders.Order', on_delete=models.SET_NULL, null=True, verbose_name="Связанный заказ")
+    error_message = models.TextField(null=True, blank=True, verbose_name="Текст ошибки")
 
     def __str__(self):
         return str(self.batch)
 
     class Meta:
+        verbose_name = "Строка Excel (raw)"
+        verbose_name_plural = "Строки Excel (raw)"
         constraints = [
             models.UniqueConstraint(
                 fields=['batch', 'row_number'],

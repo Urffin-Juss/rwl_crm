@@ -33,30 +33,34 @@ class Order(models.Model):
         ('REFUND', 'Refund'),
     ]
 
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    assigned_packer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, verbose_name='Ивент')
+    assigned_packer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Назначенный упаковщик')
     status = models.CharField(choices=STATUS_CHOICES, default='new', verbose_name='Status')
     payment_status = models.CharField(choices=PAYMENT_STATUS_CHOICES, default='NOT_PAID', verbose_name='Payment Status')
     payment_type = models.CharField(choices=PAYMENT_TYPE_CHOICES, default='cash', verbose_name='Payment Type')
-    registration_date = models.DateTimeField(blank=True, null=True)
-    distance_text = models.CharField(null=True, blank=True, max_length=250)
-    comments = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
-    stock_location = models.ForeignKey(StockLocation, null=True, blank=True, on_delete=models.CASCADE)
+    registration_date = models.DateTimeField(blank=True, null=True, verbose_name='Дата регистрации')
+    distance_text = models.CharField(null=True, blank=True, max_length=250, verbose_name='Дистанция')
+    comments = models.TextField(null=True, blank=True, verbose_name='Комментарий')
+    created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name='Создан')
+    updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name='Обновлен')
+    stock_location = models.ForeignKey(StockLocation, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Точка склада')
 
     def __str__(self):
         return str(self.client)
+
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
 
 
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    price = models.PositiveIntegerField(default=0)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name='Заказ')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар')
+    quantity = models.PositiveIntegerField(default=1, verbose_name='Количество')
+    price = models.PositiveIntegerField(default=0, verbose_name='Цена')
 
     def save(self, *args, **kwargs):
         """
@@ -137,11 +141,15 @@ class OrderItem(models.Model):
 
             return super().delete(*args, **kwargs)
 
+    class Meta:
+        verbose_name = "Позиция заказа"
+        verbose_name_plural = "Позиции заказа"
+
 
 
 
 class ArchiveOrder(Order):
     class Meta:
         proxy = True
-        verbose_name = "Archive Order"
-        verbose_name_plural = "Archive Orders"
+        verbose_name = "Архивный заказ"
+        verbose_name_plural = "Архивные заказы"
