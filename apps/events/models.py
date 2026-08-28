@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models.fields import CharField, DecimalField
+
+from apps.clients.models import Client
 
 
 class Event(models.Model):
@@ -41,4 +42,76 @@ class EventDistance(models.Model):
     class Meta:
         verbose_name = "Дистанция"
         verbose_name_plural = "Дистанции"
+
+
+from django.db import models
+
+from apps.users.models import ClubMember
+
+
+class EventParticipation(models.Model):
+    STATUS_CHOICES = [
+        ('GOING', 'Еду'),
+        ('THINKING', 'Думаю'),
+    ]
+
+    event = models.ForeignKey(
+        Event,
+        related_name='participations',
+        on_delete=models.CASCADE,
+        verbose_name='Ивент',
+    )
+
+    member = models.ForeignKey(
+        ClubMember,
+        related_name='participations',
+        on_delete=models.CASCADE,
+        verbose_name='Участник клуба',
+    )
+
+    distance = models.ForeignKey(
+        EventDistance,
+        related_name='participations',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Дистанция',
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='GOING',
+        verbose_name='Статус',
+    )
+
+    looking_for_company = models.BooleanField(
+        default=False,
+        verbose_name='Ищет компанию',
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Создано',
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Обновлено',
+    )
+
+    def __str__(self):
+        return f'{self.member} — {self.event}'
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['member', 'event'],
+                name='unique_member_event_participation',
+            )
+        ]
+
+        verbose_name = 'Участие в ивенте'
+        verbose_name_plural = 'Участия в ивентах'
+
 
