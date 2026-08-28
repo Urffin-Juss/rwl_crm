@@ -16,6 +16,25 @@
         margin: 0 auto;
         padding: 20px;
     }
+    .calendar-day {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto;
+
+    border-radius: 50%;
+    font-size: 16px;
+    }
+
+    .calendar-day.has-event {
+        background: #e53935;
+        color: white;
+        font-weight: bold;
+    }
 
     .calendar-header {
         display: flex;
@@ -87,31 +106,80 @@
     const calendarGrid = document.querySelector('.calendar-grid');
 
     const year = 2026;
-    const month = 7; // август. В JS месяцы: 0 = январь, 7 = август
+    const month = 7; // август: в JS январь = 0
 
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+    let events = [];
 
-    const daysInMonth = lastDay.getDate();
 
-    let startDay = firstDay.getDay();
+    async function loadEvents() {
+        const response = await fetch('/api/events/');
+        events = await response.json();
 
-    // JS считает: воскресенье = 0.
-    // Нам нужно: понедельник = 0.
-    startDay = (startDay + 6) % 7;
+        console.log(events);
 
-    for (let i = 0; i < startDay; i++) {
-        const emptyCell = document.createElement('div');
-        calendarGrid.appendChild(emptyCell);
+        renderCalendar();
     }
 
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dayCell = document.createElement('div');
-        dayCell.textContent = day;
-        dayCell.classList.add('calendar-day');
 
-        calendarGrid.appendChild(dayCell);
+    function renderCalendar() {
+        calendarGrid.innerHTML = '';
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+
+        const daysInMonth = lastDay.getDate();
+
+        let startDay = firstDay.getDay();
+
+        // JS:
+        // воскресенье = 0
+        // понедельник = 1
+        //
+        // Нам нужно:
+        // понедельник = 0
+        // ...
+        // воскресенье = 6
+        startDay = (startDay + 6) % 7;
+
+
+        // Пустые клетки до первого числа месяца
+        for (let i = 0; i < startDay; i++) {
+            const emptyCell = document.createElement('div');
+            calendarGrid.appendChild(emptyCell);
+        }
+
+
+        // Рисуем дни месяца
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayCell = document.createElement('div');
+
+            dayCell.textContent = day;
+            dayCell.classList.add('calendar-day');
+
+
+            // Собираем дату вида 2026-08-30
+            const currentDate =
+                `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+
+            // Ищем события на эту дату
+            const dayEvents = events.filter(
+                event => event.date === currentDate
+            );
+
+
+            // Если события есть — отмечаем день
+            if (dayEvents.length > 0) {
+                dayCell.classList.add('has-event');
+            }
+
+
+            calendarGrid.appendChild(dayCell);
+        }
     }
+
+
+    loadEvents();
 </script>
 </body>
 </html>
