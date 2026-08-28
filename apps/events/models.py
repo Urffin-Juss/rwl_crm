@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from apps.clients.models import Client
 
@@ -102,6 +103,14 @@ class EventParticipation(models.Model):
 
     def __str__(self):
         return f'{self.member} — {self.event}'
+
+    def clean(self):
+        if self.distance:
+            if self.distance.event != self.event:
+                raise ValidationError(
+                    'Выбранная дистанция не относится к этому ивенту'
+                )
+
 
     class Meta:
         constraints = [
