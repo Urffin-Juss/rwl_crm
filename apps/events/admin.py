@@ -20,9 +20,9 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(EventParticipation)
 class EventParticipationAdmin(admin.ModelAdmin):
-    list_display = ('event', 'participation', 'date')
-    list_filter = ('event', 'participation')
-    search_fields = ('event', 'participation')
+    list_display = ('event', 'distance', 'date')
+    list_filter = ('event', 'distance', 'date')
+    search_fields = ('event', 'distance', 'date')
     date_hierarchy = 'date'
 
 
