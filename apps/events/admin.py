@@ -28,14 +28,17 @@ class EventParticipationAdmin(admin.ModelAdmin):
         'looking_for_company',
         'created_at',
     )
-    list_filter = ('event', 'distance', 'date')
+    list_filter = (
+        'status',
+        'looking_for_company',
+        'event',
+    )
     search_fields = (
         'member__username',
         'member__first_name',
         'member__last_name',
         'event__name',
     )
-    date_hierarchy = 'date'
 
 
 
