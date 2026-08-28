@@ -18,6 +18,17 @@ class EventAdmin(admin.ModelAdmin):
     inlines = [EventDistanceInline]
 
 
+@admin.register(EventParticipation)
+class EventParticipationAdmin(admin.ModelAdmin):
+    list_display = ('event', 'participation', 'date')
+    list_filter = ('event', 'participation')
+    search_fields = ('event', 'participation')
+    date_hierarchy = 'date'
+
+
+
+
+
 
 
 
