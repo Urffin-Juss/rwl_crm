@@ -24,9 +24,9 @@
             padding: 20px;
         }
 
-        /* =========================
-           Шапка календаря
-           ========================= */
+        /* ========================================================
+           ШАПКА КАЛЕНДАРЯ
+           ======================================================== */
 
         .calendar-header {
             display: flex;
@@ -52,9 +52,9 @@
             cursor: pointer;
         }
 
-        /* =========================
-           Дни недели
-           ========================= */
+        /* ========================================================
+           ДНИ НЕДЕЛИ
+           ======================================================== */
 
         .weekdays,
         .calendar-grid {
@@ -71,9 +71,9 @@
             font-size: 13px;
         }
 
-        /* =========================
-           Календарь
-           ========================= */
+        /* ========================================================
+           КАЛЕНДАРЬ
+           ======================================================== */
 
         .calendar-grid {
             text-align: center;
@@ -93,12 +93,15 @@
 
             font-size: 16px;
 
-            transition: transform 0.15s ease;
+            transition:
+                transform 0.15s ease,
+                background 0.15s ease;
         }
 
         .calendar-day.has-event {
             background: #e53935;
             color: white;
+
             font-weight: bold;
             cursor: pointer;
         }
@@ -107,36 +110,112 @@
             transform: scale(1.08);
         }
 
-        /* =========================
-           Панель событий
-           ========================= */
+        /*
+           Выбранная дата чуть выделяется.
+           Позже можно поиграть с дизайном.
+        */
+
+        .calendar-day.selected {
+            outline: 3px solid rgba(255, 255, 255, 0.75);
+            outline-offset: 3px;
+        }
+
+        /* ========================================================
+           ПАНЕЛЬ СОБЫТИЙ
+           ======================================================== */
 
         .events-panel {
             margin-top: 30px;
         }
 
+        /*
+           Пока дата не выбрана —
+           панель вообще не занимает место.
+        */
+
+        .events-panel.hidden {
+            display: none;
+        }
+
         .events-date {
-            margin: 0 0 15px;
+            margin: 0 0 18px;
 
             font-size: 20px;
         }
 
-        .events-list {
-            display: flex;
-            flex-direction: column;
+        /* ========================================================
+           КАРУСЕЛЬ
+           ======================================================== */
+
+        .event-carousel {
+            display: grid;
+
+            /*
+               слева стрелка
+               по центру карточка
+               справа стрелка
+            */
+
+            grid-template-columns: 44px minmax(0, 1fr) 44px;
+
+            align-items: center;
             gap: 10px;
         }
 
-        /* =========================
-           Карточка забега
-           ========================= */
+        .event-carousel.single-event {
+            /*
+               Если забег один —
+               карточка занимает всё место.
+            */
+
+            grid-template-columns: 1fr;
+        }
+
+        /* ========================================================
+           СТРЕЛКИ КАРУСЕЛИ
+           ======================================================== */
+
+        .event-arrow {
+            width: 44px;
+            height: 44px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: none;
+            border-radius: 50%;
+
+            background: #eee;
+            color: #111;
+
+            font-size: 22px;
+
+            cursor: pointer;
+
+            transition: transform 0.15s ease;
+        }
+
+        .event-arrow:hover {
+            transform: scale(1.08);
+        }
+
+        .event-arrow.hidden {
+            display: none;
+        }
+
+        /* ========================================================
+           КАРТОЧКА ЗАБЕГА
+           ======================================================== */
 
         .event-card {
+            width: 100%;
+
             background: #222;
 
-            border-radius: 14px;
+            border-radius: 18px;
 
-            padding: 16px;
+            padding: 18px;
         }
 
         .event-card h3 {
@@ -146,30 +225,83 @@
         }
 
         .event-city {
-            margin: 0 0 12px;
+            margin: 0 0 14px;
 
             color: #aaa;
         }
 
-        /* =========================
-           Дистанции
-           ========================= */
+        /* ========================================================
+           ДИСТАНЦИИ
+           ======================================================== */
 
         .event-distances {
             display: flex;
             flex-wrap: wrap;
 
-            gap: 6px;
+            gap: 7px;
         }
 
         .distance-badge {
-            padding: 5px 9px;
+            padding: 6px 10px;
 
             background: #333;
 
-            border-radius: 8px;
+            border-radius: 9px;
 
             font-size: 13px;
+        }
+
+        /* ========================================================
+           СЧЁТЧИК 1 / 3
+           ======================================================== */
+
+        .event-counter {
+            margin-top: 12px;
+
+            text-align: center;
+
+            color: #888;
+
+            font-size: 13px;
+        }
+
+        .event-counter.hidden {
+            display: none;
+        }
+
+        /* ========================================================
+           НЕМНОГО АДАПТИВА ПОД УЗКИЙ ЭКРАН
+           ======================================================== */
+
+        @media (max-width: 420px) {
+
+            .calendar-app {
+                padding: 16px;
+            }
+
+            .calendar-title {
+                font-size: 21px;
+            }
+
+            .calendar-day {
+                width: 38px;
+                height: 38px;
+            }
+
+            .event-carousel {
+                grid-template-columns: 38px minmax(0, 1fr) 38px;
+                gap: 6px;
+            }
+
+            .event-arrow {
+                width: 38px;
+                height: 38px;
+            }
+
+            .event-card {
+                padding: 15px;
+            }
+
         }
     </style>
 </head>
@@ -179,9 +311,9 @@
 
 <main class="calendar-app">
 
-    <!-- =========================
-         Шапка
-         ========================= -->
+    <!-- =========================================================
+         КАЛЕНДАРЬ
+         ========================================================= -->
 
     <header class="calendar-header">
 
@@ -206,10 +338,6 @@
     </header>
 
 
-    <!-- =========================
-         Дни недели
-         ========================= -->
-
     <div class="weekdays">
         <div>Пн</div>
         <div>Вт</div>
@@ -221,20 +349,55 @@
     </div>
 
 
-    <!-- Сюда JavaScript нарисует числа месяца -->
-
     <div class="calendar-grid"></div>
 
 
-    <!-- =========================
-         События выбранного дня
-         ========================= -->
+    <!-- =========================================================
+         СОБЫТИЯ ВЫБРАННОГО ДНЯ
+         ========================================================= -->
 
-    <section class="events-panel">
+    <section class="events-panel hidden">
 
         <h2 class="events-date"></h2>
 
-        <div class="events-list"></div>
+
+        <div class="event-carousel">
+
+            <!-- Предыдущий забег -->
+
+            <button
+                type="button"
+                class="event-arrow event-prev"
+                aria-label="Предыдущий забег"
+            >
+                ←
+            </button>
+
+
+            <!--
+                Здесь будет находиться
+                ОДНА текущая карточка.
+            -->
+
+            <div class="event-card-container"></div>
+
+
+            <!-- Следующий забег -->
+
+            <button
+                type="button"
+                class="event-arrow event-next"
+                aria-label="Следующий забег"
+            >
+                →
+            </button>
+
+        </div>
+
+
+        <!-- Например: 2 / 5 -->
+
+        <div class="event-counter"></div>
 
     </section>
 
@@ -244,7 +407,7 @@
 <script>
 
     /* ============================================================
-       Получаем элементы HTML
+       ЭЛЕМЕНТЫ СТРАНИЦЫ
        ============================================================ */
 
     const calendarGrid =
@@ -253,37 +416,95 @@
     const calendarTitle =
         document.querySelector('.calendar-title');
 
-    const prevButton =
+    const prevMonthButton =
         document.querySelector('.prev-month');
 
-    const nextButton =
+    const nextMonthButton =
         document.querySelector('.next-month');
+
+
+    const eventsPanel =
+        document.querySelector('.events-panel');
 
     const eventsDate =
         document.querySelector('.events-date');
 
-    const eventsList =
-        document.querySelector('.events-list');
+    const eventCarousel =
+        document.querySelector('.event-carousel');
+
+    const eventCardContainer =
+        document.querySelector('.event-card-container');
+
+    const eventPrevButton =
+        document.querySelector('.event-prev');
+
+    const eventNextButton =
+        document.querySelector('.event-next');
+
+    const eventCounter =
+        document.querySelector('.event-counter');
 
 
     /* ============================================================
-       Текущий отображаемый месяц
+       СОСТОЯНИЕ ПРИЛОЖЕНИЯ
        ============================================================ */
+
+    /*
+       Открываем календарь на текущем месяце.
+    */
 
     const today = new Date();
 
-    let currentYear = today.getFullYear();
-    let currentMonth = today.getMonth();
+    let currentYear =
+        today.getFullYear();
+
+    let currentMonth =
+        today.getMonth();
 
 
-    /* Здесь будут храниться события,
-       полученные от Django API */
+    /*
+       Все события, которые пришли
+       от Django API.
+    */
 
     let events = [];
 
 
+    /*
+       События конкретного выбранного дня.
+
+       Например:
+
+       [
+           забег №1,
+           забег №2,
+           забег №3
+       ]
+    */
+
+    let selectedDayEvents = [];
+
+
+    /*
+       Какой забег из выбранного дня
+       сейчас показываем.
+
+       Важно:
+
+       массивы в JS начинаются с 0.
+
+       Поэтому:
+
+       0 = первый забег
+       1 = второй
+       2 = третий
+    */
+
+    let currentEventIndex = 0;
+
+
     /* ============================================================
-       Названия месяцев
+       МЕСЯЦЫ
        ============================================================ */
 
     const monthNames = [
@@ -302,16 +523,6 @@
     ];
 
 
-    /*
-       Отдельный массив нужен для красивой надписи:
-
-       "30 августа 2026"
-
-       вместо:
-
-       "30 август 2026"
-    */
-
     const monthNamesGenitive = [
         'января',
         'февраля',
@@ -329,28 +540,41 @@
 
 
     /* ============================================================
-       Загружаем события из Django REST API
+       ЗАГРУЗКА СОБЫТИЙ
        ============================================================ */
 
     async function loadEvents() {
 
         try {
 
-            const response = await fetch('/api/events/');
+            const response =
+                await fetch('/api/events/');
+
 
             if (!response.ok) {
+
                 throw new Error(
                     `Ошибка API: ${response.status}`
                 );
+
             }
 
-            events = await response.json();
 
-            console.log('События загружены:', events);
+            events =
+                await response.json();
+
+
+            console.log(
+                'События загружены:',
+                events
+            );
+
 
             renderCalendar();
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             console.error(
                 'Не удалось загрузить события:',
@@ -363,47 +587,32 @@
 
 
     /* ============================================================
-       Рисуем календарь
+       РИСУЕМ КАЛЕНДАРЬ
        ============================================================ */
 
     function renderCalendar() {
 
-        /*
-           Каждый раз очищаем старый месяц
-        */
-
         calendarGrid.innerHTML = '';
 
-
-        /*
-           Меняем заголовок
-        */
 
         calendarTitle.textContent =
             `${monthNames[currentMonth]} ${currentYear}`;
 
 
-        /*
-           Первый день месяца
-        */
-
-        const firstDay = new Date(
-            currentYear,
-            currentMonth,
-            1
-        );
+        const firstDay =
+            new Date(
+                currentYear,
+                currentMonth,
+                1
+            );
 
 
-        /*
-           Нулевой день следующего месяца =
-           последний день текущего месяца
-        */
-
-        const lastDay = new Date(
-            currentYear,
-            currentMonth + 1,
-            0
-        );
+        const lastDay =
+            new Date(
+                currentYear,
+                currentMonth + 1,
+                0
+            );
 
 
         const daysInMonth =
@@ -411,18 +620,10 @@
 
 
         /*
-           JavaScript:
+           Переводим неделю JavaScript
+           в привычную нам:
 
-           воскресенье = 0
-           понедельник = 1
-           ...
-           суббота = 6
-
-           Нам нужно:
-
-           понедельник = 0
-           ...
-           воскресенье = 6
+           Пн → Вс
         */
 
         let startDay =
@@ -433,7 +634,7 @@
 
 
         /* ========================================================
-           Пустые клетки перед первым числом
+           ПУСТЫЕ КЛЕТКИ
            ======================================================== */
 
         for (
@@ -445,6 +646,7 @@
             const emptyCell =
                 document.createElement('div');
 
+
             calendarGrid.appendChild(
                 emptyCell
             );
@@ -453,7 +655,7 @@
 
 
         /* ========================================================
-           Рисуем числа месяца
+           ДНИ МЕСЯЦА
            ======================================================== */
 
         for (
@@ -466,7 +668,9 @@
                 document.createElement('div');
 
 
-            dayCell.textContent = day;
+            dayCell.textContent =
+                day;
+
 
             dayCell.classList.add(
                 'calendar-day'
@@ -474,8 +678,7 @@
 
 
             /*
-               Собираем дату именно в том формате,
-               который приходит от Django:
+               Получаем:
 
                2026-08-30
             */
@@ -487,9 +690,8 @@
 
 
             /*
-               Ищем ВСЕ события этого дня.
-
-               Результатом всегда будет массив.
+               Находим ВСЕ забеги
+               этой даты.
             */
 
             const dayEvents =
@@ -500,8 +702,8 @@
 
 
             /*
-               Если события существуют —
-               красим дату и разрешаем клик.
+               Если забеги есть —
+               делаем дату активной.
             */
 
             if (dayEvents.length > 0) {
@@ -515,10 +717,70 @@
                     'click',
                     function () {
 
-                        renderEventCards(
-                            dayEvents,
-                            day
+                        /*
+                           Снимаем выделение
+                           с предыдущей даты.
+                        */
+
+                        document
+                            .querySelectorAll('.calendar-day.selected')
+                            .forEach(
+                                element =>
+                                    element.classList.remove('selected')
+                            );
+
+
+                        /*
+                           Выделяем новую дату.
+                        */
+
+                        dayCell.classList.add(
+                            'selected'
                         );
+
+
+                        /*
+                           Сохраняем события
+                           выбранного дня.
+                        */
+
+                        selectedDayEvents =
+                            dayEvents;
+
+
+                        /*
+                           При выборе новой даты
+                           всегда начинаем
+                           с первого забега.
+                        */
+
+                        currentEventIndex = 0;
+
+
+                        /*
+                           Показываем панель.
+                        */
+
+                        eventsPanel.classList.remove(
+                            'hidden'
+                        );
+
+
+                        /*
+                           Пишем красивую дату.
+                        */
+
+                        eventsDate.textContent =
+                            `${day} ` +
+                            `${monthNamesGenitive[currentMonth]} ` +
+                            `${currentYear}`;
+
+
+                        /*
+                           Рисуем первый забег.
+                        */
+
+                        renderCurrentEvent();
 
                     }
                 );
@@ -536,171 +798,293 @@
 
 
     /* ============================================================
-       Рисуем карточки событий выбранного дня
+       РИСУЕМ ТЕКУЩИЙ ЗАБЕГ
        ============================================================ */
 
-    function renderEventCards(
-        dayEvents,
-        day
-    ) {
+    function renderCurrentEvent() {
 
         /*
-           Заголовок:
-
-           30 августа 2026
+           Защита на случай,
+           если событий нет.
         */
 
-        eventsDate.textContent =
-            `${day} ` +
-            `${monthNamesGenitive[currentMonth]} ` +
-            `${currentYear}`;
+        if (selectedDayEvents.length === 0) {
+            return;
+        }
 
 
         /*
-           Удаляем карточки предыдущего выбранного дня
+           Берём только ОДНО событие
+           по текущему индексу.
         */
 
-        eventsList.innerHTML = '';
+        const event =
+            selectedDayEvents[currentEventIndex];
 
 
         /*
-           Создаём отдельную карточку
-           для КАЖДОГО события этого дня
+           Полностью очищаем
+           предыдущую карточку.
         */
 
-        dayEvents.forEach(
-            function (event) {
-
-                const card =
-                    document.createElement('article');
+        eventCardContainer.innerHTML = '';
 
 
-                card.classList.add(
-                    'event-card'
-                );
+        /* ========================================================
+           СОЗДАЁМ КАРТОЧКУ
+           ======================================================== */
+
+        const card =
+            document.createElement('article');
 
 
-                /* -------------------------
-                   Название забега
-                   ------------------------- */
-
-                const title =
-                    document.createElement('h3');
-
-                title.textContent =
-                    event.name;
+        card.classList.add(
+            'event-card'
+        );
 
 
-                /* -------------------------
-                   Город
-                   ------------------------- */
+        /* -------------------------
+           Название
+           ------------------------- */
 
-                const city =
-                    document.createElement('p');
-
-                city.classList.add(
-                    'event-city'
-                );
-
-                city.textContent =
-                    event.city;
+        const title =
+            document.createElement('h3');
 
 
-                /* -------------------------
-                   Контейнер дистанций
-                   ------------------------- */
-
-                const distances =
-                    document.createElement('div');
-
-                distances.classList.add(
-                    'event-distances'
-                );
+        title.textContent =
+            event.name;
 
 
-                /*
-                   Если у события есть дистанции,
-                   создаём для каждой маленький badge
-                */
+        /* -------------------------
+           Город
+           ------------------------- */
 
-                if (
-                    event.distances &&
-                    event.distances.length > 0
-                ) {
-
-                    event.distances.forEach(
-                        function (distance) {
-
-                            const badge =
-                                document.createElement('span');
-
-                            badge.classList.add(
-                                'distance-badge'
-                            );
+        const city =
+            document.createElement('p');
 
 
-                            /*
-                               Пока выводим название дистанции.
-
-                               Например:
-
-                               T20
-                               5KM
-                               10KM
-                            */
-
-                            badge.textContent =
-                                distance.name;
+        city.classList.add(
+            'event-city'
+        );
 
 
-                            distances.appendChild(
-                                badge
-                            );
+        city.textContent =
+            event.city;
 
-                        }
+
+        /* -------------------------
+           Дистанции
+           ------------------------- */
+
+        const distances =
+            document.createElement('div');
+
+
+        distances.classList.add(
+            'event-distances'
+        );
+
+
+        if (
+            event.distances &&
+            event.distances.length > 0
+        ) {
+
+            event.distances.forEach(
+                function (distance) {
+
+                    const badge =
+                        document.createElement('span');
+
+
+                    badge.classList.add(
+                        'distance-badge'
+                    );
+
+
+                    badge.textContent =
+                        distance.name;
+
+
+                    distances.appendChild(
+                        badge
                     );
 
                 }
+            );
+
+        }
 
 
-                /* -------------------------
-                   Собираем карточку
-                   ------------------------- */
+        /* -------------------------
+           Собираем карточку
+           ------------------------- */
 
-                card.appendChild(title);
-                card.appendChild(city);
-                card.appendChild(distances);
+        card.appendChild(title);
+
+        card.appendChild(city);
+
+        card.appendChild(distances);
 
 
-                /* -------------------------
-                   Добавляем её на страницу
-                   ------------------------- */
-
-                eventsList.appendChild(
-                    card
-                );
-
-            }
+        eventCardContainer.appendChild(
+            card
         );
+
+
+        /* ========================================================
+           СТРЕЛКИ И СЧЁТЧИК
+           ======================================================== */
+
+        updateCarouselControls();
 
     }
 
 
     /* ============================================================
-       Кнопка "предыдущий месяц"
+       УПРАВЛЕНИЕ КАРУСЕЛЬЮ
        ============================================================ */
 
-    prevButton.addEventListener(
+    function updateCarouselControls() {
+
+        /*
+           Если забег всего один —
+           стрелки и счётчик не нужны.
+        */
+
+        if (selectedDayEvents.length <= 1) {
+
+            eventPrevButton.classList.add(
+                'hidden'
+            );
+
+            eventNextButton.classList.add(
+                'hidden'
+            );
+
+            eventCounter.classList.add(
+                'hidden'
+            );
+
+            eventCarousel.classList.add(
+                'single-event'
+            );
+
+            return;
+
+        }
+
+
+        /*
+           Если забегов несколько —
+           всё показываем.
+        */
+
+        eventPrevButton.classList.remove(
+            'hidden'
+        );
+
+        eventNextButton.classList.remove(
+            'hidden'
+        );
+
+        eventCounter.classList.remove(
+            'hidden'
+        );
+
+        eventCarousel.classList.remove(
+            'single-event'
+        );
+
+
+        /*
+           Пользователю показываем:
+
+           1 / 3
+
+           а не:
+
+           0 / 3
+        */
+
+        eventCounter.textContent =
+            `${currentEventIndex + 1} / ${selectedDayEvents.length}`;
+
+    }
+
+
+    /* ============================================================
+       ПРЕДЫДУЩИЙ ЗАБЕГ
+       ============================================================ */
+
+    eventPrevButton.addEventListener(
+        'click',
+        function () {
+
+            currentEventIndex--;
+
+
+            /*
+               Если находились на первом,
+               перескакиваем на последний.
+            */
+
+            if (currentEventIndex < 0) {
+
+                currentEventIndex =
+                    selectedDayEvents.length - 1;
+
+            }
+
+
+            renderCurrentEvent();
+
+        }
+    );
+
+
+    /* ============================================================
+       СЛЕДУЮЩИЙ ЗАБЕГ
+       ============================================================ */
+
+    eventNextButton.addEventListener(
+        'click',
+        function () {
+
+            currentEventIndex++;
+
+
+            /*
+               Если прошли последний —
+               возвращаемся к первому.
+            */
+
+            if (
+                currentEventIndex >=
+                selectedDayEvents.length
+            ) {
+
+                currentEventIndex = 0;
+
+            }
+
+
+            renderCurrentEvent();
+
+        }
+    );
+
+
+    /* ============================================================
+       ПРЕДЫДУЩИЙ МЕСЯЦ
+       ============================================================ */
+
+    prevMonthButton.addEventListener(
         'click',
         function () {
 
             currentMonth--;
 
-
-            /*
-               Если ушли левее января —
-               переходим в декабрь предыдущего года
-            */
 
             if (currentMonth < 0) {
 
@@ -711,14 +1095,7 @@
             }
 
 
-            /*
-               При смене месяца убираем
-               старые карточки
-            */
-
-            eventsDate.textContent = '';
-            eventsList.innerHTML = '';
-
+            closeEventsPanel();
 
             renderCalendar();
 
@@ -727,20 +1104,15 @@
 
 
     /* ============================================================
-       Кнопка "следующий месяц"
+       СЛЕДУЮЩИЙ МЕСЯЦ
        ============================================================ */
 
-    nextButton.addEventListener(
+    nextMonthButton.addEventListener(
         'click',
         function () {
 
             currentMonth++;
 
-
-            /*
-               Если ушли дальше декабря —
-               переходим в январь следующего года
-            */
 
             if (currentMonth > 11) {
 
@@ -751,9 +1123,7 @@
             }
 
 
-            eventsDate.textContent = '';
-            eventsList.innerHTML = '';
-
+            closeEventsPanel();
 
             renderCalendar();
 
@@ -762,7 +1132,32 @@
 
 
     /* ============================================================
-       Старт приложения
+       ЗАКРЫВАЕМ ПАНЕЛЬ СОБЫТИЙ
+       ============================================================ */
+
+    function closeEventsPanel() {
+
+        eventsPanel.classList.add(
+            'hidden'
+        );
+
+
+        selectedDayEvents = [];
+
+        currentEventIndex = 0;
+
+
+        eventCardContainer.innerHTML = '';
+
+        eventsDate.textContent = '';
+
+        eventCounter.textContent = '';
+
+    }
+
+
+    /* ============================================================
+       ЗАПУСК
        ============================================================ */
 
     loadEvents();
