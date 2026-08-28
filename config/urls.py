@@ -20,6 +20,8 @@ urlpatterns = [
 
 
     path('api/', include('apps.events.urls')),
+
+    path('', include('apps.webui.urls')),
 ]
 
 if settings.DEBUG:
