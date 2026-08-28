@@ -7,6 +7,10 @@
     <title>Календарь забегов</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -20,6 +24,10 @@
             padding: 20px;
         }
 
+        /* =========================
+           Шапка календаря
+           ========================= */
+
         .calendar-header {
             display: flex;
             align-items: center;
@@ -27,19 +35,26 @@
             margin-bottom: 24px;
         }
 
-        .calendar-header h1 {
+        .calendar-title {
             margin: 0;
             font-size: 24px;
+            text-align: center;
         }
 
         .calendar-header button {
             width: 44px;
             height: 44px;
+
             border: none;
             border-radius: 50%;
+
             font-size: 20px;
             cursor: pointer;
         }
+
+        /* =========================
+           Дни недели
+           ========================= */
 
         .weekdays,
         .calendar-grid {
@@ -50,10 +65,15 @@
 
         .weekdays {
             margin-bottom: 10px;
+
             text-align: center;
             color: #999;
             font-size: 13px;
         }
+
+        /* =========================
+           Календарь
+           ========================= */
 
         .calendar-grid {
             text-align: center;
@@ -70,7 +90,10 @@
             margin: 0 auto;
 
             border-radius: 50%;
+
             font-size: 16px;
+
+            transition: transform 0.15s ease;
         }
 
         .calendar-day.has-event {
@@ -79,21 +102,113 @@
             font-weight: bold;
             cursor: pointer;
         }
+
+        .calendar-day.has-event:hover {
+            transform: scale(1.08);
+        }
+
+        /* =========================
+           Панель событий
+           ========================= */
+
+        .events-panel {
+            margin-top: 30px;
+        }
+
+        .events-date {
+            margin: 0 0 15px;
+
+            font-size: 20px;
+        }
+
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* =========================
+           Карточка забега
+           ========================= */
+
+        .event-card {
+            background: #222;
+
+            border-radius: 14px;
+
+            padding: 16px;
+        }
+
+        .event-card h3 {
+            margin: 0 0 8px;
+
+            font-size: 18px;
+        }
+
+        .event-city {
+            margin: 0 0 12px;
+
+            color: #aaa;
+        }
+
+        /* =========================
+           Дистанции
+           ========================= */
+
+        .event-distances {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 6px;
+        }
+
+        .distance-badge {
+            padding: 5px 9px;
+
+            background: #333;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+        }
     </style>
 </head>
+
 
 <body>
 
 <main class="calendar-app">
 
+    <!-- =========================
+         Шапка
+         ========================= -->
+
     <header class="calendar-header">
-        <button type="button" class="prev-month">←</button>
 
-        <h1 class="calendar-title">Август 2026</h1>
+        <button
+            type="button"
+            class="prev-month"
+            aria-label="Предыдущий месяц"
+        >
+            ←
+        </button>
 
-        <button type="button" class="next-month">→</button>
+        <h1 class="calendar-title"></h1>
+
+        <button
+            type="button"
+            class="next-month"
+            aria-label="Следующий месяц"
+        >
+            →
+        </button>
+
     </header>
 
+
+    <!-- =========================
+         Дни недели
+         ========================= -->
 
     <div class="weekdays">
         <div>Пн</div>
@@ -106,24 +221,70 @@
     </div>
 
 
+    <!-- Сюда JavaScript нарисует числа месяца -->
+
     <div class="calendar-grid"></div>
+
+
+    <!-- =========================
+         События выбранного дня
+         ========================= -->
+
+    <section class="events-panel">
+
+        <h2 class="events-date"></h2>
+
+        <div class="events-list"></div>
+
+    </section>
 
 </main>
 
 
 <script>
-    const calendarGrid = document.querySelector('.calendar-grid');
-    const calendarTitle = document.querySelector('.calendar-title');
 
-    const prevButton = document.querySelector('.prev-month');
-    const nextButton = document.querySelector('.next-month');
+    /* ============================================================
+       Получаем элементы HTML
+       ============================================================ */
+
+    const calendarGrid =
+        document.querySelector('.calendar-grid');
+
+    const calendarTitle =
+        document.querySelector('.calendar-title');
+
+    const prevButton =
+        document.querySelector('.prev-month');
+
+    const nextButton =
+        document.querySelector('.next-month');
+
+    const eventsDate =
+        document.querySelector('.events-date');
+
+    const eventsList =
+        document.querySelector('.events-list');
 
 
-    let currentYear = 2026;
-    let currentMonth = 7;
+    /* ============================================================
+       Текущий отображаемый месяц
+       ============================================================ */
+
+    const today = new Date();
+
+    let currentYear = today.getFullYear();
+    let currentMonth = today.getMonth();
+
+
+    /* Здесь будут храниться события,
+       полученные от Django API */
 
     let events = [];
 
+
+    /* ============================================================
+       Названия месяцев
+       ============================================================ */
 
     const monthNames = [
         'Январь',
@@ -141,23 +302,90 @@
     ];
 
 
+    /*
+       Отдельный массив нужен для красивой надписи:
+
+       "30 августа 2026"
+
+       вместо:
+
+       "30 август 2026"
+    */
+
+    const monthNamesGenitive = [
+        'января',
+        'февраля',
+        'марта',
+        'апреля',
+        'мая',
+        'июня',
+        'июля',
+        'августа',
+        'сентября',
+        'октября',
+        'ноября',
+        'декабря'
+    ];
+
+
+    /* ============================================================
+       Загружаем события из Django REST API
+       ============================================================ */
+
     async function loadEvents() {
-        const response = await fetch('/api/events/');
 
-        events = await response.json();
+        try {
 
-        console.log(events);
+            const response = await fetch('/api/events/');
 
-        renderCalendar();
+            if (!response.ok) {
+                throw new Error(
+                    `Ошибка API: ${response.status}`
+                );
+            }
+
+            events = await response.json();
+
+            console.log('События загружены:', events);
+
+            renderCalendar();
+
+        } catch (error) {
+
+            console.error(
+                'Не удалось загрузить события:',
+                error
+            );
+
+        }
+
     }
 
 
+    /* ============================================================
+       Рисуем календарь
+       ============================================================ */
+
     function renderCalendar() {
+
+        /*
+           Каждый раз очищаем старый месяц
+        */
+
         calendarGrid.innerHTML = '';
+
+
+        /*
+           Меняем заголовок
+        */
 
         calendarTitle.textContent =
             `${monthNames[currentMonth]} ${currentYear}`;
 
+
+        /*
+           Первый день месяца
+        */
 
         const firstDay = new Date(
             currentYear,
@@ -166,6 +394,11 @@
         );
 
 
+        /*
+           Нулевой день следующего месяца =
+           последний день текущего месяца
+        */
+
         const lastDay = new Date(
             currentYear,
             currentMonth + 1,
@@ -173,127 +406,364 @@
         );
 
 
-        const daysInMonth = lastDay.getDate();
-
-        let startDay = firstDay.getDay();
-
-
-        /*
-            JavaScript считает:
-
-            воскресенье = 0
-            понедельник = 1
-            ...
-            суббота = 6
-
-            А нам нужно:
-
-            понедельник = 0
-            ...
-            воскресенье = 6
-        */
-
-        startDay = (startDay + 6) % 7;
+        const daysInMonth =
+            lastDay.getDate();
 
 
         /*
-            Добавляем пустые клетки
-            перед первым числом месяца
+           JavaScript:
+
+           воскресенье = 0
+           понедельник = 1
+           ...
+           суббота = 6
+
+           Нам нужно:
+
+           понедельник = 0
+           ...
+           воскресенье = 6
         */
 
-        for (let i = 0; i < startDay; i++) {
-            const emptyCell = document.createElement('div');
+        let startDay =
+            firstDay.getDay();
 
-            calendarGrid.appendChild(emptyCell);
+        startDay =
+            (startDay + 6) % 7;
+
+
+        /* ========================================================
+           Пустые клетки перед первым числом
+           ======================================================== */
+
+        for (
+            let i = 0;
+            i < startDay;
+            i++
+        ) {
+
+            const emptyCell =
+                document.createElement('div');
+
+            calendarGrid.appendChild(
+                emptyCell
+            );
+
         }
 
 
-        /*
-            Рисуем сами дни месяца
-        */
+        /* ========================================================
+           Рисуем числа месяца
+           ======================================================== */
 
-        for (let day = 1; day <= daysInMonth; day++) {
+        for (
+            let day = 1;
+            day <= daysInMonth;
+            day++
+        ) {
 
-            const dayCell = document.createElement('div');
+            const dayCell =
+                document.createElement('div');
+
 
             dayCell.textContent = day;
 
-            dayCell.classList.add('calendar-day');
-
-
-            /*
-                Собираем дату вида:
-
-                2026-08-30
-            */
-
-            const currentDate =
-                `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-
-            /*
-                Ищем все забеги,
-                которые проходят в этот день
-            */
-
-            const dayEvents = events.filter(
-                event => event.date === currentDate
+            dayCell.classList.add(
+                'calendar-day'
             );
 
 
             /*
-                Если хотя бы один забег найден —
-                помечаем день
+               Собираем дату именно в том формате,
+               который приходит от Django:
+
+               2026-08-30
+            */
+
+            const currentDate =
+                `${currentYear}-` +
+                `${String(currentMonth + 1).padStart(2, '0')}-` +
+                `${String(day).padStart(2, '0')}`;
+
+
+            /*
+               Ищем ВСЕ события этого дня.
+
+               Результатом всегда будет массив.
+            */
+
+            const dayEvents =
+                events.filter(
+                    event =>
+                        event.date === currentDate
+                );
+
+
+            /*
+               Если события существуют —
+               красим дату и разрешаем клик.
             */
 
             if (dayEvents.length > 0) {
-                dayCell.classList.add('has-event');
+
+                dayCell.classList.add(
+                    'has-event'
+                );
+
+
+                dayCell.addEventListener(
+                    'click',
+                    function () {
+
+                        renderEventCards(
+                            dayEvents,
+                            day
+                        );
+
+                    }
+                );
+
             }
 
 
-            calendarGrid.appendChild(dayCell);
+            calendarGrid.appendChild(
+                dayCell
+            );
+
         }
+
     }
 
 
-    /*
-        Предыдущий месяц
-    */
+    /* ============================================================
+       Рисуем карточки событий выбранного дня
+       ============================================================ */
 
-    prevButton.addEventListener('click', function () {
+    function renderEventCards(
+        dayEvents,
+        day
+    ) {
 
-        currentMonth--;
+        /*
+           Заголовок:
 
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
+           30 августа 2026
+        */
+
+        eventsDate.textContent =
+            `${day} ` +
+            `${monthNamesGenitive[currentMonth]} ` +
+            `${currentYear}`;
+
+
+        /*
+           Удаляем карточки предыдущего выбранного дня
+        */
+
+        eventsList.innerHTML = '';
+
+
+        /*
+           Создаём отдельную карточку
+           для КАЖДОГО события этого дня
+        */
+
+        dayEvents.forEach(
+            function (event) {
+
+                const card =
+                    document.createElement('article');
+
+
+                card.classList.add(
+                    'event-card'
+                );
+
+
+                /* -------------------------
+                   Название забега
+                   ------------------------- */
+
+                const title =
+                    document.createElement('h3');
+
+                title.textContent =
+                    event.name;
+
+
+                /* -------------------------
+                   Город
+                   ------------------------- */
+
+                const city =
+                    document.createElement('p');
+
+                city.classList.add(
+                    'event-city'
+                );
+
+                city.textContent =
+                    event.city;
+
+
+                /* -------------------------
+                   Контейнер дистанций
+                   ------------------------- */
+
+                const distances =
+                    document.createElement('div');
+
+                distances.classList.add(
+                    'event-distances'
+                );
+
+
+                /*
+                   Если у события есть дистанции,
+                   создаём для каждой маленький badge
+                */
+
+                if (
+                    event.distances &&
+                    event.distances.length > 0
+                ) {
+
+                    event.distances.forEach(
+                        function (distance) {
+
+                            const badge =
+                                document.createElement('span');
+
+                            badge.classList.add(
+                                'distance-badge'
+                            );
+
+
+                            /*
+                               Пока выводим название дистанции.
+
+                               Например:
+
+                               T20
+                               5KM
+                               10KM
+                            */
+
+                            badge.textContent =
+                                distance.name;
+
+
+                            distances.appendChild(
+                                badge
+                            );
+
+                        }
+                    );
+
+                }
+
+
+                /* -------------------------
+                   Собираем карточку
+                   ------------------------- */
+
+                card.appendChild(title);
+                card.appendChild(city);
+                card.appendChild(distances);
+
+
+                /* -------------------------
+                   Добавляем её на страницу
+                   ------------------------- */
+
+                eventsList.appendChild(
+                    card
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ============================================================
+       Кнопка "предыдущий месяц"
+       ============================================================ */
+
+    prevButton.addEventListener(
+        'click',
+        function () {
+
+            currentMonth--;
+
+
+            /*
+               Если ушли левее января —
+               переходим в декабрь предыдущего года
+            */
+
+            if (currentMonth < 0) {
+
+                currentMonth = 11;
+
+                currentYear--;
+
+            }
+
+
+            /*
+               При смене месяца убираем
+               старые карточки
+            */
+
+            eventsDate.textContent = '';
+            eventsList.innerHTML = '';
+
+
+            renderCalendar();
+
         }
-
-        renderCalendar();
-    });
+    );
 
 
-    /*
-        Следующий месяц
-    */
+    /* ============================================================
+       Кнопка "следующий месяц"
+       ============================================================ */
 
-    nextButton.addEventListener('click', function () {
+    nextButton.addEventListener(
+        'click',
+        function () {
 
-        currentMonth++;
+            currentMonth++;
 
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
+
+            /*
+               Если ушли дальше декабря —
+               переходим в январь следующего года
+            */
+
+            if (currentMonth > 11) {
+
+                currentMonth = 0;
+
+                currentYear++;
+
+            }
+
+
+            eventsDate.textContent = '';
+            eventsList.innerHTML = '';
+
+
+            renderCalendar();
+
         }
-
-        renderCalendar();
-    });
+    );
 
 
-    /*
-        Загружаем события
-        после открытия страницы
-    */
+    /* ============================================================
+       Старт приложения
+       ============================================================ */
 
     loadEvents();
 
