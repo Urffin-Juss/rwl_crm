@@ -20,9 +20,21 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(EventParticipation)
 class EventParticipationAdmin(admin.ModelAdmin):
-    list_display = ('event', 'distance', 'date')
+    list_display = (
+        'member',
+        'event',
+        'distance',
+        'status',
+        'looking_for_company',
+        'created_at',
+    )
     list_filter = ('event', 'distance', 'date')
-    search_fields = ('event', 'distance', 'date')
+    search_fields = (
+        'member__username',
+        'member__first_name',
+        'member__last_name',
+        'event__name',
+    )
     date_hierarchy = 'date'
 
 
