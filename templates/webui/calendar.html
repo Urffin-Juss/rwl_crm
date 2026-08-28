@@ -2,117 +2,148 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Календарь забегов</title>
+
     <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #111;
-        color: white;
-    }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+        }
 
-    .calendar-app {
-        max-width: 500px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    .calendar-day {
-    width: 40px;
-    height: 40px;
+        .calendar-app {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
 
-    margin: 0 auto;
+        .calendar-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
 
-    border-radius: 50%;
-    font-size: 16px;
-    }
+        .calendar-header button {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+        }
 
-    .calendar-day.has-event {
-        background: #e53935;
-        color: white;
-        font-weight: bold;
-    }
+        .weekdays,
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
 
-    .calendar-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 24px;
-    }
+        .weekdays {
+            margin-bottom: 10px;
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+        }
 
-    .calendar-header h1 {
-        margin: 0;
-        font-size: 24px;
-    }
+        .calendar-grid {
+            text-align: center;
+        }
 
-    .calendar-header button {
-        width: 44px;
-        height: 44px;
-        border: none;
-        border-radius: 50%;
-        font-size: 20px;
-        cursor: pointer;
-    }
+        .calendar-day {
+            width: 40px;
+            height: 40px;
 
-    .weekdays,
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 6px;
-    }
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    .weekdays {
-        margin-bottom: 10px;
-        text-align: center;
-        color: #999;
-        font-size: 13px;
-    }
+            margin: 0 auto;
 
-    .calendar-grid {
-        text-align: center;
-    }
-</style>
+            border-radius: 50%;
+            font-size: 16px;
+        }
+
+        .calendar-day.has-event {
+            background: #e53935;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
 </head>
+
 <body>
 
-    <main class="calendar-app">
+<main class="calendar-app">
 
-        <header class="calendar-header">
-            <button type="button">←</button>
+    <header class="calendar-header">
+        <button type="button" class="prev-month">←</button>
 
-            <h1>Август 2026</h1>
+        <h1 class="calendar-title">Август 2026</h1>
 
-            <button type="button">→</button>
-        </header>
+        <button type="button" class="next-month">→</button>
+    </header>
 
-        <div class="weekdays">
-            <div>Пн</div>
-            <div>Вт</div>
-            <div>Ср</div>
-            <div>Чт</div>
-            <div>Пт</div>
-            <div>Сб</div>
-            <div>Вс</div>
-        </div>
 
-        <div class="calendar-grid">
-        </div>
+    <div class="weekdays">
+        <div>Пн</div>
+        <div>Вт</div>
+        <div>Ср</div>
+        <div>Чт</div>
+        <div>Пт</div>
+        <div>Сб</div>
+        <div>Вс</div>
+    </div>
 
-    </main>
+
+    <div class="calendar-grid"></div>
+
+</main>
+
+
 <script>
     const calendarGrid = document.querySelector('.calendar-grid');
+    const calendarTitle = document.querySelector('.calendar-title');
+
+    const prevButton = document.querySelector('.prev-month');
+    const nextButton = document.querySelector('.next-month');
+
 
     let currentYear = 2026;
-    let currentMonth = 7; // август: в JS январь = 0
+    let currentMonth = 7;
 
     let events = [];
 
 
+    const monthNames = [
+        'Январь',
+        'Февраль',
+        'Март',
+        'Апрель',
+        'Май',
+        'Июнь',
+        'Июль',
+        'Август',
+        'Сентябрь',
+        'Октябрь',
+        'Ноябрь',
+        'Декабрь'
+    ];
+
+
     async function loadEvents() {
         const response = await fetch('/api/events/');
+
         events = await response.json();
 
         console.log(events);
@@ -124,51 +155,97 @@
     function renderCalendar() {
         calendarGrid.innerHTML = '';
 
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
+        calendarTitle.textContent =
+            `${monthNames[currentMonth]} ${currentYear}`;
+
+
+        const firstDay = new Date(
+            currentYear,
+            currentMonth,
+            1
+        );
+
+
+        const lastDay = new Date(
+            currentYear,
+            currentMonth + 1,
+            0
+        );
+
 
         const daysInMonth = lastDay.getDate();
 
         let startDay = firstDay.getDay();
 
-        // JS:
-        // воскресенье = 0
-        // понедельник = 1
-        //
-        // Нам нужно:
-        // понедельник = 0
-        // ...
-        // воскресенье = 6
+
+        /*
+            JavaScript считает:
+
+            воскресенье = 0
+            понедельник = 1
+            ...
+            суббота = 6
+
+            А нам нужно:
+
+            понедельник = 0
+            ...
+            воскресенье = 6
+        */
+
         startDay = (startDay + 6) % 7;
 
 
-        // Пустые клетки до первого числа месяца
+        /*
+            Добавляем пустые клетки
+            перед первым числом месяца
+        */
+
         for (let i = 0; i < startDay; i++) {
             const emptyCell = document.createElement('div');
+
             calendarGrid.appendChild(emptyCell);
         }
 
 
-        // Рисуем дни месяца
+        /*
+            Рисуем сами дни месяца
+        */
+
         for (let day = 1; day <= daysInMonth; day++) {
+
             const dayCell = document.createElement('div');
 
             dayCell.textContent = day;
+
             dayCell.classList.add('calendar-day');
 
 
-            // Собираем дату вида 2026-08-30
+            /*
+                Собираем дату вида:
+
+                2026-08-30
+            */
+
             const currentDate =
-                `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
 
-            // Ищем события на эту дату
+            /*
+                Ищем все забеги,
+                которые проходят в этот день
+            */
+
             const dayEvents = events.filter(
                 event => event.date === currentDate
             );
 
 
-            // Если события есть — отмечаем день
+            /*
+                Если хотя бы один забег найден —
+                помечаем день
+            */
+
             if (dayEvents.length > 0) {
                 dayCell.classList.add('has-event');
             }
@@ -179,7 +256,48 @@
     }
 
 
+    /*
+        Предыдущий месяц
+    */
+
+    prevButton.addEventListener('click', function () {
+
+        currentMonth--;
+
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+
+        renderCalendar();
+    });
+
+
+    /*
+        Следующий месяц
+    */
+
+    nextButton.addEventListener('click', function () {
+
+        currentMonth++;
+
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+
+        renderCalendar();
+    });
+
+
+    /*
+        Загружаем события
+        после открытия страницы
+    */
+
     loadEvents();
+
 </script>
+
 </body>
 </html>
