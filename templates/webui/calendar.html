@@ -3,9 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <title>Календарь забегов</title>
+    <style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: white;
+    }
+
+    .calendar-app {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+
+    .calendar-header h1 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .calendar-header button {
+        width: 44px;
+        height: 44px;
+        border: none;
+        border-radius: 50%;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .weekdays,
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+    }
+
+    .weekdays {
+        margin-bottom: 10px;
+        text-align: center;
+        color: #999;
+        font-size: 13px;
+    }
+
+    .calendar-grid {
+        text-align: center;
+    }
+</style>
 </head>
 <body>
-    <h1>Календарь забегов</h1>
-    <p>Если ты это видишь — Mini App начинает оживать 😈</p>
+
+    <main class="calendar-app">
+
+        <header class="calendar-header">
+            <button type="button">←</button>
+
+            <h1>Август 2026</h1>
+
+            <button type="button">→</button>
+        </header>
+
+        <div class="weekdays">
+            <div>Пн</div>
+            <div>Вт</div>
+            <div>Ср</div>
+            <div>Чт</div>
+            <div>Пт</div>
+            <div>Сб</div>
+            <div>Вс</div>
+        </div>
+
+        <div class="calendar-grid">
+        </div>
+
+    </main>
+<script>
+    const calendarGrid = document.querySelector('.calendar-grid');
+
+    const year = 2026;
+    const month = 7; // август. В JS месяцы: 0 = январь, 7 = август
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    const daysInMonth = lastDay.getDate();
+
+    let startDay = firstDay.getDay();
+
+    // JS считает: воскресенье = 0.
+    // Нам нужно: понедельник = 0.
+    startDay = (startDay + 6) % 7;
+
+    for (let i = 0; i < startDay; i++) {
+        const emptyCell = document.createElement('div');
+        calendarGrid.appendChild(emptyCell);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.textContent = day;
+        dayCell.classList.add('calendar-day');
+
+        calendarGrid.appendChild(dayCell);
+    }
+</script>
 </body>
 </html>
