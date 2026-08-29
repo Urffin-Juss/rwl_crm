@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def miniapp(request):
+    return render(request, 'miniapp/index.html')
