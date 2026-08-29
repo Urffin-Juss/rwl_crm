@@ -14,6 +14,7 @@ class EventDistanceSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
 
     distances = EventDistanceSerializer(read_only=True, many=True)
+    participants_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
@@ -23,7 +24,9 @@ class EventSerializer(serializers.ModelSerializer):
             'city',
             'date',
             'status',
-            'participants_count'
             'distances',
+            'participants_count'
         )
 
+    def get_participants_count(self, obj):
+        return obj.participations.count()
