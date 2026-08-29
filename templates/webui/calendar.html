@@ -65,7 +65,6 @@
 
         .weekdays {
             margin-bottom: 10px;
-
             text-align: center;
             color: #999;
             font-size: 13px;
@@ -110,11 +109,6 @@
             transform: scale(1.08);
         }
 
-        /*
-           Выбранная дата чуть выделяется.
-           Позже можно поиграть с дизайном.
-        */
-
         .calendar-day.selected {
             outline: 3px solid rgba(255, 255, 255, 0.75);
             outline-offset: 3px;
@@ -128,18 +122,12 @@
             margin-top: 30px;
         }
 
-        /*
-           Пока дата не выбрана —
-           панель вообще не занимает место.
-        */
-
         .events-panel.hidden {
             display: none;
         }
 
         .events-date {
             margin: 0 0 18px;
-
             font-size: 20px;
         }
 
@@ -150,24 +138,16 @@
         .event-carousel {
             display: grid;
 
-            /*
-               слева стрелка
-               по центру карточка
-               справа стрелка
-            */
-
-            grid-template-columns: 44px minmax(0, 1fr) 44px;
+            grid-template-columns:
+                44px
+                minmax(0, 1fr)
+                44px;
 
             align-items: center;
             gap: 10px;
         }
 
         .event-carousel.single-event {
-            /*
-               Если забег один —
-               карточка занимает всё место.
-            */
-
             grid-template-columns: 1fr;
         }
 
@@ -220,13 +200,11 @@
 
         .event-card h3 {
             margin: 0 0 8px;
-
             font-size: 18px;
         }
 
         .event-city {
             margin: 0 0 14px;
-
             color: #aaa;
         }
 
@@ -237,8 +215,9 @@
         .event-distances {
             display: flex;
             flex-wrap: wrap;
-
             gap: 7px;
+
+            margin-bottom: 16px;
         }
 
         .distance-badge {
@@ -252,7 +231,56 @@
         }
 
         /* ========================================================
-           СЧЁТЧИК 1 / 3
+           СОЦИАЛЬНЫЙ БЛОК
+           ======================================================== */
+
+        .event-social {
+            margin-top: 4px;
+            padding-top: 14px;
+
+            border-top: 1px solid #333;
+        }
+
+        .participants-count {
+            margin: 0 0 12px;
+
+            color: #ccc;
+
+            font-size: 14px;
+        }
+
+        .join-button {
+            width: 100%;
+
+            padding: 12px 16px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: #e53935;
+            color: white;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .join-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .join-button:active {
+            transform: translateY(0);
+            opacity: 0.9;
+        }
+
+        /* ========================================================
+           СЧЁТЧИК КАРУСЕЛИ
            ======================================================== */
 
         .event-counter {
@@ -270,7 +298,7 @@
         }
 
         /* ========================================================
-           НЕМНОГО АДАПТИВА ПОД УЗКИЙ ЭКРАН
+           АДАПТИВ
            ======================================================== */
 
         @media (max-width: 420px) {
@@ -289,7 +317,11 @@
             }
 
             .event-carousel {
-                grid-template-columns: 38px minmax(0, 1fr) 38px;
+                grid-template-columns:
+                    38px
+                    minmax(0, 1fr)
+                    38px;
+
                 gap: 6px;
             }
 
@@ -363,8 +395,6 @@
 
         <div class="event-carousel">
 
-            <!-- Предыдущий забег -->
-
             <button
                 type="button"
                 class="event-arrow event-prev"
@@ -374,15 +404,8 @@
             </button>
 
 
-            <!--
-                Здесь будет находиться
-                ОДНА текущая карточка.
-            -->
-
             <div class="event-card-container"></div>
 
-
-            <!-- Следующий забег -->
 
             <button
                 type="button"
@@ -394,8 +417,6 @@
 
         </div>
 
-
-        <!-- Например: 2 / 5 -->
 
         <div class="event-counter"></div>
 
@@ -446,14 +467,11 @@
 
 
     /* ============================================================
-       СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+       СОСТОЯНИЕ
        ============================================================ */
 
-    /*
-       Открываем календарь на текущем месяце.
-    */
-
-    const today = new Date();
+    const today =
+        new Date();
 
     let currentYear =
         today.getFullYear();
@@ -462,43 +480,9 @@
         today.getMonth();
 
 
-    /*
-       Все события, которые пришли
-       от Django API.
-    */
-
     let events = [];
 
-
-    /*
-       События конкретного выбранного дня.
-
-       Например:
-
-       [
-           забег №1,
-           забег №2,
-           забег №3
-       ]
-    */
-
     let selectedDayEvents = [];
-
-
-    /*
-       Какой забег из выбранного дня
-       сейчас показываем.
-
-       Важно:
-
-       массивы в JS начинаются с 0.
-
-       Поэтому:
-
-       0 = первый забег
-       1 = второй
-       2 = третий
-    */
 
     let currentEventIndex = 0;
 
@@ -619,15 +603,9 @@
             lastDay.getDate();
 
 
-        /*
-           Переводим неделю JavaScript
-           в привычную нам:
-
-           Пн → Вс
-        */
-
         let startDay =
             firstDay.getDay();
+
 
         startDay =
             (startDay + 6) % 7;
@@ -677,22 +655,11 @@
             );
 
 
-            /*
-               Получаем:
-
-               2026-08-30
-            */
-
             const currentDate =
                 `${currentYear}-` +
                 `${String(currentMonth + 1).padStart(2, '0')}-` +
                 `${String(day).padStart(2, '0')}`;
 
-
-            /*
-               Находим ВСЕ забеги
-               этой даты.
-            */
 
             const dayEvents =
                 events.filter(
@@ -700,11 +667,6 @@
                         event.date === currentDate
                 );
 
-
-            /*
-               Если забеги есть —
-               делаем дату активной.
-            */
 
             if (dayEvents.length > 0) {
 
@@ -717,11 +679,6 @@
                     'click',
                     function () {
 
-                        /*
-                           Снимаем выделение
-                           с предыдущей даты.
-                        */
-
                         document
                             .querySelectorAll('.calendar-day.selected')
                             .forEach(
@@ -730,55 +687,28 @@
                             );
 
 
-                        /*
-                           Выделяем новую дату.
-                        */
-
                         dayCell.classList.add(
                             'selected'
                         );
 
 
-                        /*
-                           Сохраняем события
-                           выбранного дня.
-                        */
-
                         selectedDayEvents =
                             dayEvents;
 
 
-                        /*
-                           При выборе новой даты
-                           всегда начинаем
-                           с первого забега.
-                        */
-
                         currentEventIndex = 0;
 
-
-                        /*
-                           Показываем панель.
-                        */
 
                         eventsPanel.classList.remove(
                             'hidden'
                         );
 
 
-                        /*
-                           Пишем красивую дату.
-                        */
-
                         eventsDate.textContent =
                             `${day} ` +
                             `${monthNamesGenitive[currentMonth]} ` +
                             `${currentYear}`;
 
-
-                        /*
-                           Рисуем первый забег.
-                        */
 
                         renderCurrentEvent();
 
@@ -803,36 +733,17 @@
 
     function renderCurrentEvent() {
 
-        /*
-           Защита на случай,
-           если событий нет.
-        */
-
         if (selectedDayEvents.length === 0) {
             return;
         }
 
 
-        /*
-           Берём только ОДНО событие
-           по текущему индексу.
-        */
-
         const event =
             selectedDayEvents[currentEventIndex];
 
 
-        /*
-           Полностью очищаем
-           предыдущую карточку.
-        */
-
         eventCardContainer.innerHTML = '';
 
-
-        /* ========================================================
-           СОЗДАЁМ КАРТОЧКУ
-           ======================================================== */
 
         const card =
             document.createElement('article');
@@ -917,14 +828,117 @@
 
 
         /* -------------------------
+           Социальный блок
+           ------------------------- */
+
+        const socialBlock =
+            document.createElement('div');
+
+
+        socialBlock.classList.add(
+            'event-social'
+        );
+
+
+        const participantsCount =
+            document.createElement('p');
+
+
+        participantsCount.classList.add(
+            'participants-count'
+        );
+
+
+        /*
+           Если API вдруг не прислал число,
+           показываем 0.
+        */
+
+        const count =
+            event.participants_count ?? 0;
+
+
+        participantsCount.textContent =
+            `👥 Участвуют: ${count}`;
+
+
+        /* -------------------------
+           Кнопка участия
+           ------------------------- */
+
+        const joinButton =
+            document.createElement('button');
+
+
+        joinButton.type =
+            'button';
+
+
+        joinButton.classList.add(
+            'join-button'
+        );
+
+
+        joinButton.textContent =
+            'Я участвую';
+
+
+        /*
+           ПОКА НИЧЕГО НЕ ОТПРАВЛЯЕМ.
+
+           Просто проверяем,
+           что кнопка работает визуально.
+        */
+
+        joinButton.addEventListener(
+            'click',
+            function () {
+
+                console.log(
+                    'Нажали "Я участвую"',
+                    event
+                );
+
+            }
+        );
+
+
+        /* -------------------------
+           Собираем social block
+           ------------------------- */
+
+        socialBlock.appendChild(
+            participantsCount
+        );
+
+
+        socialBlock.appendChild(
+            joinButton
+        );
+
+
+        /* -------------------------
            Собираем карточку
            ------------------------- */
 
-        card.appendChild(title);
+        card.appendChild(
+            title
+        );
 
-        card.appendChild(city);
 
-        card.appendChild(distances);
+        card.appendChild(
+            city
+        );
+
+
+        card.appendChild(
+            distances
+        );
+
+
+        card.appendChild(
+            socialBlock
+        );
 
 
         eventCardContainer.appendChild(
@@ -932,27 +946,20 @@
         );
 
 
-        /* ========================================================
-           СТРЕЛКИ И СЧЁТЧИК
-           ======================================================== */
-
         updateCarouselControls();
 
     }
 
 
     /* ============================================================
-       УПРАВЛЕНИЕ КАРУСЕЛЬЮ
+       СТРЕЛКИ И СЧЁТЧИК
        ============================================================ */
 
     function updateCarouselControls() {
 
-        /*
-           Если забег всего один —
-           стрелки и счётчик не нужны.
-        */
-
-        if (selectedDayEvents.length <= 1) {
+        if (
+            selectedDayEvents.length <= 1
+        ) {
 
             eventPrevButton.classList.add(
                 'hidden'
@@ -975,11 +982,6 @@
         }
 
 
-        /*
-           Если забегов несколько —
-           всё показываем.
-        */
-
         eventPrevButton.classList.remove(
             'hidden'
         );
@@ -997,16 +999,6 @@
         );
 
 
-        /*
-           Пользователю показываем:
-
-           1 / 3
-
-           а не:
-
-           0 / 3
-        */
-
         eventCounter.textContent =
             `${currentEventIndex + 1} / ${selectedDayEvents.length}`;
 
@@ -1023,11 +1015,6 @@
 
             currentEventIndex--;
 
-
-            /*
-               Если находились на первом,
-               перескакиваем на последний.
-            */
 
             if (currentEventIndex < 0) {
 
@@ -1053,11 +1040,6 @@
 
             currentEventIndex++;
 
-
-            /*
-               Если прошли последний —
-               возвращаемся к первому.
-            */
 
             if (
                 currentEventIndex >=
@@ -1089,7 +1071,6 @@
             if (currentMonth < 0) {
 
                 currentMonth = 11;
-
                 currentYear--;
 
             }
@@ -1117,7 +1098,6 @@
             if (currentMonth > 11) {
 
                 currentMonth = 0;
-
                 currentYear++;
 
             }
@@ -1132,7 +1112,7 @@
 
 
     /* ============================================================
-       ЗАКРЫВАЕМ ПАНЕЛЬ СОБЫТИЙ
+       ЗАКРЫВАЕМ ПАНЕЛЬ
        ============================================================ */
 
     function closeEventsPanel() {
@@ -1157,7 +1137,7 @@
 
 
     /* ============================================================
-       ЗАПУСК
+       СТАРТ
        ============================================================ */
 
     loadEvents();
