@@ -18,7 +18,9 @@ class EventSerializer(serializers.ModelSerializer):
     going_count = serializers.SerializerMethodField()
     thinking_count = serializers.SerializerMethodField()
     current_member_status = serializers.SerializerMethodField()
-    current_member_joined = serializers.SerializerMethodField()
+
+
+
 
     class Meta:
         model = Event
@@ -33,6 +35,9 @@ class EventSerializer(serializers.ModelSerializer):
             'thinking_count',
             'current_member_status',
         )
+
+
+
 
     def get_participants_count(self, obj):
         return obj.participations.count()
@@ -93,6 +98,8 @@ class EventParticipationSerializer(serializers.ModelSerializer):
             'status',
             'looking_for_company',
         )
+
+        validators = []
 
     def validate(self, attrs):
         event = attrs.get('event')
