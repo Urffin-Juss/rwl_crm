@@ -27,7 +27,7 @@ class EventSerializer(serializers.ModelSerializer):
             'date',
             'status',
             'distances',
-            'participants_count'
+            'participants_count',
             'current_member_joined',
         )
 
