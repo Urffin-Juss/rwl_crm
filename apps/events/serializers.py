@@ -23,6 +23,7 @@ class EventSerializer(serializers.ModelSerializer):
             'city',
             'date',
             'status',
+            'participants_count'
             'distances',
         )
 
