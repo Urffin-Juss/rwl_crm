@@ -24,10 +24,6 @@
             padding: 20px;
         }
 
-        /* ========================================================
-           ШАПКА КАЛЕНДАРЯ
-           ======================================================== */
-
         .calendar-header {
             display: flex;
             align-items: center;
@@ -44,17 +40,11 @@
         .calendar-header button {
             width: 44px;
             height: 44px;
-
             border: none;
             border-radius: 50%;
-
             font-size: 20px;
             cursor: pointer;
         }
-
-        /* ========================================================
-           ДНИ НЕДЕЛИ
-           ======================================================== */
 
         .weekdays,
         .calendar-grid {
@@ -69,10 +59,6 @@
             color: #999;
             font-size: 13px;
         }
-
-        /* ========================================================
-           КАЛЕНДАРЬ
-           ======================================================== */
 
         .calendar-grid {
             text-align: center;
@@ -89,7 +75,6 @@
             margin: 0 auto;
 
             border-radius: 50%;
-
             font-size: 16px;
 
             transition:
@@ -100,7 +85,6 @@
         .calendar-day.has-event {
             background: #e53935;
             color: white;
-
             font-weight: bold;
             cursor: pointer;
         }
@@ -113,10 +97,6 @@
             outline: 3px solid rgba(255, 255, 255, 0.75);
             outline-offset: 3px;
         }
-
-        /* ========================================================
-           ПАНЕЛЬ СОБЫТИЙ
-           ======================================================== */
 
         .events-panel {
             margin-top: 30px;
@@ -131,18 +111,9 @@
             font-size: 20px;
         }
 
-        /* ========================================================
-           КАРУСЕЛЬ
-           ======================================================== */
-
         .event-carousel {
             display: grid;
-
-            grid-template-columns:
-                44px
-                minmax(0, 1fr)
-                44px;
-
+            grid-template-columns: 44px minmax(0, 1fr) 44px;
             align-items: center;
             gap: 10px;
         }
@@ -150,10 +121,6 @@
         .event-carousel.single-event {
             grid-template-columns: 1fr;
         }
-
-        /* ========================================================
-           СТРЕЛКИ КАРУСЕЛИ
-           ======================================================== */
 
         .event-arrow {
             width: 44px;
@@ -170,7 +137,6 @@
             color: #111;
 
             font-size: 22px;
-
             cursor: pointer;
 
             transition: transform 0.15s ease;
@@ -184,17 +150,10 @@
             display: none;
         }
 
-        /* ========================================================
-           КАРТОЧКА ЗАБЕГА
-           ======================================================== */
-
         .event-card {
             width: 100%;
-
             background: #222;
-
             border-radius: 18px;
-
             padding: 18px;
         }
 
@@ -208,50 +167,34 @@
             color: #aaa;
         }
 
-        /* ========================================================
-           ДИСТАНЦИИ
-           ======================================================== */
-
         .event-distances {
             display: flex;
             flex-wrap: wrap;
             gap: 7px;
-
             margin-bottom: 16px;
         }
 
         .distance-badge {
             padding: 6px 10px;
-
             background: #333;
-
             border-radius: 9px;
-
             font-size: 13px;
         }
-
-        /* ========================================================
-           СОЦИАЛЬНЫЙ БЛОК
-           ======================================================== */
 
         .event-social {
             margin-top: 4px;
             padding-top: 14px;
-
             border-top: 1px solid #333;
         }
 
         .participants-count {
             margin: 0 0 12px;
-
             color: #ccc;
-
             font-size: 14px;
         }
 
         .join-button {
             width: 100%;
-
             padding: 12px 16px;
 
             border: none;
@@ -267,39 +210,39 @@
 
             transition:
                 transform 0.15s ease,
-                opacity 0.15s ease;
+                opacity 0.15s ease,
+                background 0.15s ease;
         }
 
-        .join-button:hover {
+        .join-button:hover:not(:disabled) {
             transform: translateY(-1px);
         }
 
-        .join-button:active {
+        .join-button:active:not(:disabled) {
             transform: translateY(0);
             opacity: 0.9;
         }
 
-        /* ========================================================
-           СЧЁТЧИК КАРУСЕЛИ
-           ======================================================== */
+        .join-button.joined {
+            background: #3a3a3a;
+            color: #ddd;
+            cursor: default;
+        }
+
+        .join-button:disabled {
+            opacity: 1;
+        }
 
         .event-counter {
             margin-top: 12px;
-
             text-align: center;
-
             color: #888;
-
             font-size: 13px;
         }
 
         .event-counter.hidden {
             display: none;
         }
-
-        /* ========================================================
-           АДАПТИВ
-           ======================================================== */
 
         @media (max-width: 420px) {
 
@@ -333,19 +276,13 @@
             .event-card {
                 padding: 15px;
             }
-
         }
     </style>
 </head>
 
-
 <body>
 
 <main class="calendar-app">
-
-    <!-- =========================================================
-         КАЛЕНДАРЬ
-         ========================================================= -->
 
     <header class="calendar-header">
 
@@ -369,7 +306,6 @@
 
     </header>
 
-
     <div class="weekdays">
         <div>Пн</div>
         <div>Вт</div>
@@ -380,18 +316,11 @@
         <div>Вс</div>
     </div>
 
-
     <div class="calendar-grid"></div>
-
-
-    <!-- =========================================================
-         СОБЫТИЯ ВЫБРАННОГО ДНЯ
-         ========================================================= -->
 
     <section class="events-panel hidden">
 
         <h2 class="events-date"></h2>
-
 
         <div class="event-carousel">
 
@@ -403,9 +332,7 @@
                 ←
             </button>
 
-
             <div class="event-card-container"></div>
-
 
             <button
                 type="button"
@@ -417,19 +344,13 @@
 
         </div>
 
-
         <div class="event-counter"></div>
 
     </section>
 
 </main>
 
-
 <script>
-
-    /* ============================================================
-       ЭЛЕМЕНТЫ СТРАНИЦЫ
-       ============================================================ */
 
     const calendarGrid =
         document.querySelector('.calendar-grid');
@@ -442,7 +363,6 @@
 
     const nextMonthButton =
         document.querySelector('.next-month');
-
 
     const eventsPanel =
         document.querySelector('.events-panel');
@@ -466,10 +386,6 @@
         document.querySelector('.event-counter');
 
 
-    /* ============================================================
-       СОСТОЯНИЕ
-       ============================================================ */
-
     const today =
         new Date();
 
@@ -479,7 +395,6 @@
     let currentMonth =
         today.getMonth();
 
-
     let events = [];
 
     let selectedDayEvents = [];
@@ -487,9 +402,15 @@
     let currentEventIndex = 0;
 
 
-    /* ============================================================
-       МЕСЯЦЫ
-       ============================================================ */
+    /*
+        Временный тестовый участник.
+
+        Потом это заменим на реального
+        ClubMember из Telegram Mini App.
+    */
+
+    const testMemberId = 2;
+
 
     const monthNames = [
         'Январь',
@@ -523,10 +444,6 @@
     ];
 
 
-    /* ============================================================
-       ЗАГРУЗКА СОБЫТИЙ
-       ============================================================ */
-
     async function loadEvents() {
 
         try {
@@ -536,11 +453,9 @@
 
 
             if (!response.ok) {
-
                 throw new Error(
                     `Ошибка API: ${response.status}`
                 );
-
             }
 
 
@@ -551,6 +466,25 @@
             console.log(
                 'События загружены:',
                 events
+            );
+
+
+            /*
+                Для каждого event заведём
+                локальный флаг.
+
+                Пока браузер не знает,
+                участвует ли именно member 2.
+
+                Поэтому по умолчанию false.
+            */
+
+            events.forEach(
+                function (event) {
+
+                    event.current_member_joined = false;
+
+                }
             );
 
 
@@ -570,9 +504,141 @@
     }
 
 
-    /* ============================================================
-       РИСУЕМ КАЛЕНДАРЬ
-       ============================================================ */
+    async function joinEvent(event) {
+
+        /*
+            Не даём отправить запрос повторно,
+            если в интерфейсе уже знаем,
+            что человек участвует.
+        */
+
+        if (event.current_member_joined) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    '/api/participations/',
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+
+                        body: JSON.stringify({
+                            event: event.id,
+                            member: testMemberId,
+                            distance: null,
+                            status: 'GOING',
+                            looking_for_company: false
+                        })
+                    }
+                );
+
+
+            /*
+                Успех:
+                participation создана.
+            */
+
+            if (response.ok) {
+
+                const participation =
+                    await response.json();
+
+
+                console.log(
+                    'Участие создано:',
+                    participation
+                );
+
+
+                event.current_member_joined = true;
+
+
+                /*
+                    Увеличиваем локальный счётчик,
+                    чтобы не перезагружать API.
+                */
+
+                event.participants_count =
+                    (event.participants_count ?? 0) + 1;
+
+
+                renderCurrentEvent();
+
+                return;
+            }
+
+
+            /*
+                400 сейчас означает,
+                что такую participation
+                создать нельзя.
+
+                В нашем тестовом сценарии
+                наиболее вероятная причина —
+                member уже записан.
+            */
+
+            if (response.status === 400) {
+
+                const errorData =
+                    await response.json();
+
+
+                console.log(
+                    'Participation уже существует или данные невалидны:',
+                    errorData
+                );
+
+
+                /*
+                    Счётчик НЕ увеличиваем.
+
+                    Запись уже существовала
+                    в базе до этого клика.
+                */
+
+                event.current_member_joined = true;
+
+
+                renderCurrentEvent();
+
+                return;
+            }
+
+
+            /*
+                Любая другая ошибка.
+            */
+
+            const errorData =
+                await response.json();
+
+
+            console.error(
+                'Ошибка участия:',
+                errorData
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                'Ошибка запроса участия:',
+                error
+            );
+
+        }
+
+    }
+
 
     function renderCalendar() {
 
@@ -611,10 +677,6 @@
             (startDay + 6) % 7;
 
 
-        /* ========================================================
-           ПУСТЫЕ КЛЕТКИ
-           ======================================================== */
-
         for (
             let i = 0;
             i < startDay;
@@ -631,10 +693,6 @@
 
         }
 
-
-        /* ========================================================
-           ДНИ МЕСЯЦА
-           ======================================================== */
 
         for (
             let day = 1;
@@ -727,10 +785,6 @@
     }
 
 
-    /* ============================================================
-       РИСУЕМ ТЕКУЩИЙ ЗАБЕГ
-       ============================================================ */
-
     function renderCurrentEvent() {
 
         if (selectedDayEvents.length === 0) {
@@ -754,10 +808,6 @@
         );
 
 
-        /* -------------------------
-           Название
-           ------------------------- */
-
         const title =
             document.createElement('h3');
 
@@ -765,10 +815,6 @@
         title.textContent =
             event.name;
 
-
-        /* -------------------------
-           Город
-           ------------------------- */
 
         const city =
             document.createElement('p');
@@ -782,10 +828,6 @@
         city.textContent =
             event.city;
 
-
-        /* -------------------------
-           Дистанции
-           ------------------------- */
 
         const distances =
             document.createElement('div');
@@ -827,10 +869,6 @@
         }
 
 
-        /* -------------------------
-           Социальный блок
-           ------------------------- */
-
         const socialBlock =
             document.createElement('div');
 
@@ -849,11 +887,6 @@
         );
 
 
-        /*
-           Если API вдруг не прислал число,
-           показываем 0.
-        */
-
         const count =
             event.participants_count ?? 0;
 
@@ -861,10 +894,6 @@
         participantsCount.textContent =
             `👥 Участвуют: ${count}`;
 
-
-        /* -------------------------
-           Кнопка участия
-           ------------------------- */
 
         const joinButton =
             document.createElement('button');
@@ -879,33 +908,45 @@
         );
 
 
-        joinButton.textContent =
-            'Я участвую';
-
-
         /*
-           ПОКА НИЧЕГО НЕ ОТПРАВЛЯЕМ.
-
-           Просто проверяем,
-           что кнопка работает визуально.
+            Если мы уже знаем,
+            что текущий member участвует,
+            показываем другое состояние.
         */
 
-        joinButton.addEventListener(
-            'click',
-            function () {
+        if (event.current_member_joined) {
 
-                console.log(
-                    'Нажали "Я участвую"',
-                    event
-                );
-
-            }
-        );
+            joinButton.textContent =
+                'Вы участвуете ✓';
 
 
-        /* -------------------------
-           Собираем social block
-           ------------------------- */
+            joinButton.classList.add(
+                'joined'
+            );
+
+
+            joinButton.disabled =
+                true;
+
+        }
+
+        else {
+
+            joinButton.textContent =
+                'Я участвую';
+
+
+            joinButton.addEventListener(
+                'click',
+                function () {
+
+                    joinEvent(event);
+
+                }
+            );
+
+        }
+
 
         socialBlock.appendChild(
             participantsCount
@@ -916,10 +957,6 @@
             joinButton
         );
 
-
-        /* -------------------------
-           Собираем карточку
-           ------------------------- */
 
         card.appendChild(
             title
@@ -950,10 +987,6 @@
 
     }
 
-
-    /* ============================================================
-       СТРЕЛКИ И СЧЁТЧИК
-       ============================================================ */
 
     function updateCarouselControls() {
 
@@ -1005,10 +1038,6 @@
     }
 
 
-    /* ============================================================
-       ПРЕДЫДУЩИЙ ЗАБЕГ
-       ============================================================ */
-
     eventPrevButton.addEventListener(
         'click',
         function () {
@@ -1029,10 +1058,6 @@
         }
     );
 
-
-    /* ============================================================
-       СЛЕДУЮЩИЙ ЗАБЕГ
-       ============================================================ */
 
     eventNextButton.addEventListener(
         'click',
@@ -1057,10 +1082,6 @@
     );
 
 
-    /* ============================================================
-       ПРЕДЫДУЩИЙ МЕСЯЦ
-       ============================================================ */
-
     prevMonthButton.addEventListener(
         'click',
         function () {
@@ -1083,10 +1104,6 @@
         }
     );
 
-
-    /* ============================================================
-       СЛЕДУЮЩИЙ МЕСЯЦ
-       ============================================================ */
 
     nextMonthButton.addEventListener(
         'click',
@@ -1111,10 +1128,6 @@
     );
 
 
-    /* ============================================================
-       ЗАКРЫВАЕМ ПАНЕЛЬ
-       ============================================================ */
-
     function closeEventsPanel() {
 
         eventsPanel.classList.add(
@@ -1135,10 +1148,6 @@
 
     }
 
-
-    /* ============================================================
-       СТАРТ
-       ============================================================ */
 
     loadEvents();
 
