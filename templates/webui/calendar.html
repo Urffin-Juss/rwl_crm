@@ -13,16 +13,21 @@
 
         body {
             margin: 0;
+            background: #111111;
+            color: #ffffff;
             font-family: Arial, sans-serif;
-            background: #111;
-            color: white;
         }
 
-        .calendar-app {
+        .app {
+            width: 100%;
             max-width: 500px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 20px 16px 50px;
         }
+
+        /* =========================
+           CALENDAR
+        ========================= */
 
         .calendar-header {
             display: flex;
@@ -33,73 +38,71 @@
 
         .calendar-title {
             margin: 0;
-            font-size: 24px;
+            font-size: 22px;
+            font-weight: 700;
             text-align: center;
         }
 
-        .calendar-header button {
-            width: 44px;
-            height: 44px;
+        .month-button {
+            width: 42px;
+            height: 42px;
             border: none;
             border-radius: 50%;
-            font-size: 20px;
+            background: #eeeeee;
+            color: #111111;
+            font-size: 24px;
             cursor: pointer;
-        }
-
-        .weekdays,
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
         }
 
         .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
             margin-bottom: 10px;
-            text-align: center;
-            color: #999;
+            color: #888888;
             font-size: 13px;
+            text-align: center;
         }
 
         .calendar-grid {
-            text-align: center;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            row-gap: 14px;
         }
 
         .calendar-day {
-            width: 40px;
-            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 42px;
+            font-size: 16px;
+        }
 
+        .day-number {
             display: flex;
             align-items: center;
             justify-content: center;
-
-            margin: 0 auto;
-
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            font-size: 16px;
-
-            transition:
-                transform 0.15s ease,
-                background 0.15s ease;
         }
 
-        .calendar-day.has-event {
-            background: #e53935;
-            color: white;
-            font-weight: bold;
+        .calendar-day.has-event .day-number {
+            background: #ef3936;
+            font-weight: 700;
             cursor: pointer;
         }
 
-        .calendar-day.has-event:hover {
-            transform: scale(1.08);
+        .calendar-day.selected .day-number {
+            outline: 3px solid #aaaaaa;
+            outline-offset: 4px;
         }
 
-        .calendar-day.selected {
-            outline: 3px solid rgba(255, 255, 255, 0.75);
-            outline-offset: 3px;
-        }
+        /* =========================
+           EVENT PANEL
+        ========================= */
 
         .events-panel {
-            margin-top: 30px;
+            margin-top: 34px;
         }
 
         .events-panel.hidden {
@@ -107,137 +110,135 @@
         }
 
         .events-date {
-            margin: 0 0 18px;
-            font-size: 20px;
+            margin: 0 0 24px;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .event-carousel {
             display: grid;
-            grid-template-columns: 44px minmax(0, 1fr) 44px;
+            grid-template-columns: 50px minmax(0, 1fr) 50px;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .event-carousel.single-event {
-            grid-template-columns: 1fr;
-        }
-
-        .event-arrow {
-            width: 44px;
-            height: 44px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
+        .carousel-button {
+            width: 46px;
+            height: 46px;
             border: none;
             border-radius: 50%;
-
-            background: #eee;
-            color: #111;
-
-            font-size: 22px;
+            background: #f1f1f1;
+            color: #111111;
+            font-size: 28px;
             cursor: pointer;
-
-            transition: transform 0.15s ease;
         }
 
-        .event-arrow:hover {
-            transform: scale(1.08);
-        }
-
-        .event-arrow.hidden {
-            display: none;
+        .carousel-button.hidden {
+            visibility: hidden;
         }
 
         .event-card {
             width: 100%;
-            background: #222;
-            border-radius: 18px;
-            padding: 18px;
+            background: #222222;
+            border-radius: 22px;
+            padding: 22px;
         }
 
-        .event-card h3 {
-            margin: 0 0 8px;
-            font-size: 18px;
+        .event-name {
+            margin: 0;
+            font-size: 23px;
+            line-height: 1.2;
         }
 
         .event-city {
-            margin: 0 0 14px;
-            color: #aaa;
+            margin-top: 8px;
+            color: #aaaaaa;
+            font-size: 18px;
         }
 
-        .event-distances {
+        /* =========================
+           DISTANCES
+        ========================= */
+
+        .distances {
             display: flex;
             flex-wrap: wrap;
-            gap: 7px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-top: 18px;
         }
 
         .distance-badge {
-            padding: 6px 10px;
-            background: #333;
-            border-radius: 9px;
-            font-size: 13px;
-        }
-
-        .event-social {
-            margin-top: 4px;
-            padding-top: 14px;
-            border-top: 1px solid #333;
-        }
-
-        .participants-count {
-            margin: 0 0 12px;
-            color: #ccc;
-            font-size: 14px;
-        }
-
-        .join-button {
-            width: 100%;
-            padding: 12px 16px;
-
-            border: none;
+            padding: 9px 12px;
             border-radius: 12px;
+            background: #363636;
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.25;
+        }
 
-            background: #e53935;
-            color: white;
+        /* =========================
+           PARTICIPATION
+        ========================= */
 
+        .participation-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid #333333;
+            color: #bcbcbc;
             font-size: 15px;
-            font-weight: bold;
+        }
 
+        .participation-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .participation-button {
+            flex: 1;
+            min-height: 52px;
+            border: none;
+            border-radius: 15px;
+            padding: 12px 10px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
             cursor: pointer;
-
             transition:
-                transform 0.15s ease,
-                opacity 0.15s ease,
-                background 0.15s ease;
+                transform 0.1s ease,
+                opacity 0.1s ease;
         }
 
-        .join-button:hover:not(:disabled) {
-            transform: translateY(-1px);
+        .participation-button:active {
+            transform: scale(0.98);
         }
 
-        .join-button:active:not(:disabled) {
-            transform: translateY(0);
-            opacity: 0.9;
+        .going-button {
+            background: #ef3936;
         }
 
-        .join-button.joined {
+        .thinking-button {
             background: #3a3a3a;
-            color: #ddd;
-            cursor: default;
         }
 
-        .join-button:disabled {
-            opacity: 1;
+        .participation-button.active {
+            outline: 2px solid #ffffff;
+            outline-offset: 2px;
+        }
+
+        .participation-button:disabled {
+            cursor: default;
+            opacity: 0.8;
         }
 
         .event-counter {
-            margin-top: 12px;
+            margin-top: 18px;
             text-align: center;
-            color: #888;
-            font-size: 13px;
+            color: #777777;
+            font-size: 14px;
         }
 
         .event-counter.hidden {
@@ -245,36 +246,33 @@
         }
 
         @media (max-width: 420px) {
-
-            .calendar-app {
-                padding: 16px;
-            }
-
-            .calendar-title {
-                font-size: 21px;
-            }
-
-            .calendar-day {
-                width: 38px;
-                height: 38px;
+            .app {
+                padding-left: 12px;
+                padding-right: 12px;
             }
 
             .event-carousel {
-                grid-template-columns:
-                    38px
-                    minmax(0, 1fr)
-                    38px;
-
-                gap: 6px;
+                grid-template-columns: 40px minmax(0, 1fr) 40px;
+                gap: 7px;
             }
 
-            .event-arrow {
+            .carousel-button {
                 width: 38px;
                 height: 38px;
+                font-size: 23px;
             }
 
             .event-card {
-                padding: 15px;
+                padding: 18px;
+            }
+
+            .event-name {
+                font-size: 20px;
+            }
+
+            .participation-info {
+                flex-direction: column;
+                gap: 7px;
             }
         }
     </style>
@@ -282,38 +280,24 @@
 
 <body>
 
-<main class="calendar-app">
+<div class="app">
 
-    <header class="calendar-header">
-
-        <button
-            type="button"
-            class="prev-month"
-            aria-label="Предыдущий месяц"
-        >
-            ←
-        </button>
+    <div class="calendar-header">
+        <button class="month-button prev-month">←</button>
 
         <h1 class="calendar-title"></h1>
 
-        <button
-            type="button"
-            class="next-month"
-            aria-label="Следующий месяц"
-        >
-            →
-        </button>
-
-    </header>
+        <button class="month-button next-month">→</button>
+    </div>
 
     <div class="weekdays">
-        <div>Пн</div>
-        <div>Вт</div>
-        <div>Ср</div>
-        <div>Чт</div>
-        <div>Пт</div>
-        <div>Сб</div>
-        <div>Вс</div>
+        <div>ПН</div>
+        <div>ВТ</div>
+        <div>СР</div>
+        <div>ЧТ</div>
+        <div>ПТ</div>
+        <div>СБ</div>
+        <div>ВС</div>
     </div>
 
     <div class="calendar-grid"></div>
@@ -324,21 +308,13 @@
 
         <div class="event-carousel">
 
-            <button
-                type="button"
-                class="event-arrow event-prev"
-                aria-label="Предыдущий забег"
-            >
+            <button class="carousel-button event-prev">
                 ←
             </button>
 
             <div class="event-card-container"></div>
 
-            <button
-                type="button"
-                class="event-arrow event-next"
-                aria-label="Следующий забег"
-            >
+            <button class="carousel-button event-next">
                 →
             </button>
 
@@ -348,15 +324,30 @@
 
     </section>
 
-</main>
+</div>
+
 
 <script>
+    /*
+        ВРЕМЕННО!
 
-    const calendarGrid =
-        document.querySelector('.calendar-grid');
+        Пока Telegram-auth у нас нет,
+        считаем текущим пользователем ClubMember id=2.
+    */
+    const testMemberId = 2;
+
+
+    /*
+        ========================================
+        DOM
+        ========================================
+    */
 
     const calendarTitle =
         document.querySelector('.calendar-title');
+
+    const calendarGrid =
+        document.querySelector('.calendar-grid');
 
     const prevMonthButton =
         document.querySelector('.prev-month');
@@ -369,9 +360,6 @@
 
     const eventsDate =
         document.querySelector('.events-date');
-
-    const eventCarousel =
-        document.querySelector('.event-carousel');
 
     const eventCardContainer =
         document.querySelector('.event-card-container');
@@ -386,16 +374,23 @@
         document.querySelector('.event-counter');
 
 
-    const today =
-        new Date();
-
-    let currentYear =
-        today.getFullYear();
-
-    let currentMonth =
-        today.getMonth();
+    /*
+        ========================================
+        STATE
+        ========================================
+    */
 
     let events = [];
+
+    const now = new Date();
+
+    let currentYear =
+        now.getFullYear();
+
+    let currentMonth =
+        now.getMonth();
+
+    let selectedDate = null;
 
     let selectedDayEvents = [];
 
@@ -403,14 +398,10 @@
 
 
     /*
-        Временный тестовый участник.
-
-        Потом это заменим на реального
-        ClubMember из Telegram Mini App.
+        ========================================
+        MONTH NAMES
+        ========================================
     */
-
-    const testMemberId = 2;
-
 
     const monthNames = [
         'Январь',
@@ -426,7 +417,6 @@
         'Ноябрь',
         'Декабрь'
     ];
-
 
     const monthNamesGenitive = [
         'января',
@@ -444,200 +434,169 @@
     ];
 
 
+    /*
+        ========================================
+        LOAD EVENTS
+        ========================================
+    */
+
     async function loadEvents() {
-
         try {
-
-            const response =
-                await fetch(`/api/events/?member=${testMemberId}`);
-
+            const response = await fetch(
+                `/api/events/?member=${testMemberId}`
+            );
 
             if (!response.ok) {
                 throw new Error(
-                    `Ошибка API: ${response.status}`
+                    `HTTP error: ${response.status}`
                 );
             }
 
-
-            events =
-                await response.json();
-
-
-            console.log(
-                'События загружены:',
-                events
-            );
-
-
-            /*
-                Для каждого event заведём
-                локальный флаг.
-
-                Пока браузер не знает,
-                участвует ли именно member 2.
-
-                Поэтому по умолчанию false.
-            */
-
-
-
+            events = await response.json();
 
             renderCalendar();
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             console.error(
-                'Не удалось загрузить события:',
+                'Ошибка загрузки событий:',
                 error
             );
-
         }
-
     }
 
 
-    async function joinEvent(event) {
+    /*
+        ========================================
+        PARTICIPATION
+        ========================================
+    */
+
+    async function setParticipationStatus(
+        event,
+        status
+    ) {
 
         /*
-            Не даём отправить запрос повторно,
-            если в интерфейсе уже знаем,
-            что человек участвует.
+            Если человек нажал кнопку,
+            которая уже активна,
+            ничего не делаем.
         */
-
-        if (event.current_member_joined) {
+        if (
+            event.current_member_status === status
+        ) {
             return;
         }
 
 
         try {
+            const response = await fetch(
+                '/api/participations/',
+                {
+                    method: 'POST',
 
-            const response =
-                await fetch(
-                    '/api/participations/',
-                    {
-                        method: 'POST',
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
 
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-
-                        body: JSON.stringify({
-                            event: event.id,
-                            member: testMemberId,
-                            distance: null,
-                            status: 'GOING',
-                            looking_for_company: false
-                        })
-                    }
-                );
-
-
-            /*
-                Успех:
-                participation создана.
-            */
-
-            if (response.ok) {
-
-                const participation =
-                    await response.json();
+                    body: JSON.stringify({
+                        event: event.id,
+                        member: testMemberId,
+                        distance: null,
+                        status: status,
+                        looking_for_company: false
+                    })
+                }
+            );
 
 
-                console.log(
-                    'Участие создано:',
-                    participation
-                );
-
-
-                event.current_member_joined = true;
-
-
-                /*
-                    Увеличиваем локальный счётчик,
-                    чтобы не перезагружать API.
-                */
-
-                event.participants_count =
-                    (event.participants_count ?? 0) + 1;
-
-
-                renderCurrentEvent();
-
-                return;
-            }
-
-
-            /*
-                400 сейчас означает,
-                что такую participation
-                создать нельзя.
-
-                В нашем тестовом сценарии
-                наиболее вероятная причина —
-                member уже записан.
-            */
-
-            if (response.status === 400) {
-
+            if (!response.ok) {
                 const errorData =
                     await response.json();
 
-
-                console.log(
-                    'Participation уже существует или данные невалидны:',
+                console.error(
+                    'Participation error:',
                     errorData
                 );
-
-
-                /*
-                    Счётчик НЕ увеличиваем.
-
-                    Запись уже существовала
-                    в базе до этого клика.
-                */
-
-                event.current_member_joined = true;
-
-
-                renderCurrentEvent();
 
                 return;
             }
 
 
             /*
-                Любая другая ошибка.
+                Запоминаем старый статус,
+                чтобы правильно переставить
+                единичку между счётчиками.
             */
 
-            const errorData =
-                await response.json();
+            const previousStatus =
+                event.current_member_status;
 
 
+            /*
+                Убираем пользователя
+                из старого счётчика.
+            */
+
+            if (
+                previousStatus === 'GOING'
+            ) {
+                event.going_count =
+                    Math.max(
+                        0,
+                        event.going_count - 1
+                    );
+            }
+
+            if (
+                previousStatus === 'THINKING'
+            ) {
+                event.thinking_count =
+                    Math.max(
+                        0,
+                        event.thinking_count - 1
+                    );
+            }
+
+
+            /*
+                Добавляем пользователя
+                в новый счётчик.
+            */
+
+            if (status === 'GOING') {
+                event.going_count += 1;
+            }
+
+            if (status === 'THINKING') {
+                event.thinking_count += 1;
+            }
+
+
+            event.current_member_status =
+                status;
+
+
+            renderCurrentEvent();
+
+        } catch (error) {
             console.error(
-                'Ошибка участия:',
-                errorData
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                'Ошибка запроса участия:',
+                'Ошибка изменения участия:',
                 error
             );
-
         }
-
     }
 
+
+    /*
+        ========================================
+        CALENDAR
+        ========================================
+    */
 
     function renderCalendar() {
 
         calendarGrid.innerHTML = '';
-
 
         calendarTitle.textContent =
             `${monthNames[currentMonth]} ${currentYear}`;
@@ -651,42 +610,57 @@
             );
 
 
-        const lastDay =
+        const daysInMonth =
             new Date(
                 currentYear,
                 currentMonth + 1,
                 0
-            );
+            ).getDate();
 
 
-        const daysInMonth =
-            lastDay.getDate();
+        /*
+            JS:
+            Sunday = 0
+            Monday = 1
+
+            Нам надо:
+            Monday = 0
+            Sunday = 6
+        */
+
+        let startOffset =
+            firstDay.getDay() - 1;
+
+        if (startOffset < 0) {
+            startOffset = 6;
+        }
 
 
-        let startDay =
-            firstDay.getDay();
-
-
-        startDay =
-            (startDay + 6) % 7;
-
+        /*
+            Пустые клетки
+            перед первым числом месяца.
+        */
 
         for (
             let i = 0;
-            i < startDay;
+            i < startOffset;
             i++
         ) {
-
             const emptyCell =
                 document.createElement('div');
 
+            emptyCell.className =
+                'calendar-day';
 
             calendarGrid.appendChild(
                 emptyCell
             );
-
         }
 
+
+        /*
+            Дни месяца.
+        */
 
         for (
             let day = 1;
@@ -694,281 +668,374 @@
             day++
         ) {
 
-            const dayCell =
+            const cell =
                 document.createElement('div');
 
+            cell.className =
+                'calendar-day';
 
-            dayCell.textContent =
+
+            const dayNumber =
+                document.createElement('div');
+
+            dayNumber.className =
+                'day-number';
+
+            dayNumber.textContent =
                 day;
 
 
-            dayCell.classList.add(
-                'calendar-day'
-            );
-
-
-            const currentDate =
-                `${currentYear}-` +
-                `${String(currentMonth + 1).padStart(2, '0')}-` +
-                `${String(day).padStart(2, '0')}`;
+            const dateString =
+                buildDateString(
+                    currentYear,
+                    currentMonth,
+                    day
+                );
 
 
             const dayEvents =
                 events.filter(
                     event =>
-                        event.date === currentDate
+                        event.date ===
+                        dateString
                 );
 
 
             if (dayEvents.length > 0) {
 
-                dayCell.classList.add(
+                cell.classList.add(
                     'has-event'
                 );
 
 
-                dayCell.addEventListener(
+                cell.addEventListener(
                     'click',
                     function () {
 
-                        document
-                            .querySelectorAll('.calendar-day.selected')
-                            .forEach(
-                                element =>
-                                    element.classList.remove('selected')
-                            );
-
-
-                        dayCell.classList.add(
-                            'selected'
-                        );
-
+                        selectedDate =
+                            dateString;
 
                         selectedDayEvents =
                             dayEvents;
 
-
                         currentEventIndex = 0;
 
+                        renderCalendar();
 
-                        eventsPanel.classList.remove(
-                            'hidden'
+                        openEventsPanel(
+                            day
                         );
-
-
-                        eventsDate.textContent =
-                            `${day} ` +
-                            `${monthNamesGenitive[currentMonth]} ` +
-                            `${currentYear}`;
-
-
-                        renderCurrentEvent();
-
                     }
                 );
-
             }
 
 
-            calendarGrid.appendChild(
-                dayCell
+            if (
+                selectedDate ===
+                dateString
+            ) {
+                cell.classList.add(
+                    'selected'
+                );
+            }
+
+
+            cell.appendChild(
+                dayNumber
             );
 
+            calendarGrid.appendChild(
+                cell
+            );
         }
+    }
 
+
+    /*
+        ========================================
+        EVENT PANEL
+        ========================================
+    */
+
+    function openEventsPanel(day) {
+
+        eventsPanel.classList.remove(
+            'hidden'
+        );
+
+
+        eventsDate.textContent =
+            `${day} ` +
+            `${monthNamesGenitive[currentMonth]} ` +
+            `${currentYear}`;
+
+
+        renderCurrentEvent();
     }
 
 
     function renderCurrentEvent() {
 
-        if (selectedDayEvents.length === 0) {
+        eventCardContainer.innerHTML = '';
+
+
+        if (
+            selectedDayEvents.length === 0
+        ) {
             return;
         }
 
 
         const event =
-            selectedDayEvents[currentEventIndex];
+            selectedDayEvents[
+                currentEventIndex
+            ];
 
 
-        eventCardContainer.innerHTML = '';
-
+        /*
+            Карточка.
+        */
 
         const card =
-            document.createElement('article');
+            document.createElement('div');
+
+        card.className =
+            'event-card';
 
 
-        card.classList.add(
-            'event-card'
-        );
-
+        /*
+            Название.
+        */
 
         const title =
             document.createElement('h3');
 
+        title.className =
+            'event-name';
 
         title.textContent =
             event.name;
-
-
-        const city =
-            document.createElement('p');
-
-
-        city.classList.add(
-            'event-city'
-        );
-
-
-        city.textContent =
-            event.city;
-
-
-        const distances =
-            document.createElement('div');
-
-
-        distances.classList.add(
-            'event-distances'
-        );
-
-
-        if (
-            event.distances &&
-            event.distances.length > 0
-        ) {
-
-            event.distances.forEach(
-                function (distance) {
-
-                    const badge =
-                        document.createElement('span');
-
-
-                    badge.classList.add(
-                        'distance-badge'
-                    );
-
-
-                    badge.textContent =
-                        distance.name;
-
-
-                    distances.appendChild(
-                        badge
-                    );
-
-                }
-            );
-
-        }
-
-
-        const socialBlock =
-            document.createElement('div');
-
-
-        socialBlock.classList.add(
-            'event-social'
-        );
-
-
-        const participantsCount =
-            document.createElement('p');
-
-
-        participantsCount.classList.add(
-            'participants-count'
-        );
-
-
-        const count =
-            event.participants_count ?? 0;
-
-
-        participantsCount.textContent =
-            `👥 Участвуют: ${count}`;
-
-
-        const joinButton =
-            document.createElement('button');
-
-
-        joinButton.type =
-            'button';
-
-
-        joinButton.classList.add(
-            'join-button'
-        );
-
-
-        /*
-            Если мы уже знаем,
-            что текущий member участвует,
-            показываем другое состояние.
-        */
-
-        if (event.current_member_joined) {
-
-            joinButton.textContent =
-                'Вы участвуете ✓';
-
-
-            joinButton.classList.add(
-                'joined'
-            );
-
-
-            joinButton.disabled =
-                true;
-
-        }
-
-        else {
-
-            joinButton.textContent =
-                'Я участвую';
-
-
-            joinButton.addEventListener(
-                'click',
-                function () {
-
-                    joinEvent(event);
-
-                }
-            );
-
-        }
-
-
-        socialBlock.appendChild(
-            participantsCount
-        );
-
-
-        socialBlock.appendChild(
-            joinButton
-        );
-
 
         card.appendChild(
             title
         );
 
 
+        /*
+            Город.
+        */
+
+        const city =
+            document.createElement('div');
+
+        city.className =
+            'event-city';
+
+        city.textContent =
+            event.city;
+
         card.appendChild(
             city
         );
 
 
-        card.appendChild(
-            distances
+        /*
+            Дистанции.
+        */
+
+        if (
+            event.distances &&
+            event.distances.length > 0
+        ) {
+
+            const distancesContainer =
+                document.createElement('div');
+
+            distancesContainer.className =
+                'distances';
+
+
+            event.distances.forEach(
+                function (distance) {
+
+                    const badge =
+                        document.createElement(
+                            'div'
+                        );
+
+                    badge.className =
+                        'distance-badge';
+
+                    /*
+                        Нам важнее красивое name,
+                        чем голое число distance.
+                    */
+
+                    badge.textContent =
+                        distance.name;
+
+                    distancesContainer.appendChild(
+                        badge
+                    );
+                }
+            );
+
+
+            card.appendChild(
+                distancesContainer
+            );
+        }
+
+
+        /*
+            Счётчики участия.
+        */
+
+        const participationInfo =
+            document.createElement('div');
+
+        participationInfo.className =
+            'participation-info';
+
+
+        const goingInfo =
+            document.createElement('span');
+
+        goingInfo.textContent =
+            `👥 Едут: ${event.going_count}`;
+
+
+        const thinkingInfo =
+            document.createElement('span');
+
+        thinkingInfo.textContent =
+            `🤔 Думают: ${event.thinking_count}`;
+
+
+        participationInfo.appendChild(
+            goingInfo
+        );
+
+        participationInfo.appendChild(
+            thinkingInfo
         );
 
 
         card.appendChild(
-            socialBlock
+            participationInfo
+        );
+
+
+        /*
+            Кнопки.
+        */
+
+        const buttons =
+            document.createElement('div');
+
+        buttons.className =
+            'participation-buttons';
+
+
+        const goingButton =
+            document.createElement('button');
+
+        goingButton.className =
+            'participation-button going-button';
+
+
+        const thinkingButton =
+            document.createElement('button');
+
+        thinkingButton.className =
+            'participation-button thinking-button';
+
+
+        /*
+            Текущий статус пользователя.
+        */
+
+        if (
+            event.current_member_status ===
+            'GOING'
+        ) {
+
+            goingButton.textContent =
+                'Я еду ✓';
+
+            goingButton.classList.add(
+                'active'
+            );
+
+
+            thinkingButton.textContent =
+                'Думаю';
+
+        } else if (
+            event.current_member_status ===
+            'THINKING'
+        ) {
+
+            goingButton.textContent =
+                'Я еду';
+
+
+            thinkingButton.textContent =
+                'Думаю ✓';
+
+            thinkingButton.classList.add(
+                'active'
+            );
+
+        } else {
+
+            goingButton.textContent =
+                'Я еду';
+
+            thinkingButton.textContent =
+                'Думаю';
+        }
+
+
+        /*
+            Обработчики кнопок.
+        */
+
+        goingButton.addEventListener(
+            'click',
+            function () {
+
+                setParticipationStatus(
+                    event,
+                    'GOING'
+                );
+            }
+        );
+
+
+        thinkingButton.addEventListener(
+            'click',
+            function () {
+
+                setParticipationStatus(
+                    event,
+                    'THINKING'
+                );
+            }
+        );
+
+
+        buttons.appendChild(
+            goingButton
+        );
+
+        buttons.appendChild(
+            thinkingButton
+        );
+
+
+        card.appendChild(
+            buttons
         );
 
 
@@ -978,15 +1045,22 @@
 
 
         updateCarouselControls();
-
     }
 
 
+    /*
+        ========================================
+        CAROUSEL
+        ========================================
+    */
+
     function updateCarouselControls() {
 
-        if (
-            selectedDayEvents.length <= 1
-        ) {
+        const total =
+            selectedDayEvents.length;
+
+
+        if (total <= 1) {
 
             eventPrevButton.classList.add(
                 'hidden'
@@ -1000,12 +1074,7 @@
                 'hidden'
             );
 
-            eventCarousel.classList.add(
-                'single-event'
-            );
-
             return;
-
         }
 
 
@@ -1021,14 +1090,9 @@
             'hidden'
         );
 
-        eventCarousel.classList.remove(
-            'single-event'
-        );
-
 
         eventCounter.textContent =
-            `${currentEventIndex + 1} / ${selectedDayEvents.length}`;
-
+            `${currentEventIndex + 1} / ${total}`;
     }
 
 
@@ -1036,19 +1100,23 @@
         'click',
         function () {
 
+            if (
+                selectedDayEvents.length <= 1
+            ) {
+                return;
+            }
+
+
             currentEventIndex--;
 
 
             if (currentEventIndex < 0) {
-
                 currentEventIndex =
                     selectedDayEvents.length - 1;
-
             }
 
 
             renderCurrentEvent();
-
         }
     );
 
@@ -1057,6 +1125,13 @@
         'click',
         function () {
 
+            if (
+                selectedDayEvents.length <= 1
+            ) {
+                return;
+            }
+
+
             currentEventIndex++;
 
 
@@ -1064,17 +1139,20 @@
                 currentEventIndex >=
                 selectedDayEvents.length
             ) {
-
                 currentEventIndex = 0;
-
             }
 
 
             renderCurrentEvent();
-
         }
     );
 
+
+    /*
+        ========================================
+        MONTH NAVIGATION
+        ========================================
+    */
 
     prevMonthButton.addEventListener(
         'click',
@@ -1084,17 +1162,14 @@
 
 
             if (currentMonth < 0) {
-
                 currentMonth = 11;
                 currentYear--;
-
             }
 
 
             closeEventsPanel();
 
             renderCalendar();
-
         }
     );
 
@@ -1107,41 +1182,76 @@
 
 
             if (currentMonth > 11) {
-
                 currentMonth = 0;
                 currentYear++;
-
             }
 
 
             closeEventsPanel();
 
             renderCalendar();
-
         }
     );
 
 
     function closeEventsPanel() {
 
-        eventsPanel.classList.add(
-            'hidden'
-        );
-
+        selectedDate = null;
 
         selectedDayEvents = [];
 
         currentEventIndex = 0;
 
 
-        eventCardContainer.innerHTML = '';
-
-        eventsDate.textContent = '';
-
-        eventCounter.textContent = '';
-
+        eventsPanel.classList.add(
+            'hidden'
+        );
     }
 
+
+    /*
+        ========================================
+        HELPERS
+        ========================================
+    */
+
+    function buildDateString(
+        year,
+        month,
+        day
+    ) {
+
+        const monthString =
+            String(
+                month + 1
+            ).padStart(
+                2,
+                '0'
+            );
+
+
+        const dayString =
+            String(
+                day
+            ).padStart(
+                2,
+                '0'
+            );
+
+
+        return (
+            `${year}-` +
+            `${monthString}-` +
+            `${dayString}`
+        );
+    }
+
+
+    /*
+        ========================================
+        START
+        ========================================
+    */
 
     loadEvents();
 
