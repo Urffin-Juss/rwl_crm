@@ -41,14 +41,14 @@ class EventParticipationSerializer(serializers.ModelSerializer):
             'member',
             'distance',
             'status',
-            'looking_company',
+            'looking_for_company',
         )
 
     def validate(self, attrs):
         event = attrs.get('event')
         distance = attrs.get('distance')
 
-        if distance and event.distance != event:
+        if distance and distance.event != event:
             raise serializers.ValidationError(
                 'Выбранная дистанция не относится к этому ивенту'
             )
