@@ -115,9 +115,10 @@ class EventParticipationSerializer(serializers.ModelSerializer):
         member = validated_data.pop('member')
         event = validated_data.pop('event')
 
-        participation = EventParticipation.objects.update_or_create(
+        participation, created = EventParticipation.objects.update_or_create(
             member=member,
             event=event,
-            defaults=validated_data
+            defaults=validated_data,
         )
+
         return participation
