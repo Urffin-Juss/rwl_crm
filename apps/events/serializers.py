@@ -52,6 +52,36 @@ class EventSerializer(serializers.ModelSerializer):
             member_id=member_id
         ).exists()
 
+    def get_going_count(self, obj):
+        return obj.participations.filter(
+            status='GOING'
+        ).count()
+
+    def get_thinking_count(self, obj):
+        return obj.participations.filter(
+            status='THINKING'
+        ).count()
+
+    def get_current_member_status(self, obj):
+        request = self.context.get('request')
+
+        if not request:
+            return None
+
+        member_id = request.query_params.get('member')
+
+        if not member_id:
+            return None
+
+        participation = obj.participations.filter(
+            member_id=member_id
+        ).first()
+
+        if not participation:
+            return None
+
+        return participation.status
+
 class EventParticipationSerializer(serializers.ModelSerializer):
 
     class Meta:
