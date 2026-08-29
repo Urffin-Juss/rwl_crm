@@ -449,7 +449,7 @@
         try {
 
             const response =
-                await fetch('/api/events/');
+                await fetch(`/api/events/?member=${testMemberId}`);
 
 
             if (!response.ok) {

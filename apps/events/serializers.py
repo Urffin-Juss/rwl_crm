@@ -16,6 +16,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     distances = EventDistanceSerializer(read_only=True, many=True)
     participants_count = serializers.SerializerMethodField()
+    current_member_joined = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
@@ -27,10 +28,26 @@ class EventSerializer(serializers.ModelSerializer):
             'status',
             'distances',
             'participants_count'
+            'current_member_joined',
         )
 
     def get_participants_count(self, obj):
         return obj.participations.count()
+
+    def get_current_member_joined(self, obj):
+        request = self.context.get('request')
+
+        if not request:
+            return False
+
+        member_id = request.query_params.get('member')
+
+        if not member_id:
+            return False
+
+        return obj.participations.filter(
+            member_id=member_id
+        ).exists()
 
 class EventParticipationSerializer(serializers.ModelSerializer):
 
