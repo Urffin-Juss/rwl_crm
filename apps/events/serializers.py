@@ -70,3 +70,14 @@ class EventParticipationSerializer(serializers.ModelSerializer):
                 'Выбранная дистанция не относится к этому ивенту'
             )
         return attrs
+
+    def create(self, validated_data):
+        member = validated_data.pop('member')
+        event = validated_data.pop('event')
+
+        participation = EventParticipation.objects.update_or_create(
+            member=member,
+            event=event,
+            defaults=validated_data
+        )
+        return participation
