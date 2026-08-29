@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'apps.clients',
     'import_export',
     'apps.webui',
+    'apps.miniapp',
 
     
 ]
