@@ -744,6 +744,39 @@ function renderCurrentEvent() {
         'participation-button thinking-button';
 
 
+    if (event.current_member_status) {
+
+    const companyButton =
+        document.createElement('button');
+
+    companyButton.className =
+        'company-button';
+
+    if (
+        event.current_member_looking_for_company
+    ) {
+        companyButton.textContent =
+            'Ищу компанию ✓';
+
+        companyButton.classList.add(
+            'active'
+        );
+    } else {
+        companyButton.textContent =
+            'Ищу компанию';
+    }
+
+    companyButton.addEventListener(
+        'click',
+        function () {
+            toggleLookingForCompany(event);
+        }
+    );
+
+    card.appendChild(companyButton);
+    }
+
+
     /*
         Текущий статус пользователя.
     */
