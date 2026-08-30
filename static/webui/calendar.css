@@ -1,0 +1,269 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #111111;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+.app {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 16px 50px;
+}
+
+/* =========================
+   CALENDAR
+========================= */
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.calendar-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.month-button {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: #eeeeee;
+    color: #111111;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 10px;
+    color: #888888;
+    font-size: 13px;
+    text-align: center;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    row-gap: 14px;
+}
+
+.calendar-day {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 42px;
+    font-size: 16px;
+}
+
+.day-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+}
+
+.calendar-day.has-event .day-number {
+    background: #ef3936;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.calendar-day.selected .day-number {
+    outline: 3px solid #aaaaaa;
+    outline-offset: 4px;
+}
+
+/* =========================
+   EVENT PANEL
+========================= */
+
+.events-panel {
+    margin-top: 34px;
+}
+
+.events-panel.hidden {
+    display: none;
+}
+
+.events-date {
+    margin: 0 0 24px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.event-carousel {
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr) 50px;
+    align-items: center;
+    gap: 12px;
+}
+
+.carousel-button {
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    background: #f1f1f1;
+    color: #111111;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.carousel-button.hidden {
+    visibility: hidden;
+}
+
+.event-card {
+    width: 100%;
+    background: #222222;
+    border-radius: 22px;
+    padding: 22px;
+}
+
+.event-name {
+    margin: 0;
+    font-size: 23px;
+    line-height: 1.2;
+}
+
+.event-city {
+    margin-top: 8px;
+    color: #aaaaaa;
+    font-size: 18px;
+}
+
+/* =========================
+   DISTANCES
+========================= */
+
+.distances {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.distance-badge {
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: #363636;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.25;
+}
+
+/* =========================
+   PARTICIPATION
+========================= */
+
+.participation-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #333333;
+    color: #bcbcbc;
+    font-size: 15px;
+}
+
+.participation-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.participation-button {
+    flex: 1;
+    min-height: 52px;
+    border: none;
+    border-radius: 15px;
+    padding: 12px 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    transition:
+        transform 0.1s ease,
+        opacity 0.1s ease;
+}
+
+.participation-button:active {
+    transform: scale(0.98);
+}
+
+.going-button {
+    background: #ef3936;
+}
+
+.thinking-button {
+    background: #3a3a3a;
+}
+
+.participation-button.active {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+.participation-button:disabled {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.event-counter {
+    margin-top: 18px;
+    text-align: center;
+    color: #777777;
+    font-size: 14px;
+}
+
+.event-counter.hidden {
+    display: none;
+}
+
+@media (max-width: 420px) {
+    .app {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .event-carousel {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        gap: 7px;
+    }
+
+    .carousel-button {
+        width: 38px;
+        height: 38px;
+        font-size: 23px;
+    }
+
+    .event-card {
+        padding: 18px;
+    }
+
+    .event-name {
+        font-size: 20px;
+    }
+
+    .participation-info {
+        flex-direction: column;
+        gap: 7px;
+    }
+}

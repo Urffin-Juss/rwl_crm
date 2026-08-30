@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Календарь забегов</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'webui/calendar.css' %}"
+    >
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="calendar-header">
+        <button class="month-button prev-month">←</button>
+
+        <h1 class="calendar-title"></h1>
+
+        <button class="month-button next-month">→</button>
+    </div>
+
+    <div class="weekdays">
+        <div>ПН</div>
+        <div>ВТ</div>
+        <div>СР</div>
+        <div>ЧТ</div>
+        <div>ПТ</div>
+        <div>СБ</div>
+        <div>ВС</div>
+    </div>
+
+    <div class="calendar-grid"></div>
+
+    <section class="events-panel hidden">
+
+        <h2 class="events-date"></h2>
+
+        <div class="event-carousel">
+
+            <button class="carousel-button event-prev">
+                ←
+            </button>
+
+            <div class="event-card-container"></div>
+
+            <button class="carousel-button event-next">
+                →
+            </button>
+
+        </div>
+
+        <div class="event-counter"></div>
+
+    </section>
+
+</div>
+
+<script src="{% static 'webui/calendar.js' %}"></script>
+
+</body>
+</html>
