@@ -20,6 +20,7 @@ class EventSerializer(serializers.ModelSerializer):
     current_member_status = serializers.SerializerMethodField()
     current_participation_id = serializers.SerializerMethodField()
     current_member_looking_for_company = serializers.SerializerMethodField()
+    looking_for_company_count = serializers.SerializerMethodField()
 
 
 
@@ -35,6 +36,7 @@ class EventSerializer(serializers.ModelSerializer):
             'distances',
             'going_count',
             'thinking_count',
+            'looking_for_company_count',
             'current_member_status',
             'current_participation_id',
             'current_member_looking_for_company',
@@ -128,6 +130,12 @@ class EventSerializer(serializers.ModelSerializer):
         if not participation:
             return False
         return participation.looking_for_company
+
+
+    def get_looking_for_company_count(self, obj):
+        return obj.participations.filter(
+            looking_for_company=True
+        ).count()
 
 
 
