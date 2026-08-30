@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import (
@@ -14,9 +14,24 @@ from aiogram.types import (
 
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 MINI_APP_URL = os.getenv('MINI_APP_URL')
+BOT_PROXY = os.getenv('BOT_PROXY')
 
-bot = Bot(token=BOT_TOKEN)
+session = AiohttpSession(
+
+    proxy=BOT_PROXY,
+
+)
+
+bot = Bot(
+
+    token=BOT_TOKEN,
+
+    session=session,
+
+)
 dp = Dispatcher()
+
+
 
 
 @dp.message(CommandStart())
