@@ -43,12 +43,29 @@ const eventNextButton =
 const eventCounter =
     document.querySelector('.event-counter');
 
+const emptyState =
+    document.getElementById('calendar-empty-state');
+
+const eventContainer =
+    document.getElementById('event-container');
+
 
 /*
     ========================================
     STATE
     ========================================
 */
+
+function showBrandState() {
+    emptyState.style.display = 'flex';
+    eventContainer.style.display = 'none';
+}
+
+function showEventState() {
+    emptyState.style.display = 'none';
+    eventContainer.style.display = 'block';
+}
+
 
 let events = [];
 
