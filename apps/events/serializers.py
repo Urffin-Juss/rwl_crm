@@ -19,6 +19,7 @@ class EventSerializer(serializers.ModelSerializer):
     thinking_count = serializers.SerializerMethodField()
     current_member_status = serializers.SerializerMethodField()
     current_participation_id = serializers.SerializerMethodField()
+    current_member_looking_for_company = serializers.SerializerMethodField()
 
 
 
@@ -36,6 +37,7 @@ class EventSerializer(serializers.ModelSerializer):
             'thinking_count',
             'current_member_status',
             'current_participation_id',
+            'current_member_looking_for_company',
         )
 
 
