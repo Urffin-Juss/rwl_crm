@@ -18,6 +18,7 @@ class EventSerializer(serializers.ModelSerializer):
     going_count = serializers.SerializerMethodField()
     thinking_count = serializers.SerializerMethodField()
     current_member_status = serializers.SerializerMethodField()
+    current_participation_id = serializers.SerializerMethodField()
 
 
 
@@ -34,6 +35,7 @@ class EventSerializer(serializers.ModelSerializer):
             'going_count',
             'thinking_count',
             'current_member_status',
+            'current_participation_id',
         )
 
 
@@ -86,6 +88,28 @@ class EventSerializer(serializers.ModelSerializer):
             return None
 
         return participation.status
+
+    def get_current_participation_id(self, obj):
+        request = self.context.get('request')
+        if not request:
+            return None
+
+        member_id = request.query_params.get('member')
+
+        if not member_id:
+            return None
+
+        participation = obj.participations.filter(
+            member_id=member_id
+        ).first()
+
+        if not participation:
+            return None
+
+        return participation.id
+
+
+
 
 class EventParticipationSerializer(serializers.ModelSerializer):
 
