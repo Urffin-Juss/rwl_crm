@@ -110,6 +110,27 @@ class EventSerializer(serializers.ModelSerializer):
 
         return participation.id
 
+    def get_current_member_looking_for_company(self, obj):
+        request = self.context.get('request')
+
+        if not request:
+            return False
+
+        member_id = request.query_params.get('member')
+
+        if not member_id:
+            return False
+
+        participation = obj.participations.filter(
+            member_id=member_id
+        ).first()
+
+        if not participation:
+            return False
+        return participation.looking_for_company
+
+
+
 
 
 
