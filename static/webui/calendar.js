@@ -371,6 +371,14 @@ async function removeParticipation(event) {
         }
 
 
+        if (event.current_member_status === 'THINKING') {
+            event.thinking_count = Math.max(
+                0,
+                event.thinking_count - 1
+            );
+        }
+
+
         if (
             event.current_member_looking_for_company
         ) {
@@ -379,16 +387,6 @@ async function removeParticipation(event) {
                     0,
                     event.looking_for_company_count - 1
                 );
-        }
-
-
-
-
-        if (event.current_member_status === 'THINKING') {
-            event.thinking_count = Math.max(
-                0,
-                event.thinking_count - 1
-            );
         }
 
         event.current_member_status = null;
