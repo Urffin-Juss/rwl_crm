@@ -52,6 +52,14 @@ services:
     volumes:
       - media_data:/app/media
 
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - web
+    command: python -m apps.miniapp.bot
+
   nginx:
     image: nginx:1.27-alpine
     restart: unless-stopped
