@@ -744,37 +744,6 @@ function renderCurrentEvent() {
         'participation-button thinking-button';
 
 
-    if (event.current_member_status) {
-
-    const companyButton =
-        document.createElement('button');
-
-    companyButton.className =
-        'company-button';
-
-    if (
-        event.current_member_looking_for_company
-    ) {
-        companyButton.textContent =
-            'Ищу компанию ✓';
-
-        companyButton.classList.add(
-            'active'
-        );
-    } else {
-        companyButton.textContent =
-            'Ищу компанию';
-    }
-
-    companyButton.addEventListener(
-        'click',
-        function () {
-            toggleLookingForCompany(event);
-        }
-    );
-
-    card.appendChild(companyButton);
-    }
 
 
     /*
@@ -858,8 +827,56 @@ function renderCurrentEvent() {
     buttons.appendChild(
         thinkingButton
     );
+/*
+    Добавляем основные кнопки
+    в карточку.
+*/
+    card.appendChild(buttons);
+
+
+    /*
+        Дополнительные действия появляются
+        только если пользователь уже отметил
+        участие в событии.
+    */
     if (event.current_member_status) {
 
+        /*
+            Ищу компанию
+        */
+        const companyButton =
+            document.createElement('button');
+
+        companyButton.className =
+            'company-button';
+
+        if (
+            event.current_member_looking_for_company
+        ) {
+            companyButton.textContent =
+                'Ищу компанию ✓';
+
+            companyButton.classList.add(
+                'active'
+            );
+        } else {
+            companyButton.textContent =
+                'Ищу компанию';
+        }
+
+        companyButton.addEventListener(
+            'click',
+            function () {
+                toggleLookingForCompany(event);
+            }
+        );
+
+    card.appendChild(companyButton);
+
+
+    /*
+        Снять отметку
+    */
     const removeButton =
         document.createElement('button');
 
@@ -876,13 +893,15 @@ function renderCurrentEvent() {
         }
     );
 
-    card.appendChild(buttons);
     card.appendChild(removeButton);
+}
 
-    } else {
 
-        card.appendChild(buttons);
-    }
+eventCardContainer.appendChild(
+    card
+);
+
+updateCarouselControls();
 
 
 
