@@ -226,6 +226,21 @@ body {
     opacity: 0.8;
 }
 
+.remove-participation-button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: #888888;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.remove-participation-button:hover {
+    color: #ffffff;
+}
+
 .event-counter {
     margin-top: 18px;
     text-align: center;
@@ -267,3 +282,4 @@ body {
         gap: 7px;
     }
 }
+

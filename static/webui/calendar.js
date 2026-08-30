@@ -257,6 +257,57 @@ async function setParticipationStatus(
     }
 }
 
+async function removeParticipation(event) {
+
+    if (!event.current_participation_id) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `/api/participations/${event.current_participation_id}/`,
+            {
+                method: 'DELETE'
+            }
+        );
+
+        if (!response.ok) {
+            console.error(
+                'Ошибка удаления участия:',
+                response.status
+            );
+
+            return;
+        }
+
+        if (event.current_member_status === 'GOING') {
+            event.going_count = Math.max(
+                0,
+                event.going_count - 1
+            );
+        }
+
+        if (event.current_member_status === 'THINKING') {
+            event.thinking_count = Math.max(
+                0,
+                event.thinking_count - 1
+            );
+        }
+
+        event.current_member_status = null;
+        event.current_participation_id = null;
+
+        renderCurrentEvent();
+
+    } catch (error) {
+        console.error(
+            'Ошибка удаления участия:',
+            error
+        );
+    }
+}
+
+
 
 /*
     ========================================
@@ -702,11 +753,33 @@ function renderCurrentEvent() {
     buttons.appendChild(
         thinkingButton
     );
+    if (event.current_member_status) {
 
+    const removeButton =
+        document.createElement('button');
 
-    card.appendChild(
-        buttons
+    removeButton.className =
+        'remove-participation-button';
+
+    removeButton.textContent =
+        'Снять отметку';
+
+    removeButton.addEventListener(
+        'click',
+        function () {
+            removeParticipation(event);
+        }
     );
+
+    card.appendChild(buttons);
+    card.appendChild(removeButton);
+
+    } else {
+
+        card.appendChild(buttons);
+    }
+
+
 
 
     eventCardContainer.appendChild(
