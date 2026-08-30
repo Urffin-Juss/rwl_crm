@@ -266,6 +266,69 @@ async function setParticipationStatus(
     }
 }
 
+
+async function toggleLookingForCompany(event) {
+
+    if (!event.current_member_status) {
+        return;
+    }
+
+    const newValue =
+        !event.current_member_looking_for_company;
+
+    try {
+        const response = await fetch(
+            '/api/participations/',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
+
+                body: JSON.stringify({
+                    event: event.id,
+                    member: testMemberId,
+                    distance: null,
+                    status: event.current_member_status,
+                    looking_for_company: newValue
+                })
+            }
+        );
+
+        if (!response.ok) {
+            const errorData =
+                await response.json();
+
+            console.error(
+                'Looking for company error:',
+                errorData
+            );
+
+            return;
+        }
+
+        const participationData =
+            await response.json();
+
+        event.current_participation_id =
+            participationData.id;
+
+        event.current_member_looking_for_company =
+            newValue;
+
+        renderCurrentEvent();
+
+    } catch (error) {
+        console.error(
+            'Ошибка изменения поиска компании:',
+            error
+        );
+    }
+}
+
+
 async function removeParticipation(event) {
 
     if (!event.current_participation_id) {
