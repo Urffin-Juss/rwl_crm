@@ -189,8 +189,17 @@ async function setParticipationStatus(
                 errorData
             );
 
+
+
             return;
         }
+
+
+        const participationData =
+            await response.json();
+
+        event.current_participation_id =
+            participationData.id;
 
 
         /*

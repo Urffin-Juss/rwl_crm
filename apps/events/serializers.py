@@ -116,6 +116,7 @@ class EventParticipationSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventParticipation
         fields = (
+            'id'
             'event',
             'member',
             'distance',
