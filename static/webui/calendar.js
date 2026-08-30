@@ -704,6 +704,12 @@ function renderCurrentEvent() {
     thinkingInfo.textContent =
         `🤔 Думают: ${event.thinking_count}`;
 
+    const companyInfo =
+        document.createElement('span');
+
+    companyInfo.textContent =
+        `🙋 Ищут компанию: ${event.looking_for_company_count}`;
+
 
     participationInfo.appendChild(
         goingInfo
@@ -716,6 +722,10 @@ function renderCurrentEvent() {
 
     card.appendChild(
         participationInfo
+    );
+
+    participationInfo.appendChild(
+        companyInfo
     );
 
 
