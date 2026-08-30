@@ -315,6 +315,17 @@ async function toggleLookingForCompany(event) {
         event.current_participation_id =
             participationData.id;
 
+        if (newValue) {
+            event.looking_for_company_count += 1;
+        } else {
+            event.looking_for_company_count =
+                Math.max(
+                    0,
+                    event.looking_for_company_count - 1
+                );
+        }
+
+
         event.current_member_looking_for_company =
             newValue;
 
