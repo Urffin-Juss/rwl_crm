@@ -4,6 +4,10 @@
 
 let currentMemberId = null;
 
+let requiredConsents = [];
+
+let currentConsentIndex = 0;
+
 
 /*
     ========================================
@@ -122,6 +126,8 @@ async function authenticateTelegramUser() {
 
         return currentMemberId;
 
+        requiredConsents = data.required_consents || [];
+
     } catch (error) {
         console.error(
             'Ошибка Telegram auth:',
@@ -130,6 +136,30 @@ async function authenticateTelegramUser() {
     }
 }
 
+function showConsentScreen() {
+    const gate = document.getElementById("consent-gate");
+
+    if (requiredConsents.length === 0) {
+        gate.style.display = "none";
+        return;
+    }
+
+    const documentData = requiredConsents[currentConsentIndex];
+
+    document.getElementById("consent-title").textContent =
+        documentData.title;
+
+    document.getElementById("consent-version").textContent =
+        `Версия ${documentData.version}`;
+
+    document.getElementById("consent-link").href =
+        documentData.url;
+
+    document.getElementById("consent-progress").textContent =
+        `${currentConsentIndex + 1} / ${requiredConsents.length}`;
+
+    gate.style.display = "flex";
+}
 
 
 /*
@@ -1281,6 +1311,12 @@ async function acceptConsent(documentId) {
 */
 async function startApp() {
     await authenticateTelegramUser();
+
+    if (requiredConsents.length > 0) {
+        showConsentScreen();
+        return;
+    }
+
     await loadEvents();
 }
 
