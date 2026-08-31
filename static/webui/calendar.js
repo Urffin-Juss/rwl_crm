@@ -1312,6 +1312,8 @@ async function acceptConsent(documentId) {
 async function startApp() {
     await authenticateTelegramUser();
 
+    console.log("requiredConsents перед gate:", requiredConsents);
+
     if (requiredConsents.length > 0) {
         showConsentScreen();
         return;
