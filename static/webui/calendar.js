@@ -49,6 +49,28 @@ const emptyState =
 
 /*
     ========================================
+    TELEGRAM
+    ========================================
+*/
+
+const tg = window.Telegram?.WebApp;
+
+if (tg) {
+    tg.ready();
+
+    console.log('Telegram WebApp:', tg);
+    console.log('initData:', tg.initData);
+    console.log('initDataUnsafe:', tg.initDataUnsafe);
+    console.log('Telegram user:', tg.initDataUnsafe?.user);
+} else {
+    console.log('Telegram WebApp не найден');
+}
+
+
+
+
+/*
+    ========================================
     STATE
     ========================================
 */
