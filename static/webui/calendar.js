@@ -1,10 +1,8 @@
-/*
-    ВРЕМЕННО!
 
-    Пока Telegram-auth у нас нет,
-    считаем текущим пользователем ClubMember id=2.
-*/
-const testMemberId = 1;
+
+
+
+let currentMemberId = null;
 
 
 /*
@@ -117,6 +115,10 @@ async function authenticateTelegramUser() {
             data
         );
 
+        currentMemberId = data.member_id;
+
+        return currentMemberId;
+
     } catch (error) {
         console.error(
             'Ошибка Telegram auth:',
@@ -207,7 +209,7 @@ const monthNamesGenitive = [
 async function loadEvents() {
     try {
         const response = await fetch(
-            `/api/events/?member=${testMemberId}`
+            `/api/events/?member=${currentMemberId}`
         );
 
         if (!response.ok) {
@@ -1244,7 +1246,12 @@ function buildDateString(
     START
     ========================================
 */
-authenticateTelegramUser();
+async function startApp() {
 
-loadEvents();
+    await authenticateTelegramUser();
+
+    await loadEvents();
+}
+
+startApp();
 
