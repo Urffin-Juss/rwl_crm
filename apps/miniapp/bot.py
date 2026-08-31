@@ -12,6 +12,7 @@ from aiogram.types import (
 )
 
 
+
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 MINI_APP_URL = os.getenv('MINI_APP_URL')
 BOT_PROXY = os.getenv('BOT_PROXY')
@@ -37,16 +38,23 @@ dp = Dispatcher()
 @dp.message(CommandStart())
 async def start_handler(message: Message):
     keyboard = InlineKeyboardMarkup(
+
         inline_keyboard=[
+
             [
+
                 InlineKeyboardButton(
-                    text='🏃 Открыть календарь',
-                    web_app=WebAppInfo(
-                        url=MINI_APP_URL,
-                    ),
+
+                    text="🏃 Открыть календарь",
+
+                    url="https://t.me/TestForChatEasyBot?startapp"
+
                 )
+
             ]
+
         ]
+
     )
 
     await message.answer(
