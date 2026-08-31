@@ -105,6 +105,8 @@ async function authenticateTelegramUser() {
         const data =
             await response.json();
 
+        requiredConsents = data.required_consents || [];
+
         console.log("AUTH RESPONSE:", data);
         console.log("REQUIRED CONSENTS:", data.required_consents);
 
