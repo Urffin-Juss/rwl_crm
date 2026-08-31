@@ -66,16 +66,7 @@ if (tg) {
     console.log('Telegram WebApp не найден');
 }
 
-if (tg?.initDataUnsafe?.user) {
 
-    const user = tg.initDataUnsafe.user;
-
-    alert(
-        `Telegram ID: ${user.id}\n` +
-        `Имя: ${user.first_name}\n` +
-        `Username: ${user.username}`
-    );
-}
 
 
 
