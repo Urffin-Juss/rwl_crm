@@ -23,7 +23,8 @@ urlpatterns = [
 
     path('', include('apps.webui.urls')),
 
-    path('miniapp/', include('apps.miniapp.urls')),
+    path('api/', include('apps.miniapp.urls')),
+
 ]
 
 if settings.DEBUG:
