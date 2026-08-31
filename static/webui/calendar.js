@@ -67,6 +67,64 @@ if (tg) {
 }
 
 
+/*
+    ========================================
+    TELEGRAM AUTH
+    ========================================
+*/
+
+async function authenticateTelegramUser() {
+
+    if (!tg?.initData) {
+        console.error(
+            'Telegram initData отсутствует'
+        );
+
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            '/api/auth/telegram/',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
+
+                body: JSON.stringify({
+                    init_data: tg.initData
+                })
+            }
+        );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+            console.error(
+                'Telegram auth error:',
+                data
+            );
+
+            return;
+        }
+
+        console.log(
+            'Telegram auth success:',
+            data
+        );
+
+    } catch (error) {
+        console.error(
+            'Ошибка Telegram auth:',
+            error
+        );
+    }
+}
+
 
 
 /*
@@ -1186,6 +1244,7 @@ function buildDateString(
     START
     ========================================
 */
+authenticateTelegramUser();
 
 loadEvents();
 
