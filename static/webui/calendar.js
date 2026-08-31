@@ -66,7 +66,14 @@ if (tg) {
     console.log('Telegram WebApp не найден');
 }
 
+const tg = window.Telegram?.WebApp;
 
+if (tg) {
+    tg.ready();
+
+    console.log('RAW INIT DATA:');
+    console.log(tg.initData);
+}
 
 
 
