@@ -35,7 +35,7 @@ class ConsentCreateAPIView(APIView):
 
         init_data = serializer.validated_data["init_data"]
 
-        bot_token = os.getenv("BOT_TOKEN")
+        bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
 
         telegram_user = validate_telegram_init_data(
 
