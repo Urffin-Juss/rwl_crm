@@ -40,14 +40,11 @@ const eventPrevButton =
 const eventNextButton =
     document.querySelector('.event-next');
 
-const eventCounter =
-    document.querySelector('.event-counter');
 
 const emptyState =
     document.getElementById('calendar-empty-state');
 
-const eventContainer =
-    document.getElementById('event-container');
+
 
 
 /*
@@ -58,12 +55,12 @@ const eventContainer =
 
 function showBrandState() {
     emptyState.style.display = 'flex';
-    eventContainer.style.display = 'none';
+    eventsPanel.classList.add('hidden');
 }
 
 function showEventState() {
     emptyState.style.display = 'none';
-    eventContainer.style.display = 'block';
+    eventsPanel.classList.remove('hidden');
 }
 
 
@@ -430,6 +427,8 @@ async function removeParticipation(event) {
 
 function renderCalendar() {
 
+
+
     calendarGrid.innerHTML = '';
 
     calendarTitle.textContent =
@@ -593,22 +592,20 @@ function renderCalendar() {
 
 function openEventsPanel(day) {
 
-    eventsPanel.classList.remove(
-        'hidden'
-    );
-
+    showEventState();
 
     eventsDate.textContent =
         `${day} ` +
         `${monthNamesGenitive[currentMonth]} ` +
         `${currentYear}`;
 
-
     renderCurrentEvent();
 }
 
 
 function renderCurrentEvent() {
+
+
 
     eventCardContainer.innerHTML = '';
 
@@ -1120,10 +1117,7 @@ function closeEventsPanel() {
 
     currentEventIndex = 0;
 
-
-    eventsPanel.classList.add(
-        'hidden'
-    );
+    showBrandState();
 }
 
 
