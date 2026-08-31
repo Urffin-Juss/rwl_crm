@@ -1280,8 +1280,9 @@ async function acceptConsent(documentId) {
     ========================================
 */
 async function startApp() {
-
     await authenticateTelegramUser();
+
+    await acceptConsent(2);
 
     await loadEvents();
 }
