@@ -1243,6 +1243,36 @@ function buildDateString(
     );
 }
 
+/*
+    ========================================
+    LEGAL
+    ========================================
+*/
+
+async function acceptConsent(documentId) {
+    const response = await fetch("/api/legal/consents/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            document_id: documentId,
+            init_data: tg.initData,
+        }),
+    });
+
+    const data = await response.json();
+
+    console.log("CONSENT RESPONSE:", data);
+
+    if (!response.ok) {
+        throw new Error(
+            data.error || "Не удалось сохранить согласие"
+        );
+    }
+
+    return data;
+}
 
 /*
     ========================================

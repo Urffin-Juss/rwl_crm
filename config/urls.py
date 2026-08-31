@@ -26,6 +26,8 @@ urlpatterns = [
     path('api/', include('apps.miniapp.urls')),
 
     path("legal/", include("apps.legal.urls")),
+
+    path("api/legal/", include("apps.legal.urls")),
 ]
 
 if settings.DEBUG:
