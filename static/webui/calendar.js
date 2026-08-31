@@ -140,13 +140,21 @@ async function authenticateTelegramUser() {
 
 function showConsentScreen() {
     const gate = document.getElementById("consent-gate");
+    const calendarApp = document.getElementById("calendar-app");
 
     if (requiredConsents.length === 0) {
         gate.style.display = "none";
+        calendarApp.style.display = "block";
         return;
     }
 
     const documentData = requiredConsents[currentConsentIndex];
+
+    calendarApp.style.display = "none";
+    gate.style.display = "flex";
+
+    document.getElementById("consent-progress").textContent =
+        `${currentConsentIndex + 1} / ${requiredConsents.length}`;
 
     document.getElementById("consent-title").textContent =
         documentData.title;
@@ -157,10 +165,10 @@ function showConsentScreen() {
     document.getElementById("consent-link").href =
         documentData.url;
 
-    document.getElementById("consent-progress").textContent =
-        `${currentConsentIndex + 1} / ${requiredConsents.length}`;
+    const acceptButton =
+        document.getElementById("consent-accept-button");
 
-    gate.style.display = "flex";
+    acceptButton.onclick = handleConsentAccept;
 }
 
 
