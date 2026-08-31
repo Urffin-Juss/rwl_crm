@@ -506,3 +506,66 @@ body {
     }
 }
 
+.consent-gate {
+    min-height: 100vh;
+    padding: 24px;
+    box-sizing: border-box;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #0f0f0f;
+}
+
+.consent-card {
+    width: 100%;
+    max-width: 520px;
+}
+
+.consent-progress {
+    margin-bottom: 32px;
+
+    font-size: 14px;
+    opacity: 0.55;
+}
+
+.consent-card h2 {
+    margin: 0 0 16px;
+
+    font-size: 30px;
+    line-height: 1.15;
+}
+
+.consent-version {
+    margin-bottom: 32px;
+
+    font-size: 14px;
+    opacity: 0.55;
+}
+
+.consent-link {
+    display: block;
+
+    margin-bottom: 32px;
+
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.consent-accept-button {
+    width: 100%;
+    min-height: 56px;
+
+    border: 0;
+    border-radius: 16px;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.consent-accept-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
