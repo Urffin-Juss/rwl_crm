@@ -1380,12 +1380,15 @@ async function acceptConsent(documentId) {
 async function startApp() {
     await authenticateTelegramUser();
 
-    console.log("requiredConsents перед gate:", requiredConsents);
+    currentConsentIndex = 0;
 
     if (requiredConsents.length > 0) {
         showConsentScreen();
         return;
     }
+
+    document.getElementById("consent-gate").style.display = "none";
+    document.getElementById("calendar-app").style.display = "block";
 
     await loadEvents();
 }
