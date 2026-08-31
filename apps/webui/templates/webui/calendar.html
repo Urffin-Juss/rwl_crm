@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
 
-    <title>Календарь забегов</title>
+
 
     <link
         rel="stylesheet"
@@ -15,30 +15,12 @@
     >
 </head>
 
-<body>
-<div id="consent-gate" class="consent-gate" style="display: none;">
-    <div class="consent-card">
-        <div class="consent-progress" id="consent-progress"></div>
 
-        <h2 id="consent-title"></h2>
 
-        <p id="consent-version"></p>
 
-        <a
-            id="consent-link"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            Открыть документ
-        </a>
+<title>Календарь забегов</title>
 
-        <button id="consent-accept-button" type="button">
-            Согласен
-        </button>
-    </div>
-</div>
-
+<div id="calendar-app">
 
 <div class="app">
 
@@ -122,6 +104,33 @@
 
     </section>
 
+</div>
+
+</div>
+
+
+
+<div id="consent-gate" class="consent-gate" style="display: none;">
+    <div class="consent-card">
+        <div class="consent-progress" id="consent-progress"></div>
+
+        <h2 id="consent-title"></h2>
+
+        <p id="consent-version"></p>
+
+        <a
+            id="consent-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Открыть документ
+        </a>
+
+        <button id="consent-accept-button" type="button">
+            Согласен
+        </button>
+    </div>
 </div>
 
 <script src="{% static 'webui/calendar.js' %}"></script>
