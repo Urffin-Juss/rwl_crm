@@ -267,7 +267,7 @@ async function setParticipationStatus(
 
                 body: JSON.stringify({
                     event: event.id,
-                    member: testMemberId,
+                    member: currentMemberId,
                     distance: null,
                     status: status,
                     looking_for_company: false
@@ -385,7 +385,7 @@ async function toggleLookingForCompany(event) {
 
                 body: JSON.stringify({
                     event: event.id,
-                    member: testMemberId,
+                    member: currentMemberId,
                     distance: null,
                     status: event.current_member_status,
                     looking_for_company: newValue
