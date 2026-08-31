@@ -4,7 +4,7 @@
     Пока Telegram-auth у нас нет,
     считаем текущим пользователем ClubMember id=2.
 */
-const testMemberId = 2;
+const testMemberId = 1;
 
 
 /*
