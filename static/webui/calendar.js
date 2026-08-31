@@ -172,6 +172,64 @@ function showConsentScreen() {
 }
 
 
+async function handleConsentAccept() {
+    const acceptButton =
+        document.getElementById("consent-accept-button");
+
+    const documentData =
+        requiredConsents[currentConsentIndex];
+
+    console.log(
+        "Accepting document:",
+        documentData.id,
+        documentData.title
+    );
+
+    acceptButton.disabled = true;
+    acceptButton.textContent = "Сохраняем...";
+
+    try {
+        await acceptConsent(documentData.id);
+
+        currentConsentIndex += 1;
+
+        if (currentConsentIndex < requiredConsents.length) {
+            acceptButton.disabled = false;
+            acceptButton.textContent = "Согласен";
+
+            showConsentScreen();
+            return;
+        }
+
+        /*
+         * Все документы из текущего набора приняты.
+         * Проверяем backend ещё раз.
+         */
+        await authenticateTelegramUser();
+
+        if (requiredConsents.length > 0) {
+            currentConsentIndex = 0;
+
+            acceptButton.disabled = false;
+            acceptButton.textContent = "Согласен";
+
+            showConsentScreen();
+            return;
+        }
+
+        document.getElementById("consent-gate").style.display = "none";
+        document.getElementById("calendar-app").style.display = "block";
+
+        await loadEvents();
+
+    } catch (error) {
+        console.error("Consent error:", error);
+
+        acceptButton.disabled = false;
+        acceptButton.textContent = "Попробовать ещё раз";
+    }
+}
+
 /*
     ========================================
     STATE
