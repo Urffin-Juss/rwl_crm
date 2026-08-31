@@ -1,15 +1,15 @@
 from django.shortcuts import render
 import os
-
 from rest_framework.response import Response
-
 from rest_framework.views import APIView
-
 from rest_framework import status
-
 from apps.users.models import ClubMember
-
 from apps.miniapp.telegram_auth import validate_telegram_init_data
+from apps.legal.models import LegalDocument, Consent
+
+
+
+
 
 def miniapp(request):
     return render(request, 'miniapp/index.html')
@@ -76,6 +76,23 @@ class TelegramAuthAPIView(APIView):
 
         )
 
+        required_documents = LegalDocument.objects.filter(
+            is_active=True,
+            is_required=True,
+            requires_acceptance=True
+        )
+
+        accepted_document_ids = Consent.objects.filter(
+            member=member
+        ).values_list(
+            "document_id",
+            flat=True
+        )
+
+        missing_documents = required_documents.exclude(
+            id__in=accepted_document_ids
+        )
+
         return Response(
 
             {
@@ -89,6 +106,24 @@ class TelegramAuthAPIView(APIView):
                 "first_name": member.first_name,
 
                 "created": created,
+
+                "required_consents": [
+
+                    {
+
+                        "id": document.id,
+
+                        "title": document.title,
+
+                        "version": document.version,
+
+                        "url": document.external_url,
+
+                    }
+
+                    for document in missing_documents
+
+                ],
 
             }
 
