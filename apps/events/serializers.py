@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from apps.events.models import EventDistance, Event, EventParticipation
+from apps.users.models import ClubMember
 
 
 class EventDistanceSerializer(serializers.ModelSerializer):
@@ -178,3 +179,28 @@ class EventParticipationSerializer(serializers.ModelSerializer):
         )
 
         return participation
+
+
+class EvenParticipantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClubMember
+        fields = (
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'photo_url',
+            'display_name',
+        )
+
+    def get_display_name(self, obj):
+
+        full_name = f'{obj.first_name} {obj.last_name}'.strip()
+
+        if full_name:
+            return full_name
+
+        if obj.username:
+            return f'@{obj.username}'
+
+        return "Участник клуба"
