@@ -643,6 +643,92 @@ async function loadEventParticipants(eventId, category) {
     return data;
 }
 
+async function toggleSocialPanel(eventId, category) {
+    const panel = document.getElementById(
+        `social-panel-${eventId}`
+    );
+
+    if (!panel) {
+        return;
+    }
+
+    /*
+     * Нажали повторно на уже открытую категорию —
+     * просто сворачиваем панель.
+     */
+    if (
+        openSocialEventId === eventId &&
+        openSocialCategory === category
+    ) {
+        panel.innerHTML = "";
+        panel.style.display = "none";
+
+        openSocialEventId = null;
+        openSocialCategory = null;
+
+        return;
+    }
+
+    openSocialEventId = eventId;
+    openSocialCategory = category;
+
+    panel.style.display = "block";
+    panel.innerHTML = "<div>Загрузка...</div>";
+
+    try {
+        const data = await loadEventParticipants(
+            eventId,
+            category
+        );
+
+        renderSocialParticipants(
+            panel,
+            data.participants
+        );
+
+    } catch (error) {
+        console.error(error);
+
+        panel.innerHTML =
+            "<div>Не удалось загрузить участников</div>";
+    }
+}
+
+function renderSocialParticipants(panel, participants) {
+    if (participants.length === 0) {
+        panel.innerHTML =
+            "<div>Пока никого нет</div>";
+
+        return;
+    }
+
+    panel.innerHTML = participants
+        .map((participant) => {
+            const username = participant.username
+                ? `@${participant.username}`
+                : "";
+
+            return `
+                <div class="social-participant">
+                    <div class="social-participant-name">
+                        ${participant.display_name}
+                    </div>
+
+                    ${
+                        username
+                            ? `
+                                <div class="social-participant-username">
+                                    ${username}
+                                </div>
+                            `
+                            : ""
+                    }
+                </div>
+            `;
+        })
+        .join("");
+}
+
 /*
     ========================================
     CALENDAR
