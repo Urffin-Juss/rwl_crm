@@ -16,26 +16,52 @@
 </head>
 
 <div id="consent-gate" class="consent-gate" style="display: none;">
+
     <div class="consent-card">
-        <div class="consent-progress" id="consent-progress"></div>
 
-        <h2 id="consent-title"></h2>
+        <div class="consent-progress">
+            <div id="consent-progress-bars" class="consent-progress-bars"></div>
+            <span id="consent-progress-text" class="consent-progress-text"></span>
+        </div>
 
-        <p id="consent-version"></p>
+        <div class="consent-content">
+            <div class="consent-label">
+                RUN WITH LOVE · ДОКУМЕНТЫ
+            </div>
 
-        <a
-            id="consent-link"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            Открыть документ
-        </a>
+            <h1 id="consent-title" class="consent-title"></h1>
 
-        <button id="consent-accept-button" type="button">
-            Согласен
-        </button>
+            <div id="consent-version" class="consent-version"></div>
+
+            <p class="consent-description">
+                Перед продолжением ознакомьтесь с документом
+                и подтвердите согласие отдельно.
+            </p>
+        </div>
+
+        <div class="consent-actions">
+            <a
+                id="consent-link"
+                class="consent-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <span>Открыть документ</span>
+                <span>↗</span>
+            </a>
+
+            <button
+                id="consent-accept-button"
+                class="consent-accept-button"
+                type="button"
+            >
+                Согласен
+            </button>
+        </div>
+
     </div>
+
 </div>
 
 
