@@ -134,7 +134,7 @@ async function authenticateTelegramUser() {
 
         return currentMemberId;
 
-        requiredConsents = data.required_consents || [];
+
 
     } catch (error) {
         console.error(
