@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.events.models import Event, EventParticipation
 from apps.events.serializers import EventSerializer, EventParticipationSerializer
+from apps.events.serializers import EventParticipantSerializer
 
 
 

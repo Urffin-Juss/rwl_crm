@@ -181,7 +181,7 @@ class EventParticipationSerializer(serializers.ModelSerializer):
         return participation
 
 
-class EvenParticipantSerializer(serializers.ModelSerializer):
+class EventParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClubMember
         fields = (
