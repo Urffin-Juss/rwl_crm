@@ -717,6 +717,39 @@ async function toggleSocialPanel(eventId, category) {
             category
         );
 
+        const event =
+            events.find(
+                event => event.id === eventId
+            );
+
+        if (event) {
+
+            if (category === 'going') {
+                event.going_count =
+                    data.count;
+
+                activeButton.textContent =
+                    `👥 Едут: ${data.count}`;
+            }
+
+            if (category === 'thinking') {
+                event.thinking_count =
+                    data.count;
+
+                activeButton.textContent =
+                    `🤔 Думают: ${data.count}`;
+            }
+
+            if (category === 'company') {
+                event.looking_for_company_count =
+                    data.count;
+
+                activeButton.textContent =
+                    `🙋 Ищут компанию: ${data.count}`;
+            }
+        }
+
+
         renderSocialParticipants(
             panel,
             data.participants
