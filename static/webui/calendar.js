@@ -50,11 +50,7 @@ const eventNextButton =
 const emptyState =
     document.getElementById('calendar-empty-state');
 
-const socialTabs =
-    panel.previousElementSibling;
 
-const tabButtons =
-    socialTabs.querySelectorAll('button');
 
 
 
@@ -651,24 +647,6 @@ async function loadEventParticipants(eventId, category) {
 
 async function toggleSocialPanel(eventId, category) {
 
-    const activeButton =
-        socialTabs.querySelector(
-            `[data-category="${category}"]`
-        );
-
-    if (activeButton) {
-        activeButton.classList.add('active');
-    }
-
-    tabButtons.forEach(
-
-        function (button) {
-
-            button.classList.remove('active');
-
-        }
-
-    );
 
     const panel = document.getElementById(
         `social-panel-${eventId}`
@@ -677,7 +655,11 @@ async function toggleSocialPanel(eventId, category) {
     if (!panel) {
         return;
     }
+    const socialTabs =
+        panel.previousElementSibling;
 
+    const tabButtons =
+        socialTabs.querySelectorAll('button');
     /*
      * Нажали повторно на уже открытую категорию —
      * просто сворачиваем панель.
@@ -703,6 +685,29 @@ async function toggleSocialPanel(eventId, category) {
             button.classList.remove('active');
         }
     );
+
+
+
+    const activeButton =
+        socialTabs.querySelector(
+            `[data-category="${category}"]`
+        );
+
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+
+    tabButtons.forEach(
+
+        function (button) {
+
+            button.classList.remove('active');
+
+        }
+
+    );
+
+
 
     panel.style.display = "block";
     panel.innerHTML = "<div>Загрузка...</div>";
