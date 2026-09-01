@@ -697,15 +697,7 @@ async function toggleSocialPanel(eventId, category) {
         activeButton.classList.add('active');
     }
 
-    tabButtons.forEach(
 
-        function (button) {
-
-            button.classList.remove('active');
-
-        }
-
-    );
 
 
 
