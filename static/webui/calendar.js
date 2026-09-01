@@ -1412,15 +1412,6 @@ eventCardContainer.appendChild(
 
 updateCarouselControls();
 
-
-
-
-    eventCardContainer.appendChild(
-        card
-    );
-
-
-    updateCarouselControls();
 }
 
 
