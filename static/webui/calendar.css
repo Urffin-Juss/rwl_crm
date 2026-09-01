@@ -669,3 +669,117 @@ body {
     opacity: 0.55;
     cursor: default;
 }
+
+.event-social-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 8px;
+
+    margin-top: 16px;
+}
+
+.event-social-tabs button {
+    min-height: 48px;
+
+    padding: 8px 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.72);
+
+    font-size: 13px;
+    line-height: 1.2;
+
+    cursor: pointer;
+}
+
+.event-social-tabs button.active {
+    border-color: rgba(255, 45, 45, 0.55);
+
+    background: rgba(255, 45, 45, 0.12);
+    color: #ffffff;
+}
+
+.event-social-panel {
+    margin-top: 12px;
+    padding-top: 14px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.social-participant {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px 0;
+}
+
+.social-participant + .social-participant {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.social-participant-avatar {
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    overflow: hidden;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.social-participant-avatar img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.social-participant-avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.social-participant-info {
+    min-width: 0;
+}
+
+.social-participant-name {
+    font-size: 15px;
+    font-weight: 600;
+
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.social-participant-username {
+    margin-top: 2px;
+
+    font-size: 13px;
+
+    color: rgba(255, 255, 255, 0.42);
+}
+
+.social-empty {
+    padding: 14px 0;
+
+    font-size: 14px;
+
+    color: rgba(255, 255, 255, 0.45);
+}

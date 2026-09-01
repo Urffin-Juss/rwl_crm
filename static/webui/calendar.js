@@ -696,8 +696,11 @@ async function toggleSocialPanel(eventId, category) {
 
 function renderSocialParticipants(panel, participants) {
     if (participants.length === 0) {
-        panel.innerHTML =
-            "<div>Пока никого нет</div>";
+        panel.innerHTML = `
+            <div class="social-empty">
+                Пока никого нет
+            </div>
+        `;
 
         return;
     }
@@ -708,21 +711,47 @@ function renderSocialParticipants(panel, participants) {
                 ? `@${participant.username}`
                 : "";
 
+            const firstLetter =
+                participant.display_name
+                    ? participant.display_name.charAt(0).toUpperCase()
+                    : "?";
+
+            const avatar = participant.photo_url
+                ? `
+                    <div class="social-participant-avatar">
+                        <img
+                            src="${participant.photo_url}"
+                            alt=""
+                        >
+                    </div>
+                `
+                : `
+                    <div class="social-participant-avatar">
+                        <div class="social-participant-avatar-placeholder">
+                            ${firstLetter}
+                        </div>
+                    </div>
+                `;
+
             return `
                 <div class="social-participant">
-                    <div class="social-participant-name">
-                        ${participant.display_name}
-                    </div>
+                    ${avatar}
 
-                    ${
-                        username
-                            ? `
-                                <div class="social-participant-username">
-                                    ${username}
-                                </div>
-                            `
-                            : ""
-                    }
+                    <div class="social-participant-info">
+                        <div class="social-participant-name">
+                            ${participant.display_name}
+                        </div>
+
+                        ${
+                            username
+                                ? `
+                                    <div class="social-participant-username">
+                                        ${username}
+                                    </div>
+                                `
+                                : ""
+                        }
+                    </div>
                 </div>
             `;
         })
