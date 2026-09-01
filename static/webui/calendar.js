@@ -650,6 +650,16 @@ async function loadEventParticipants(eventId, category) {
 }
 
 async function toggleSocialPanel(eventId, category) {
+
+    const activeButton =
+        socialTabs.querySelector(
+            `[data-category="${category}"]`
+        );
+
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+
     const panel = document.getElementById(
         `social-panel-${eventId}`
     );
@@ -677,6 +687,12 @@ async function toggleSocialPanel(eventId, category) {
 
     openSocialEventId = eventId;
     openSocialCategory = category;
+
+    tabButtons.forEach(
+        function (button) {
+            button.classList.remove('active');
+        }
+    );
 
     panel.style.display = "block";
     panel.innerHTML = "<div>Загрузка...</div>";
@@ -1081,6 +1097,8 @@ function renderCurrentEvent() {
     const goingSocialButton =
         document.createElement('button');
 
+
+
     goingSocialButton.type =
         'button';
 
@@ -1100,6 +1118,9 @@ function renderCurrentEvent() {
     socialTabs.appendChild(
         goingSocialButton
     );
+
+    goingSocialButton.dataset.category =
+        'going';
 
 
     /*
@@ -1129,6 +1150,9 @@ function renderCurrentEvent() {
         thinkingSocialButton
     );
 
+    thinkingSocialButton.dataset.category =
+        'thinking';
+
 
     /*
         Ищут компанию.
@@ -1156,6 +1180,9 @@ function renderCurrentEvent() {
     socialTabs.appendChild(
         companySocialButton
     );
+
+    companySocialButton.dataset.category =
+        'company';
 
 
     /*
