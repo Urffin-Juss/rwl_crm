@@ -50,6 +50,12 @@ const eventNextButton =
 const emptyState =
     document.getElementById('calendar-empty-state');
 
+const socialTabs =
+    panel.previousElementSibling;
+
+const tabButtons =
+    socialTabs.querySelectorAll('button');
+
 
 
 
