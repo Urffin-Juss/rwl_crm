@@ -394,7 +394,8 @@ async function setParticipationStatus(
                     member: currentMemberId,
                     distance: null,
                     status: status,
-                    looking_for_company: false
+                    looking_for_company:
+                        event.current_member_looking_for_company
                 })
             }
         );
@@ -476,7 +477,7 @@ async function setParticipationStatus(
             status;
 
 
-        renderCurrentEvent();
+        await refreshEventCard(event);
 
     } catch (error) {
         console.error(
@@ -549,7 +550,7 @@ async function toggleLookingForCompany(event) {
         event.current_member_looking_for_company =
             newValue;
 
-        renderCurrentEvent();
+        await refreshEventCard(event);
 
     } catch (error) {
         console.error(
@@ -613,7 +614,7 @@ async function removeParticipation(event) {
         event.current_participation_id = null;
         event.current_member_looking_for_company = false;
 
-        renderCurrentEvent();
+        await refreshEventCard(event);
 
     } catch (error) {
         console.error(
