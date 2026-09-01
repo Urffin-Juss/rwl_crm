@@ -1032,49 +1032,36 @@ function renderCurrentEvent() {
         Счётчики участия.
     */
 
-    const participationInfo =
-        document.createElement('div');
+    <div class="event-social-tabs">
 
-    participationInfo.className =
-        'participation-info';
+        <button
+            type="button"
+            onclick="toggleSocialPanel(${event.id}, 'going')"
+        >
+            👥 Едут: ${event.going_count}
+        </button>
 
+        <button
+            type="button"
+            onclick="toggleSocialPanel(${event.id}, 'thinking')"
+        >
+            🤔 Думают: ${event.thinking_count}
+        </button>
 
-    const goingInfo =
-        document.createElement('span');
+        <button
+            type="button"
+            onclick="toggleSocialPanel(${event.id}, 'company')"
+        >
+            🙋 Ищут компанию: ${event.looking_for_company_count}
+        </button>
 
-    goingInfo.textContent =
-        `👥 Едут: ${event.going_count}`;
+    </div>
 
-
-    const thinkingInfo =
-        document.createElement('span');
-
-    thinkingInfo.textContent =
-        `🤔 Думают: ${event.thinking_count}`;
-
-    const companyInfo =
-        document.createElement('span');
-
-    companyInfo.textContent =
-        `🙋 Ищут компанию: ${event.looking_for_company_count}`;
-
-
-    participationInfo.appendChild(
-        goingInfo
-    );
-
-    participationInfo.appendChild(
-        thinkingInfo
-    );
-
-
-    card.appendChild(
-        participationInfo
-    );
-
-    participationInfo.appendChild(
-        companyInfo
-    );
+    <div
+        id="social-panel-${event.id}"
+        class="event-social-panel"
+        style="display: none;"
+    ></div>
 
 
     /*
