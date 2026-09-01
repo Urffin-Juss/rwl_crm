@@ -153,8 +153,25 @@ function showConsentScreen() {
     calendarApp.style.display = "none";
     gate.style.display = "flex";
 
-    document.getElementById("consent-progress").textContent =
-        `${currentConsentIndex + 1} / ${requiredConsents.length}`;
+    const progressBars =
+    document.getElementById("consent-progress-bars");
+
+    progressBars.innerHTML = "";
+
+    requiredConsents.forEach((_, index) => {
+        const bar = document.createElement("div");
+
+        bar.className = "consent-progress-bar";
+
+        if (index <= currentConsentIndex) {
+            bar.classList.add("active");
+        }
+
+        progressBars.appendChild(bar);
+    });
+
+document.getElementById("consent-progress-text").textContent =
+    `${currentConsentIndex + 1} из ${requiredConsents.length}`;
 
     document.getElementById("consent-title").textContent =
         documentData.title;
