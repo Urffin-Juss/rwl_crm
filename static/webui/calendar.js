@@ -792,7 +792,47 @@ function renderSocialParticipants(panel, participants) {
         })
         .join("");
 }
+async function refreshEventCard(event) {
 
+    const shouldRestoreSocialPanel =
+        openSocialEventId === event.id &&
+        openSocialCategory !== null;
+
+    const categoryToRestore =
+        openSocialCategory;
+
+
+    /*
+        Перерисовываем карточку
+        с новыми счётчиками и кнопками.
+    */
+
+    renderCurrentEvent();
+
+
+    /*
+        Если social-панель была открыта,
+        открываем ту же категорию заново.
+    */
+
+    if (shouldRestoreSocialPanel) {
+
+        /*
+            Сбрасываем состояние,
+            иначе toggleSocialPanel решит,
+            что мы повторно нажали активный таб
+            и закроет его.
+        */
+
+        openSocialEventId = null;
+        openSocialCategory = null;
+
+        await toggleSocialPanel(
+            event.id,
+            categoryToRestore
+        );
+    }
+}
 /*
     ========================================
     CALENDAR
