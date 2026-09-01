@@ -1577,7 +1577,7 @@ async function acceptConsent(documentId) {
 
 /*
     ========================================
-    START
+    START (Для коммита)
     ========================================
 */
 async function startApp() {
