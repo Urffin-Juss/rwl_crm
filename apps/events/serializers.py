@@ -182,6 +182,9 @@ class EventParticipationSerializer(serializers.ModelSerializer):
 
 
 class EventParticipantSerializer(serializers.ModelSerializer):
+
+    display_name = serializers.SerializerMethodField()
+
     class Meta:
         model = ClubMember
         fields = (
