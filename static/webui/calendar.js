@@ -8,6 +8,10 @@ let requiredConsents = [];
 
 let currentConsentIndex = 0;
 
+let openSocialEventId = null;
+
+let openSocialCategory = null;
+
 
 /*
     ========================================
@@ -617,7 +621,27 @@ async function removeParticipation(event) {
     }
 }
 
+/*
+    ========================================
+    SOCIAL MECHANICS
+    ========================================
+*/
 
+
+async function loadEventParticipants(eventId, category) {
+    const response = await fetch(
+        `/api/events/${eventId}/participants/?category=${category}`
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        console.error("Participants API error:", data);
+        throw new Error("Не удалось загрузить участников");
+    }
+
+    return data;
+}
 
 /*
     ========================================
