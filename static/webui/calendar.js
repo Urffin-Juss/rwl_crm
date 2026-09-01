@@ -1032,36 +1032,125 @@ function renderCurrentEvent() {
         Счётчики участия.
     */
 
-    <div class="event-social-tabs">
+    const socialTabs =
+        document.createElement('div');
 
-        <button
-            type="button"
-            onclick="toggleSocialPanel(${event.id}, 'going')"
-        >
-            👥 Едут: ${event.going_count}
-        </button>
+    socialTabs.className =
+        'event-social-tabs';
 
-        <button
-            type="button"
-            onclick="toggleSocialPanel(${event.id}, 'thinking')"
-        >
-            🤔 Думают: ${event.thinking_count}
-        </button>
 
-        <button
-            type="button"
-            onclick="toggleSocialPanel(${event.id}, 'company')"
-        >
-            🙋 Ищут компанию: ${event.looking_for_company_count}
-        </button>
+    /*
+        Едут.
+    */
 
-    </div>
+    const goingSocialButton =
+        document.createElement('button');
 
-    <div
-        id="social-panel-${event.id}"
-        class="event-social-panel"
-        style="display: none;"
-    ></div>
+    goingSocialButton.type =
+        'button';
+
+    goingSocialButton.textContent =
+        `👥 Едут: ${event.going_count}`;
+
+    goingSocialButton.addEventListener(
+        'click',
+        function () {
+            toggleSocialPanel(
+                event.id,
+                'going'
+            );
+        }
+    );
+
+    socialTabs.appendChild(
+        goingSocialButton
+    );
+
+
+    /*
+        Думают.
+    */
+
+    const thinkingSocialButton =
+        document.createElement('button');
+
+    thinkingSocialButton.type =
+        'button';
+
+    thinkingSocialButton.textContent =
+        `🤔 Думают: ${event.thinking_count}`;
+
+    thinkingSocialButton.addEventListener(
+        'click',
+        function () {
+            toggleSocialPanel(
+                event.id,
+                'thinking'
+            );
+        }
+    );
+
+    socialTabs.appendChild(
+        thinkingSocialButton
+    );
+
+
+    /*
+        Ищут компанию.
+    */
+
+    const companySocialButton =
+        document.createElement('button');
+
+    companySocialButton.type =
+        'button';
+
+    companySocialButton.textContent =
+        `🙋 Ищут компанию: ${event.looking_for_company_count}`;
+
+    companySocialButton.addEventListener(
+        'click',
+        function () {
+            toggleSocialPanel(
+                event.id,
+                'company'
+            );
+        }
+    );
+
+    socialTabs.appendChild(
+        companySocialButton
+    );
+
+
+    /*
+        Добавляем вкладки в карточку.
+    */
+
+    card.appendChild(
+        socialTabs
+    );
+
+
+    /*
+        Панель со списком людей.
+    */
+
+    const socialPanel =
+        document.createElement('div');
+
+    socialPanel.id =
+        `social-panel-${event.id}`;
+
+    socialPanel.className =
+        'event-social-panel';
+
+    socialPanel.style.display =
+        'none';
+
+    card.appendChild(
+        socialPanel
+    );
 
 
     /*
