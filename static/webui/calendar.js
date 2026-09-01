@@ -671,6 +671,12 @@ async function toggleSocialPanel(eventId, category) {
         panel.innerHTML = "";
         panel.style.display = "none";
 
+        tabButtons.forEach(
+            function (button) {
+            button.classList.remove('active');
+            }
+        );
+
         openSocialEventId = null;
         openSocialCategory = null;
 
