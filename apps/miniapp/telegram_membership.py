@@ -4,7 +4,7 @@ from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 
 
-def check_chet_membership(bot_token, chat_id, user_id):
+def check_chat_membership(bot_token, chat_id, user_id):
 
     if not bot_token or not chat_id or not user_id:
         return {
