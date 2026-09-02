@@ -1,6 +1,8 @@
 import requests
 from typing import Any, Dict, List
+from datetime import datetime
 
+from apps.events.models import Event
 
 
 def fetch_events(
@@ -126,3 +128,20 @@ def parse_event(
     return clean_event
 
 
+def save_event(clean_event: Dict[str, Any]):
+
+    source = "russiarunning"
+    external_id = clean_event.get("external_id")
+
+    event, _ = Event.objects.update_or_create(
+        source=source,
+        external_id=external_id,
+        defaults={
+            "name": clean_event.get("name"),
+            "city": clean_event.get("city"),
+            "date": datetime.fromisoformat(clean_event.get("date")).date(),
+        }
+
+    )
+
+    return event
