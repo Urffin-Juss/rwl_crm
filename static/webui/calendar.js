@@ -12,6 +12,12 @@ let openSocialEventId = null;
 
 let openSocialCategory = null;
 
+let isClubMember = null;
+
+let membershipStatus = null;
+
+let membershipError = null;
+
 
 /*
     ========================================
@@ -110,6 +116,15 @@ async function authenticateTelegramUser() {
 
         const data =
             await response.json();
+
+        isClubMember =
+            data.is_club_member;
+
+        membershipStatus =
+            data.membership_status;
+
+        membershipError =
+            data.membership_error;
 
         requiredConsents = data.required_consents || [];
 
@@ -1715,6 +1730,26 @@ async function acceptConsent(documentId) {
     return data;
 }
 
+function showMembershipGate() {
+    document.getElementById(
+        "consent-gate"
+    ).style.display = "none";
+
+    document.getElementById(
+        "calendar-app"
+    ).style.display = "none";
+
+    document.getElementById(
+        "membership-gate"
+    ).style.display = "flex";
+
+    console.log(
+        "Membership denied:",
+        membershipStatus,
+        membershipError
+    );
+}
+
 /*
     ========================================
     START (Для коммита)
@@ -1723,6 +1758,10 @@ async function acceptConsent(documentId) {
 async function startApp() {
     await authenticateTelegramUser();
 
+    /*
+        Сначала юридические согласия.
+    */
+
     currentConsentIndex = 0;
 
     if (requiredConsents.length > 0) {
@@ -1730,11 +1769,33 @@ async function startApp() {
         return;
     }
 
-    document.getElementById("consent-gate").style.display = "none";
-    document.getElementById("calendar-app").style.display = "block";
+
+    /*
+        Потом проверка членства в стае.
+    */
+
+    if (!isClubMember) {
+        showMembershipGate();
+        return;
+    }
+
+
+    /*
+        Всё пройдено —
+        открываем календарь.
+    */
+
+    document.getElementById(
+        "consent-gate"
+    ).style.display = "none";
+
+    document.getElementById(
+        "membership-gate"
+    ).style.display = "none";
+
+    document.getElementById(
+        "calendar-app"
+    ).style.display = "block";
 
     await loadEvents();
 }
-
-startApp();
-
