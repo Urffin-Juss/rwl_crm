@@ -10,6 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 
+CLUB_CHAT_ID = os.getenv("CLUB_CHAT_ID")
+
+
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('1', 'true', 'yes', 'on')
 
 ALLOWED_HOSTS = [h for h in os.getenv('ALLOWED_HOSTS', '').split(',') if h]
