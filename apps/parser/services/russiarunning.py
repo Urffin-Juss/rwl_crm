@@ -2,7 +2,9 @@ import requests
 from typing import Any, Dict, List
 from datetime import datetime
 
-from apps.events.models import Event
+from eventlet import event
+
+from apps.events.models import Event, EventDistance
 
 
 def fetch_events(
@@ -144,4 +146,20 @@ def save_event(clean_event: Dict[str, Any]):
 
     )
 
+    save_distances(event, clean_event)
     return event
+
+
+def save_distances(event, clean_event: Dict[str, Any]) -> None
+    for distance in clean_event.get("distances", []):
+        EventDistance.objects.update_or_create(
+            event=event,
+            external_id=distance.get("external_id"),
+            defaults={
+                "name": distance.get("name"),
+                "distance": distance.get("distance"),
+            },
+        )
+
+
+
