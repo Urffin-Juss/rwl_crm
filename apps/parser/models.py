@@ -32,7 +32,7 @@ class ParserRawEvent(models.Model):
         related_name='raw_events',
     )
 
-    external_id = mmodels.CharField(
+    external_id = models.CharField(
         max_length=255,
         blank=True,
     )
