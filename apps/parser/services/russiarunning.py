@@ -89,6 +89,11 @@ def cleanup_distances(
         if race_item.get("disciplineCode") != "run":
             continue
 
+        code = race_item.get("code", "")
+
+        if str(code).startswith("online_"):
+            continue
+
         clean_item = {
             "external_id": race_item.get("id"),
             "name": race_item.get("name"),
