@@ -150,7 +150,7 @@ def save_event(clean_event: Dict[str, Any]):
     return event
 
 
-def save_distances(event, clean_event: Dict[str, Any]) -> None
+def save_distances(event, clean_event: Dict[str, Any]) -> None:
     for distance in clean_event.get("distances", []):
         EventDistance.objects.update_or_create(
             event=event,
