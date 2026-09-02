@@ -290,20 +290,12 @@ async function handleConsentAccept() {
          */
         await authenticateTelegramUser();
 
-        if (requiredConsents.length > 0) {
-            currentConsentIndex = 0;
+        await authenticateTelegramUser();
 
-            acceptButton.disabled = false;
-            acceptButton.textContent = "Согласен";
+        acceptButton.disabled = false;
+        acceptButton.textContent = "Согласен";
 
-            showConsentScreen();
-            return;
-        }
-
-        document.getElementById("consent-gate").style.display = "none";
-        document.getElementById("calendar-app").style.display = "block";
-
-        await loadEvents();
+        await routeAfterAuth();
 
     } catch (error) {
         console.error("Consent error:", error);
