@@ -1,6 +1,8 @@
 import requests
 from typing import Any, Dict, List
 
+from django.db.models import JSONField
+
 
 def fetch_events(
     take: int = 12,
@@ -69,3 +71,71 @@ def fetch_events(
         )
 
     return events
+
+
+def parse_event(event: Dict[str, Any]) -> Dict[str, Any]:
+
+    if not isinstance(event, dict):
+
+        raise ValueError("Событие должно быть словарём")
+
+    return {
+
+        "external_id": event.get("id"),
+
+        "name": event.get("title"),
+
+        "city": event.get("cityName") or event.get("place") or "",
+
+        "date": event.get("beginDate"),
+
+        "distances": event.get("raceItems", []),
+
+    }
+
+from typing import Any, Dict, List
+
+
+def cleanup_distances(
+    race_items: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """
+    Очищает список дистанций RussiaRunning
+    и оставляет только нужные нам поля.
+    """
+
+    clean_data = []
+
+    for race_item in race_items:
+        clean_item = {
+            "external_id": race_item.get("id"),
+            "name": race_item.get("name"),
+            "distance": race_item.get("distance"),
+        }
+
+        clean_data.append(clean_item)
+
+    return clean_data
+
+
+def parse_event(
+    event: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Преобразует событие RussiaRunning
+    в формат, который нужен нашему приложению.
+    """
+
+    clean_event = {
+        "external_id": event.get("id"),
+        "name": event.get("title"),
+        "city": event.get("cityName") or event.get("place") or "",
+        "date": event.get("beginDate"),
+        "distances": cleanup_distances(
+            event.get("raceItems", [])
+        ),
+    }
+
+    return clean_event
+
+
