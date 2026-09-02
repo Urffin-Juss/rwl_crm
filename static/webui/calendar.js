@@ -159,6 +159,51 @@ async function authenticateTelegramUser() {
     }
 }
 
+async function routeAfterAuth() {
+
+    /*
+        1. Сначала Legal Gate.
+    */
+
+    currentConsentIndex = 0;
+
+    if (requiredConsents.length > 0) {
+        showConsentScreen();
+        return;
+    }
+
+
+    /*
+        2. Потом Membership Gate.
+    */
+
+    if (!isClubMember) {
+        showMembershipGate();
+        return;
+    }
+
+
+    /*
+        3. Только после обоих gate —
+        календарь.
+    */
+
+    document.getElementById(
+        "consent-gate"
+    ).style.display = "none";
+
+    document.getElementById(
+        "membership-gate"
+    ).style.display = "none";
+
+    document.getElementById(
+        "calendar-app"
+    ).style.display = "block";
+
+    await loadEvents();
+}
+
+
 function showConsentScreen() {
     const gate = document.getElementById("consent-gate");
     const calendarApp = document.getElementById("calendar-app");
@@ -1757,45 +1802,7 @@ function showMembershipGate() {
 */
 async function startApp() {
     await authenticateTelegramUser();
-
-    /*
-        Сначала юридические согласия.
-    */
-
-    currentConsentIndex = 0;
-
-    if (requiredConsents.length > 0) {
-        showConsentScreen();
-        return;
-    }
-
-
-    /*
-        Потом проверка членства в стае.
-    */
-
-    if (!isClubMember) {
-        showMembershipGate();
-        return;
-    }
-
-
-    /*
-        Всё пройдено —
-        открываем календарь.
-    */
-
-    document.getElementById(
-        "consent-gate"
-    ).style.display = "none";
-
-    document.getElementById(
-        "membership-gate"
-    ).style.display = "none";
-
-    document.getElementById(
-        "calendar-app"
-    ).style.display = "block";
-
-    await loadEvents();
+    await routeAfterAuth();
 }
+
+startApp();
