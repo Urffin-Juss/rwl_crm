@@ -1789,7 +1789,7 @@ function showMembershipGate() {
 
 /*
     ========================================
-    START
+    START (for commit)
     ========================================
 */
 async function startApp() {
