@@ -6,6 +6,7 @@ from rest_framework import status
 from apps.users.models import ClubMember
 from apps.miniapp.telegram_auth import validate_telegram_init_data
 from apps.legal.models import LegalDocument, Consent
+from apps.miniapp.telegram_membership import check_chat_membership
 
 
 
@@ -76,6 +77,14 @@ class TelegramAuthAPIView(APIView):
 
         )
 
+        membership = check_chat_membership(
+            os.getenv("TELEGRAM_BOT_TOKEN"),
+            os.getenv("BOT_PROXY"),
+            os.getenv("CLUB_CHAT_ID"),
+            member.telegram_id,
+        )
+
+
         required_documents = LegalDocument.objects.filter(
             is_active=True,
             is_required=True,
@@ -125,6 +134,11 @@ class TelegramAuthAPIView(APIView):
 
                 ],
 
+                "is_club_member": membership["is_member"],
+
+                "membership_status": membership["status"],
+
+                "membership_error": membership["error"],
             }
 
         )
