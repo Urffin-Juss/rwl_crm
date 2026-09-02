@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'apps.webui',
     'apps.miniapp',
     'apps.legal',
+    'apps.parser',
 
     
 ]
