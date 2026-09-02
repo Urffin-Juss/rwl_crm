@@ -1,7 +1,6 @@
 import requests
 from typing import Any, Dict, List
 
-from django.db.models import JSONField
 
 
 def fetch_events(
@@ -73,27 +72,7 @@ def fetch_events(
     return events
 
 
-def parse_event(event: Dict[str, Any]) -> Dict[str, Any]:
 
-    if not isinstance(event, dict):
-
-        raise ValueError("Событие должно быть словарём")
-
-    return {
-
-        "external_id": event.get("id"),
-
-        "name": event.get("title"),
-
-        "city": event.get("cityName") or event.get("place") or "",
-
-        "date": event.get("beginDate"),
-
-        "distances": event.get("raceItems", []),
-
-    }
-
-from typing import Any, Dict, List
 
 
 def cleanup_distances(
@@ -107,6 +86,9 @@ def cleanup_distances(
     clean_data = []
 
     for race_item in race_items:
+        if race_item.get("disciplineCode") != "run":
+            continue
+
         clean_item = {
             "external_id": race_item.get("id"),
             "name": race_item.get("name"),
