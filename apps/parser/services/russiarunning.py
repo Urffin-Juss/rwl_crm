@@ -153,3 +153,26 @@ def import_events(events: List[Dict[str, Any]]) -> None:
         save_event(clean_event)
 
 
+
+
+def fetch_all_events(
+    take: int = 12,
+    skip: int = 0,
+) -> List[Dict[str, Any]]:
+
+    all_events = []
+
+    while True:
+        page = fetch_events(
+            take=take,
+            skip=skip,
+        )
+
+        if not page:
+            break
+
+        all_events.extend(page)
+
+        skip += take
+
+    return all_events
