@@ -163,3 +163,9 @@ def save_distances(event, clean_event: Dict[str, Any]) -> None:
 
 
 
+def import_event(events: List[Dict[str, Any]]) -> None:
+    for raw_event in events:
+        clean_event = parse_event(raw_event)
+        save_event(clean_event)
+
+
