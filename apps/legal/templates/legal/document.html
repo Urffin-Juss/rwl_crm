@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if document %}
+            {{ document.title }}
+        {% else %}
+            Документ не найден
+        {% endif %}
+    </title>
+</head>
+
+<body>
+
+{% if document %}
+
+    <h1>{{ document.title }}</h1>
+
+    <p>Версия: {{ document.version }}</p>
+
+    {% if document.file %}
+        <p>
+            <a href="{{ document.file.url }}">
+                Открыть документ
+            </a>
+        </p>
+    {% else %}
+        <p>Файл документа отсутствует.</p>
+    {% endif %}
+
+{% else %}
+
+    <h1>Документ не найден</h1>
+    <p>Актуальная версия документа сейчас недоступна.</p>
+
+{% endif %}
+
+</body>
+</html>

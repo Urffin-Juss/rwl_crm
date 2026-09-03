@@ -8,16 +8,37 @@ from apps.miniapp.telegram_auth import validate_telegram_init_data
 from apps.users.models import ClubMember
 from django.shortcuts import render
 
+
+def render_legal_document(request, slug):
+    document = (
+        LegalDocument.objects
+        .filter(
+            slug=slug,
+            is_active=True,
+        )
+        .order_by("-published_at", "-id")
+        .first()
+    )
+
+    return render(
+        request,
+        "legal/document.html",
+        {
+            "document": document,
+        },
+    )
+
+
 def privacy(request):
-    return render(request, "legal/privacy.html")
+    return render_legal_document(request, "privacy-policy")
 
 
 def consent(request):
-    return render(request, "legal/consent.html")
+    return render_legal_document(request, "personal-data-consent")
 
 
 def terms(request):
-    return render(request, "legal/terms.html")
+    return render_legal_document(request, "terms")
 
 
 class ConsentCreateAPIView(APIView):
