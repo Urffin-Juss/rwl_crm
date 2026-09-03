@@ -42,24 +42,6 @@ def render_legal_document(request, slug):
         },
     )
 
-def render_legal_document(request, slug):
-    document = (
-        LegalDocument.objects
-        .filter(
-            slug=slug,
-            is_active=True,
-        )
-        .order_by("-published_at", "-id")
-        .first()
-    )
-
-    return render(
-        request,
-        "legal/document.html",
-        {
-            "document": document,
-        },
-    )
 
 
 def privacy(request):
