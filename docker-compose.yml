@@ -54,6 +54,18 @@ services:
     volumes:
       - media_data:/app/media
 
+  celery_beat:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: celery -A config beat -l info
+
   bot:
     build: .
     restart: unless-stopped
