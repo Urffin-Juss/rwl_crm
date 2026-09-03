@@ -27,11 +27,27 @@ def render_legal_document(request, slug):
     if document and document.file:
         docx_document = Document(document.file.path)
 
-        paragraphs = [
-            paragraph.text
-            for paragraph in docx_document.paragraphs
-            if paragraph.text.strip()
-        ]
+        paragraphs = []
+
+        for paragraph in docx_document.paragraphs:
+            text = paragraph.text.strip()
+
+            if not text:
+                continue
+
+            first_part = text.split(".", 1)[0]
+
+            is_heading = (
+                    "." in text
+                    and first_part.isdigit()
+            )
+
+            paragraphs.append(
+                {
+                    "text": text,
+                    "is_heading": is_heading,
+                }
+            )
 
     return render(
         request,
