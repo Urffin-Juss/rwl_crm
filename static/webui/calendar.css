@@ -308,7 +308,10 @@ body {
 }
 
 .event-carousel {
-    width: 100%;
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr) 50px;
+    align-items: center;
+    gap: 12px;
 }
 
 .carousel-button {
@@ -331,25 +334,6 @@ body {
     background: #222222;
     border-radius: 22px;
     padding: 22px;
-}
-
-.event-card-header {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-items: center;
-}
-
-.event-card-header.has-navigation {
-    grid-template-columns: 46px minmax(0, 1fr) 46px;
-    gap: 12px;
-}
-
-.event-heading {
-    min-width: 0;
-}
-
-.event-card-header .carousel-button {
-    flex: 0 0 auto;
 }
 
 .event-name {
@@ -481,10 +465,14 @@ body {
 
 
 .event-counter {
-    margin-top: 8px;
+    margin-top: 18px;
+    text-align: center;
     color: #777777;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
+}
+
+.event-counter.hidden {
+    display: none;
 }
 
 @media (max-width: 420px) {
@@ -493,9 +481,9 @@ body {
         padding-right: 12px;
     }
 
-    .event-card-header.has-navigation {
-        grid-template-columns: 38px minmax(0, 1fr) 38px;
-        gap: 8px;
+    .event-carousel {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        gap: 7px;
     }
 
     .carousel-button {

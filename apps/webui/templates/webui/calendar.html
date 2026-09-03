@@ -11,7 +11,7 @@
 
     <link
         rel="stylesheet"
-        href="{% static 'webui/calendar.css' %}?v=4"
+        href="{% static 'webui/calendar.css' %}?v=3"
     >
 </head>
 
@@ -152,8 +152,23 @@
         <h2 class="events-date"></h2>
 
         <div class="event-carousel">
+
+            <button class="carousel-button event-prev">
+                ←
+            </button>
+
             <div class="event-card-container"></div>
+
+
+
+            <button class="carousel-button event-next">
+                →
+            </button>
+
         </div>
+
+
+        <div class="event-counter"></div>
 
     </section>
 
@@ -165,7 +180,7 @@
 
 
 
-<script src="{% static 'webui/calendar.js' %}?v=4"></script>
+<script src="{% static 'webui/calendar.js' %}?v=3"></script>
 
 </body>
 </html>
