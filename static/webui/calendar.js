@@ -46,12 +46,6 @@ const eventsDate =
 const eventCardContainer =
     document.querySelector('.event-card-container');
 
-const eventPrevButton =
-    document.querySelector('.event-prev');
-
-const eventNextButton =
-    document.querySelector('.event-next');
-
 
 const emptyState =
     document.getElementById('calendar-empty-state');
@@ -1135,8 +1129,41 @@ function renderCurrentEvent() {
 
 
     /*
-        Название.
+    Шапка карточки:
+    стрелка ← / название + город + счётчик / стрелка →
     */
+
+    const cardHeader =
+        document.createElement('div');
+
+    cardHeader.className =
+        'event-card-header';
+
+
+    /*
+        Левая стрелка.
+    */
+
+    const prevButton =
+        document.createElement('button');
+
+    prevButton.type = 'button';
+    prevButton.className =
+        'carousel-button event-card-prev';
+
+    prevButton.textContent = '←';
+
+
+    /*
+        Центральная часть шапки.
+    */
+
+    const heading =
+        document.createElement('div');
+
+    heading.className =
+        'event-heading';
+
 
     const title =
         document.createElement('h3');
@@ -1147,9 +1174,116 @@ function renderCurrentEvent() {
     title.textContent =
         event.name;
 
-    card.appendChild(
-        title
-    );
+    heading.appendChild(title);
+
+
+/*
+    Город.
+*/
+
+const city =
+    document.createElement('div');
+
+city.className =
+    'event-city';
+
+city.textContent =
+    event.city;
+
+heading.appendChild(city);
+
+
+/*
+    Номер карточки.
+*/
+
+if (selectedDayEvents.length > 1) {
+
+    const counter =
+        document.createElement('div');
+
+    counter.className =
+        'event-counter';
+
+    counter.textContent =
+        `${currentEventIndex + 1} / ${selectedDayEvents.length}`;
+
+    heading.appendChild(counter);
+}
+
+
+/*
+    Правая стрелка.
+*/
+
+const nextButton =
+    document.createElement('button');
+
+nextButton.type = 'button';
+nextButton.className =
+    'carousel-button event-card-next';
+
+nextButton.textContent = '→';
+
+
+/*
+    Если событие одно —
+    навигация не нужна.
+*/
+
+if (selectedDayEvents.length <= 1) {
+    prevButton.classList.add('hidden');
+    nextButton.classList.add('hidden');
+}
+
+
+/*
+    Переключение назад.
+*/
+
+prevButton.addEventListener(
+    'click',
+    function () {
+
+        currentEventIndex--;
+
+        if (currentEventIndex < 0) {
+            currentEventIndex =
+                selectedDayEvents.length - 1;
+        }
+
+        renderCurrentEvent();
+    }
+);
+
+
+/*
+    Переключение вперёд.
+*/
+
+nextButton.addEventListener(
+    'click',
+    function () {
+
+        currentEventIndex++;
+
+        if (
+            currentEventIndex >=
+            selectedDayEvents.length
+        ) {
+            currentEventIndex = 0;
+        }
+
+        renderCurrentEvent();
+    }
+);
+
+
+cardHeader.appendChild(prevButton);
+cardHeader.appendChild(heading);
+cardHeader.appendChild(nextButton);
+
+card.appendChild(cardHeader);
 
 
     /*
@@ -1536,109 +1670,11 @@ eventCardContainer.appendChild(
     card
 );
 
-updateCarouselControls();
+
 
 }
 
 
-/*
-    ========================================
-    CAROUSEL
-    ========================================
-*/
-
-function updateCarouselControls() {
-
-    const total =
-        selectedDayEvents.length;
-
-
-    if (total <= 1) {
-
-        eventPrevButton.classList.add(
-            'hidden'
-        );
-
-        eventNextButton.classList.add(
-            'hidden'
-        );
-
-        eventCounter.classList.add(
-            'hidden'
-        );
-
-        return;
-    }
-
-
-    eventPrevButton.classList.remove(
-        'hidden'
-    );
-
-    eventNextButton.classList.remove(
-        'hidden'
-    );
-
-    eventCounter.classList.remove(
-        'hidden'
-    );
-
-
-    eventCounter.textContent =
-        `${currentEventIndex + 1} / ${total}`;
-}
-
-
-eventPrevButton.addEventListener(
-    'click',
-    function () {
-
-        if (
-            selectedDayEvents.length <= 1
-        ) {
-            return;
-        }
-
-
-        currentEventIndex--;
-
-
-        if (currentEventIndex < 0) {
-            currentEventIndex =
-                selectedDayEvents.length - 1;
-        }
-
-
-        renderCurrentEvent();
-    }
-);
-
-
-eventNextButton.addEventListener(
-    'click',
-    function () {
-
-        if (
-            selectedDayEvents.length <= 1
-        ) {
-            return;
-        }
-
-
-        currentEventIndex++;
-
-
-        if (
-            currentEventIndex >=
-            selectedDayEvents.length
-        ) {
-            currentEventIndex = 0;
-        }
-
-
-        renderCurrentEvent();
-    }
-);
 
 
 /*

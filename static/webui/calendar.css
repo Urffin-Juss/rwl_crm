@@ -308,10 +308,7 @@ body {
 }
 
 .event-carousel {
-    display: grid;
-    grid-template-columns: 50px minmax(0, 1fr) 50px;
-    align-items: center;
-    gap: 12px;
+    width: 100%;
 }
 
 .carousel-button {
@@ -335,6 +332,24 @@ body {
     border-radius: 22px;
     padding: 22px;
 }
+
+.event-card-header {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) 46px;
+    align-items: center;
+    gap: 12px;
+}
+
+.event-heading {
+    min-width: 0;
+}
+
+.event-card-header .carousel-button {
+    align-self: center;
+}
+
+
+
 
 .event-name {
     margin: 0;
@@ -481,9 +496,9 @@ body {
         padding-right: 12px;
     }
 
-    .event-carousel {
-        grid-template-columns: 40px minmax(0, 1fr) 40px;
-        gap: 7px;
+    .event-card-header {
+    grid-template-columns: 38px minmax(0, 1fr) 38px;
+    gap: 8px;
     }
 
     .carousel-button {
