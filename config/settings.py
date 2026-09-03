@@ -149,7 +149,7 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     "import-russiarunning-daily": {
         "task": "apps.parser.tasks.import_russiarunning_task",
-        "schedule": crontab(hour=4, minute=0),
+        "schedule": crontab(minute="*"),
     },
 }
 
