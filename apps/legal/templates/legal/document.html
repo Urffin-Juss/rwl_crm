@@ -1,42 +1,111 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ document.title }}</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% if document %}
+            {{ document.title }}
+        {% else %}
+            Документ не найден
+        {% endif %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'legal/legal.css' %}"
+    >
 </head>
 
 <body>
-    <main class="legal-page">
+
+<main class="legal-page">
+
+    <div class="legal-brand">
+        RUN WITH LOVE
+    </div>
+
+    {% if document %}
 
         <header class="legal-header">
-            <div class="legal-brand">RUN WITH LOVE</div>
 
-            <h1>{{ document.title }}</h1>
+            <h1>
+                {{ document.title }}
+            </h1>
 
             <div class="legal-meta">
-                Версия {{ document.version }}
+
+                <span>
+                    Версия {{ document.version }}
+                </span>
 
                 {% if document.published_at %}
-                    · {{ document.published_at|date:"d.m.Y" }}
+                    <span>·</span>
+
+                    <span>
+                        {{ document.published_at|date:"d.m.Y" }}
+                    </span>
                 {% endif %}
+
             </div>
+
         </header>
 
+
         <article class="legal-content">
+
             {% for paragraph in paragraphs %}
-                <p>{{ paragraph }}</p>
+
+                {% if paragraph.is_heading %}
+                    <h2>{{ paragraph.text }}</h2>
+                {% else %}
+                    <p>{{ paragraph.text }}</p>
+                {% endif %}
+
             {% endfor %}
+
         </article>
 
+
         {% if document.file %}
+
             <footer class="legal-footer">
-                <a href="{{ document.file.url }}">
+
+                <a
+                    class="legal-download"
+                    href="{{ document.file.url }}"
+                >
                     Скачать оригинал
                 </a>
+
             </footer>
+
         {% endif %}
 
-    </main>
+    {% else %}
+
+        <div class="legal-unavailable">
+
+            <h1>
+                Документ не найден
+            </h1>
+
+            <p>
+                Актуальная версия документа сейчас недоступна.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</main>
+
 </body>
 </html>
