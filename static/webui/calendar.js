@@ -1,7 +1,3 @@
-
-
-
-
 let currentMemberId = null;
 
 let requiredConsents = [];
@@ -46,13 +42,8 @@ const eventsDate =
 const eventCardContainer =
     document.querySelector('.event-card-container');
 
-
 const emptyState =
     document.getElementById('calendar-empty-state');
-
-
-
-
 
 
 /*
@@ -143,8 +134,6 @@ async function authenticateTelegramUser() {
 
         return currentMemberId;
 
-
-
     } catch (error) {
         console.error(
             'Ошибка Telegram auth:',
@@ -152,6 +141,7 @@ async function authenticateTelegramUser() {
         );
     }
 }
+
 
 async function routeAfterAuth() {
 
@@ -214,7 +204,7 @@ function showConsentScreen() {
     gate.style.display = "flex";
 
     const progressBars =
-    document.getElementById("consent-progress-bars");
+        document.getElementById("consent-progress-bars");
 
     progressBars.innerHTML = "";
 
@@ -230,8 +220,8 @@ function showConsentScreen() {
         progressBars.appendChild(bar);
     });
 
-document.getElementById("consent-progress-text").textContent =
-    `${currentConsentIndex + 1} из ${requiredConsents.length}`;
+    document.getElementById("consent-progress-text").textContent =
+        `${currentConsentIndex + 1} из ${requiredConsents.length}`;
 
     document.getElementById("consent-title").textContent =
         documentData.title;
@@ -284,8 +274,6 @@ async function handleConsentAccept() {
          */
         await authenticateTelegramUser();
 
-        await authenticateTelegramUser();
-
         acceptButton.disabled = false;
         acceptButton.textContent = "Согласен";
 
@@ -298,6 +286,7 @@ async function handleConsentAccept() {
         acceptButton.textContent = "Попробовать ещё раз";
     }
 }
+
 
 /*
     ========================================
@@ -456,8 +445,6 @@ async function setParticipationStatus(
                 errorData
             );
 
-
-
             return;
         }
 
@@ -510,102 +497,46 @@ async function setParticipationStatus(
             в новый счётчик.
         */
 
-        if (status === 'GOING') {
+        if (
+            status === 'GOING'
+        ) {
             event.going_count += 1;
         }
 
-        if (status === 'THINKING') {
+        if (
+            status === 'THINKING'
+        ) {
             event.thinking_count += 1;
         }
 
+
+        /*
+            Сохраняем новый статус.
+        */
 
         event.current_member_status =
             status;
 
 
-        await refreshEventCard(event);
+        /*
+            Перерисовываем карточку.
+        */
+
+        renderCurrentEvent();
 
     } catch (error) {
         console.error(
-            'Ошибка изменения участия:',
+            'Ошибка сохранения участия:',
             error
         );
     }
 }
 
-
-async function toggleLookingForCompany(event) {
-
-    if (!event.current_member_status) {
-        return;
-    }
-
-    const newValue =
-        !event.current_member_looking_for_company;
-
-    try {
-        const response = await fetch(
-            '/api/participations/',
-            {
-                method: 'POST',
-
-                headers: {
-                    'Content-Type':
-                        'application/json'
-                },
-
-                body: JSON.stringify({
-                    event: event.id,
-                    member: currentMemberId,
-                    distance: null,
-                    status: event.current_member_status,
-                    looking_for_company: newValue
-                })
-            }
-        );
-
-        if (!response.ok) {
-            const errorData =
-                await response.json();
-
-            console.error(
-                'Looking for company error:',
-                errorData
-            );
-
-            return;
-        }
-
-        const participationData =
-            await response.json();
-
-        event.current_participation_id =
-            participationData.id;
-
-        if (newValue) {
-            event.looking_for_company_count += 1;
-        } else {
-            event.looking_for_company_count =
-                Math.max(
-                    0,
-                    event.looking_for_company_count - 1
-                );
-        }
-
-
-        event.current_member_looking_for_company =
-            newValue;
-
-        await refreshEventCard(event);
-
-    } catch (error) {
-        console.error(
-            'Ошибка изменения поиска компании:',
-            error
-        );
-    }
-}
-
+/*
+    ========================================
+    REMOVE PARTICIPATION
+    ========================================
+*/
 
 async function removeParticipation(event) {
 
@@ -630,21 +561,37 @@ async function removeParticipation(event) {
             return;
         }
 
-        if (event.current_member_status === 'GOING') {
-            event.going_count = Math.max(
-                0,
-                event.going_count - 1
-            );
+
+        /*
+            Уменьшаем соответствующий
+            социальный счётчик.
+        */
+
+        if (
+            event.current_member_status === 'GOING'
+        ) {
+            event.going_count =
+                Math.max(
+                    0,
+                    event.going_count - 1
+                );
+        }
+
+        if (
+            event.current_member_status === 'THINKING'
+        ) {
+            event.thinking_count =
+                Math.max(
+                    0,
+                    event.thinking_count - 1
+                );
         }
 
 
-        if (event.current_member_status === 'THINKING') {
-            event.thinking_count = Math.max(
-                0,
-                event.thinking_count - 1
-            );
-        }
-
+        /*
+            Если пользователь искал компанию,
+            его надо убрать и из этого счётчика.
+        */
 
         if (
             event.current_member_looking_for_company
@@ -656,11 +603,15 @@ async function removeParticipation(event) {
                 );
         }
 
+
         event.current_member_status = null;
+
         event.current_participation_id = null;
+
         event.current_member_looking_for_company = false;
 
-        await refreshEventCard(event);
+
+        renderCurrentEvent();
 
     } catch (error) {
         console.error(
@@ -670,249 +621,161 @@ async function removeParticipation(event) {
     }
 }
 
+
 /*
     ========================================
-    SOCIAL MECHANICS
+    LOOKING FOR COMPANY
     ========================================
 */
 
+async function toggleLookingForCompany(event) {
 
-async function loadEventParticipants(eventId, category) {
-    const response = await fetch(
-        `/api/events/${eventId}/participants/?category=${category}`
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        console.error("Participants API error:", data);
-        throw new Error("Не удалось загрузить участников");
-    }
-
-    return data;
-}
-
-async function toggleSocialPanel(eventId, category) {
-
-
-    const panel = document.getElementById(
-        `social-panel-${eventId}`
-    );
-
-    if (!panel) {
-        return;
-    }
-    const socialTabs =
-        panel.previousElementSibling;
-
-    const tabButtons =
-        socialTabs.querySelectorAll('button');
     /*
-     * Нажали повторно на уже открытую категорию —
-     * просто сворачиваем панель.
-     */
-    if (
-        openSocialEventId === eventId &&
-        openSocialCategory === category
-    ) {
-        panel.innerHTML = "";
-        panel.style.display = "none";
+        Искать компанию можно только
+        если пользователь уже отметил
+        участие в событии.
+    */
 
-        tabButtons.forEach(
-            function (button) {
-            button.classList.remove('active');
-            }
-        );
-
-        openSocialEventId = null;
-        openSocialCategory = null;
-
+    if (!event.current_participation_id) {
         return;
     }
 
-    openSocialEventId = eventId;
-    openSocialCategory = category;
 
-    tabButtons.forEach(
-        function (button) {
-            button.classList.remove('active');
-        }
-    );
+    const newValue =
+        !event.current_member_looking_for_company;
 
-
-
-    const activeButton =
-        socialTabs.querySelector(
-            `[data-category="${category}"]`
-        );
-
-    if (activeButton) {
-        activeButton.classList.add('active');
-    }
-
-
-
-
-
-    panel.style.display = "block";
-    panel.innerHTML = "<div>Загрузка...</div>";
 
     try {
-        const data = await loadEventParticipants(
-            eventId,
-            category
+        const response = await fetch(
+            '/api/participations/',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
+
+                body: JSON.stringify({
+                    event: event.id,
+                    member: currentMemberId,
+                    distance: null,
+                    status:
+                        event.current_member_status,
+                    looking_for_company:
+                        newValue
+                })
+            }
         );
 
-        const event =
-            events.find(
-                event => event.id === eventId
+
+        if (!response.ok) {
+            const errorData =
+                await response.json();
+
+            console.error(
+                'Looking for company error:',
+                errorData
             );
 
-        if (event) {
-
-            if (category === 'going') {
-                event.going_count =
-                    data.count;
-
-                activeButton.textContent =
-                    `👥 Едут: ${data.count}`;
-            }
-
-            if (category === 'thinking') {
-                event.thinking_count =
-                    data.count;
-
-                activeButton.textContent =
-                    `🤔 Думают: ${data.count}`;
-            }
-
-            if (category === 'company') {
-                event.looking_for_company_count =
-                    data.count;
-
-                activeButton.textContent =
-                    `🙋 Ищут компанию: ${data.count}`;
-            }
+            return;
         }
 
 
-        renderSocialParticipants(
-            panel,
-            data.participants
-        );
-
-    } catch (error) {
-        console.error(error);
-
-        panel.innerHTML =
-            "<div>Не удалось загрузить участников</div>";
-    }
-}
-
-function renderSocialParticipants(panel, participants) {
-    if (participants.length === 0) {
-        panel.innerHTML = `
-            <div class="social-empty">
-                Пока никого нет
-            </div>
-        `;
-
-        return;
-    }
-
-    panel.innerHTML = participants
-        .map((participant) => {
-            const username = participant.username
-                ? `@${participant.username}`
-                : "";
-
-            const firstLetter =
-                participant.display_name
-                    ? participant.display_name.charAt(0).toUpperCase()
-                    : "?";
-
-            const avatar = participant.photo_url
-                ? `
-                    <div class="social-participant-avatar">
-                        <img
-                            src="${participant.photo_url}"
-                            alt=""
-                        >
-                    </div>
-                `
-                : `
-                    <div class="social-participant-avatar">
-                        <div class="social-participant-avatar-placeholder">
-                            ${firstLetter}
-                        </div>
-                    </div>
-                `;
-
-            return `
-                <div class="social-participant">
-                    ${avatar}
-
-                    <div class="social-participant-info">
-                        <div class="social-participant-name">
-                            ${participant.display_name}
-                        </div>
-
-                        ${
-                            username
-                                ? `
-                                    <div class="social-participant-username">
-                                        ${username}
-                                    </div>
-                                `
-                                : ""
-                        }
-                    </div>
-                </div>
-            `;
-        })
-        .join("");
-}
-async function refreshEventCard(event) {
-
-    const shouldRestoreSocialPanel =
-        openSocialEventId === event.id &&
-        openSocialCategory !== null;
-
-    const categoryToRestore =
-        openSocialCategory;
+        const participationData =
+            await response.json();
 
 
-    /*
-        Перерисовываем карточку
-        с новыми счётчиками и кнопками.
-    */
+        event.current_participation_id =
+            participationData.id;
 
-    renderCurrentEvent();
-
-
-    /*
-        Если social-панель была открыта,
-        открываем ту же категорию заново.
-    */
-
-    if (shouldRestoreSocialPanel) {
 
         /*
-            Сбрасываем состояние,
-            иначе toggleSocialPanel решит,
-            что мы повторно нажали активный таб
-            и закроет его.
+            Обновляем локальный счётчик.
         */
 
-        openSocialEventId = null;
-        openSocialCategory = null;
+        if (newValue) {
+            event.looking_for_company_count += 1;
+        } else {
+            event.looking_for_company_count =
+                Math.max(
+                    0,
+                    event.looking_for_company_count - 1
+                );
+        }
 
-        await toggleSocialPanel(
-            event.id,
-            categoryToRestore
+
+        event.current_member_looking_for_company =
+            newValue;
+
+
+        renderCurrentEvent();
+
+    } catch (error) {
+        console.error(
+            'Ошибка изменения поиска компании:',
+            error
         );
     }
 }
+
+
+/*
+    ========================================
+    DATE HELPERS
+    ========================================
+*/
+
+function formatDateKey(
+    year,
+    month,
+    day
+) {
+
+    const monthString =
+        String(month + 1).padStart(
+            2,
+            '0'
+        );
+
+    const dayString =
+        String(day).padStart(
+            2,
+            '0'
+        );
+
+    return (
+        `${year}-${monthString}-${dayString}`
+    );
+}
+
+
+function getEventsForDate(dateKey) {
+
+    return events.filter(
+        event => event.date === dateKey
+    );
+}
+
+
+function formatSelectedDate(dateKey) {
+
+    const [
+        year,
+        month,
+        day
+    ] = dateKey
+        .split('-')
+        .map(Number);
+
+    return (
+        `${day} ` +
+        `${monthNamesGenitive[month - 1]} ` +
+        `${year}`
+    );
+}
+
+
 /*
     ========================================
     CALENDAR
@@ -921,20 +784,37 @@ async function refreshEventCard(event) {
 
 function renderCalendar() {
 
-
-
     calendarGrid.innerHTML = '';
 
     calendarTitle.textContent =
         `${monthNames[currentMonth]} ${currentYear}`;
 
 
+    /*
+        День недели первого числа.
+
+        JS:
+        0 = воскресенье
+        1 = понедельник
+        ...
+
+        Наш календарь:
+        0 = понедельник
+        ...
+        6 = воскресенье
+    */
+
     const firstDay =
         new Date(
             currentYear,
             currentMonth,
             1
-        );
+        ).getDay();
+
+    const startOffset =
+        firstDay === 0
+            ? 6
+            : firstDay - 1;
 
 
     const daysInMonth =
@@ -946,26 +826,8 @@ function renderCalendar() {
 
 
     /*
-        JS:
-        Sunday = 0
-        Monday = 1
-
-        Нам надо:
-        Monday = 0
-        Sunday = 6
-    */
-
-    let startOffset =
-        firstDay.getDay() - 1;
-
-    if (startOffset < 0) {
-        startOffset = 6;
-    }
-
-
-    /*
-        Пустые клетки
-        перед первым числом месяца.
+        Пустые клетки перед
+        первым числом месяца.
     */
 
     for (
@@ -977,7 +839,7 @@ function renderCalendar() {
             document.createElement('div');
 
         emptyCell.className =
-            'calendar-day';
+            'calendar-day empty';
 
         calendarGrid.appendChild(
             emptyCell
@@ -995,25 +857,8 @@ function renderCalendar() {
         day++
     ) {
 
-        const cell =
-            document.createElement('div');
-
-        cell.className =
-            'calendar-day';
-
-
-        const dayNumber =
-            document.createElement('div');
-
-        dayNumber.className =
-            'day-number';
-
-        dayNumber.textContent =
-            day;
-
-
-        const dateString =
-            buildDateString(
+        const dateKey =
+            formatDateKey(
                 currentYear,
                 currentMonth,
                 day
@@ -1021,85 +866,423 @@ function renderCalendar() {
 
 
         const dayEvents =
-            events.filter(
-                event =>
-                    event.date ===
-                    dateString
-            );
+            getEventsForDate(dateKey);
 
 
-        if (dayEvents.length > 0) {
+        const dayCell =
+            document.createElement('button');
 
-            cell.classList.add(
-                'has-event'
-            );
+        dayCell.type = 'button';
+
+        dayCell.className =
+            'calendar-day';
+
+        dayCell.textContent =
+            day;
 
 
-            cell.addEventListener(
-                'click',
-                function () {
+        /*
+            Сегодня.
+        */
 
-                    selectedDate =
-                        dateString;
+        const today =
+            new Date();
 
-                    selectedDayEvents =
-                        dayEvents;
-
-                    currentEventIndex = 0;
-
-                    renderCalendar();
-
-                    openEventsPanel(
-                        day
-                    );
-                }
+        if (
+            day === today.getDate() &&
+            currentMonth === today.getMonth() &&
+            currentYear === today.getFullYear()
+        ) {
+            dayCell.classList.add(
+                'today'
             );
         }
 
 
+        /*
+            Выбранная дата.
+        */
+
         if (
-            selectedDate ===
-            dateString
+            selectedDate === dateKey
         ) {
-            cell.classList.add(
+            dayCell.classList.add(
                 'selected'
             );
         }
 
 
-        cell.appendChild(
-            dayNumber
+        /*
+            На этой дате есть забег.
+        */
+
+        if (
+            dayEvents.length > 0
+        ) {
+            dayCell.classList.add(
+                'has-event'
+            );
+
+            /*
+                Точка / индикатор события.
+            */
+
+            const eventMarker =
+                document.createElement(
+                    'span'
+                );
+
+            eventMarker.className =
+                'event-marker';
+
+            dayCell.appendChild(
+                eventMarker
+            );
+        }
+
+
+        dayCell.addEventListener(
+            'click',
+            () => {
+                selectDate(
+                    dateKey
+                );
+            }
         );
 
+
         calendarGrid.appendChild(
-            cell
+            dayCell
         );
+    }
+
+
+    /*
+        После перерисовки месяца
+        сохраняем правильное состояние
+        нижней части интерфейса.
+    */
+
+    if (selectedDate) {
+
+        const [
+            selectedYear,
+            selectedMonth
+        ] = selectedDate
+            .split('-')
+            .map(Number);
+
+
+        if (
+            selectedYear === currentYear &&
+            selectedMonth - 1 === currentMonth
+        ) {
+
+            selectedDayEvents =
+                getEventsForDate(
+                    selectedDate
+                );
+
+
+            if (
+                selectedDayEvents.length > 0
+            ) {
+                showEventState();
+                renderCurrentEvent();
+            } else {
+                showBrandState();
+            }
+
+        } else {
+            showBrandState();
+        }
+
+    } else {
+        showBrandState();
     }
 }
 
 
 /*
     ========================================
-    EVENT PANEL
+    SELECT DATE
     ========================================
 */
 
-function openEventsPanel(day) {
+function selectDate(dateKey) {
 
-    showEventState();
+    selectedDate =
+        dateKey;
+
+    selectedDayEvents =
+        getEventsForDate(
+            dateKey
+        );
+
+    currentEventIndex = 0;
+
+
+    /*
+        Перерисовываем календарь,
+        чтобы подсветить выбранный день.
+    */
+
+    renderCalendar();
+
+
+    if (
+        selectedDayEvents.length === 0
+    ) {
+        showBrandState();
+        return;
+    }
+
 
     eventsDate.textContent =
-        `${day} ` +
-        `${monthNamesGenitive[currentMonth]} ` +
-        `${currentYear}`;
+        formatSelectedDate(
+            dateKey
+        );
+
+
+    showEventState();
 
     renderCurrentEvent();
 }
 
 
+/*
+    ========================================
+    EVENT CAROUSEL
+    ========================================
+*/
+
+function previousEvent() {
+
+    if (
+        selectedDayEvents.length <= 1
+    ) {
+        return;
+    }
+
+
+    currentEventIndex -= 1;
+
+
+    if (
+        currentEventIndex < 0
+    ) {
+        currentEventIndex =
+            selectedDayEvents.length - 1;
+    }
+
+
+    renderCurrentEvent();
+}
+
+
+function nextEvent() {
+
+    if (
+        selectedDayEvents.length <= 1
+    ) {
+        return;
+    }
+
+
+    currentEventIndex += 1;
+
+
+    if (
+        currentEventIndex >=
+        selectedDayEvents.length
+    ) {
+        currentEventIndex = 0;
+    }
+
+
+    renderCurrentEvent();
+}
+
+
+/*
+    ========================================
+    CAROUSEL HEADER
+    ========================================
+
+    Стрелки и счётчик теперь живут
+    непосредственно в шапке карточки.
+
+    Поэтому их положение больше
+    не зависит от высоты события:
+    длинного названия, количества
+    дистанций, social panel и т.д.
+*/
+
+function createCarouselHeader(event) {
+
+    const header =
+        document.createElement('div');
+
+    header.className =
+        'event-card-header';
+
+
+    /*
+        Левая стрелка.
+    */
+
+    const previousButton =
+        document.createElement('button');
+
+    previousButton.type =
+        'button';
+
+    previousButton.className =
+        'event-carousel-arrow event-carousel-arrow-left';
+
+    previousButton.setAttribute(
+        'aria-label',
+        'Предыдущее событие'
+    );
+
+    previousButton.textContent =
+        '←';
+
+    previousButton.addEventListener(
+        'click',
+        previousEvent
+    );
+
+
+    /*
+        Центральная часть:
+        название + счётчик карусели.
+    */
+
+    const headerContent =
+        document.createElement('div');
+
+    headerContent.className =
+        'event-card-header-content';
+
+
+    const title =
+        document.createElement('h2');
+
+    title.className =
+        'event-title';
+
+    title.textContent =
+        event.name;
+
+
+    headerContent.appendChild(
+        title
+    );
+
+
+    /*
+        Счётчик показываем только
+        если на выбранную дату
+        приходится больше одного события.
+    */
+
+    if (
+        selectedDayEvents.length > 1
+    ) {
+
+        const counter =
+            document.createElement(
+                'div'
+            );
+
+        counter.className =
+            'event-carousel-counter';
+
+        counter.textContent =
+            `${currentEventIndex + 1} / ${selectedDayEvents.length}`;
+
+        headerContent.appendChild(
+            counter
+        );
+    }
+
+
+    /*
+        Правая стрелка.
+    */
+
+    const nextButton =
+        document.createElement(
+            'button'
+        );
+
+    nextButton.type =
+        'button';
+
+    nextButton.className =
+        'event-carousel-arrow event-carousel-arrow-right';
+
+    nextButton.setAttribute(
+        'aria-label',
+        'Следующее событие'
+    );
+
+    nextButton.textContent =
+        '→';
+
+    nextButton.addEventListener(
+        'click',
+        nextEvent
+    );
+
+
+    /*
+        При единственном событии
+        стрелки оставляем в DOM,
+        но скрываем через класс.
+
+        Это сохраняет геометрию
+        шапки одинаковой.
+    */
+
+    if (
+        selectedDayEvents.length <= 1
+    ) {
+        previousButton.classList.add(
+            'hidden'
+        );
+
+        nextButton.classList.add(
+            'hidden'
+        );
+    }
+
+
+    header.appendChild(
+        previousButton
+    );
+
+    header.appendChild(
+        headerContent
+    );
+
+    header.appendChild(
+        nextButton
+    );
+
+
+    return header;
+}
+
+
+/*
+    ========================================
+    EVENT CARD
+    ========================================
+*/
+
 function renderCurrentEvent() {
-
-
 
     eventCardContainer.innerHTML = '';
 
@@ -1107,6 +1290,7 @@ function renderCurrentEvent() {
     if (
         selectedDayEvents.length === 0
     ) {
+        showBrandState();
         return;
     }
 
@@ -1117,191 +1301,50 @@ function renderCurrentEvent() {
         ];
 
 
-    /*
-        Карточка.
-    */
-
     const card =
-        document.createElement('div');
+        document.createElement('article');
 
     card.className =
         'event-card';
 
 
     /*
-    Шапка карточки:
-    стрелка ← / название + город + счётчик / стрелка →
+        Шапка события.
+
+        Здесь теперь находятся:
+        ← название →
+        и счётчик 1 / N.
     */
 
-    const cardHeader =
-        document.createElement('div');
+    const carouselHeader =
+        createCarouselHeader(
+            event
+        );
 
-    cardHeader.className =
-        'event-card-header';
-
-
-    /*
-        Левая стрелка.
-    */
-
-    const prevButton =
-        document.createElement('button');
-
-    prevButton.type = 'button';
-    prevButton.className =
-        'carousel-button event-card-prev';
-
-    prevButton.textContent = '←';
-
-
-    /*
-        Центральная часть шапки.
-    */
-
-    const heading =
-        document.createElement('div');
-
-    heading.className =
-        'event-heading';
-
-
-    const title =
-        document.createElement('h3');
-
-    title.className =
-        'event-name';
-
-    title.textContent =
-        event.name;
-
-    heading.appendChild(title);
-
-
-/*
-    Город.
-*/
-
-const city =
-    document.createElement('div');
-
-city.className =
-    'event-city';
-
-city.textContent =
-    event.city;
-
-heading.appendChild(city);
-
-
-/*
-    Номер карточки.
-*/
-
-if (selectedDayEvents.length > 1) {
-
-    const counter =
-        document.createElement('div');
-
-    counter.className =
-        'event-counter';
-
-    counter.textContent =
-        `${currentEventIndex + 1} / ${selectedDayEvents.length}`;
-
-    heading.appendChild(counter);
-}
-
-
-/*
-    Правая стрелка.
-*/
-
-const nextButton =
-    document.createElement('button');
-
-nextButton.type = 'button';
-nextButton.className =
-    'carousel-button event-card-next';
-
-nextButton.textContent = '→';
-
-
-/*
-    Если событие одно —
-    навигация не нужна.
-*/
-
-if (selectedDayEvents.length <= 1) {
-    prevButton.classList.add('hidden');
-    nextButton.classList.add('hidden');
-}
-
-
-/*
-    Переключение назад.
-*/
-
-prevButton.addEventListener(
-    'click',
-    function () {
-
-        currentEventIndex--;
-
-        if (currentEventIndex < 0) {
-            currentEventIndex =
-                selectedDayEvents.length - 1;
-        }
-
-        renderCurrentEvent();
-    }
-);
-
-
-/*
-    Переключение вперёд.
-*/
-
-nextButton.addEventListener(
-    'click',
-    function () {
-
-        currentEventIndex++;
-
-        if (
-            currentEventIndex >=
-            selectedDayEvents.length
-        ) {
-            currentEventIndex = 0;
-        }
-
-        renderCurrentEvent();
-    }
-);
-
-
-cardHeader.appendChild(prevButton);
-cardHeader.appendChild(heading);
-cardHeader.appendChild(nextButton);
-
-card.appendChild(cardHeader);
+    card.appendChild(
+        carouselHeader
+    );
 
 
     /*
         Город.
     */
 
-    const city =
-        document.createElement('div');
+    if (event.city) {
 
-    city.className =
-        'event-city';
+        const city =
+            document.createElement('div');
 
-    city.textContent =
-        event.city;
+        city.className =
+            'event-city';
 
-    card.appendChild(
-        city
-    );
+        city.textContent =
+            event.city;
+
+        card.appendChild(
+            city
+        );
+    }
 
 
     /*
@@ -1309,37 +1352,53 @@ card.appendChild(cardHeader);
     */
 
     if (
-        event.distances &&
+        Array.isArray(
+            event.distances
+        ) &&
         event.distances.length > 0
     ) {
 
-        const distancesContainer =
-            document.createElement('div');
+        const distances =
+            document.createElement(
+                'div'
+            );
 
-        distancesContainer.className =
-            'distances';
+        distances.className =
+            'event-distances';
 
 
         event.distances.forEach(
-            function (distance) {
+            distance => {
 
                 const badge =
                     document.createElement(
-                        'div'
+                        'span'
                     );
 
                 badge.className =
                     'distance-badge';
 
+
                 /*
-                    Нам важнее красивое name,
-                    чем голое число distance.
+                    Если backend отдаёт name,
+                    показываем его.
+
+                    Иначе используем
+                    числовую дистанцию.
                 */
 
-                badge.textContent =
-                    distance.name;
+                if (
+                    distance.name
+                ) {
+                    badge.textContent =
+                        distance.name;
+                } else {
+                    badge.textContent =
+                        `${distance.distance} км`;
+                }
 
-                distancesContainer.appendChild(
+
+                distances.appendChild(
                     badge
                 );
             }
@@ -1347,17 +1406,205 @@ card.appendChild(cardHeader);
 
 
         card.appendChild(
-            distancesContainer
+            distances
         );
     }
 
 
     /*
-        Счётчики участия.
+        Кнопки участия.
+    */
+
+    const participationControls =
+        document.createElement(
+            'div'
+        );
+
+    participationControls.className =
+        'participation-controls';
+
+
+    const goingButton =
+        document.createElement(
+            'button'
+        );
+
+    goingButton.type =
+        'button';
+
+    goingButton.className =
+        'participation-button';
+
+    goingButton.textContent =
+        'Я еду';
+
+
+    if (
+        event.current_member_status ===
+        'GOING'
+    ) {
+        goingButton.classList.add(
+            'active'
+        );
+    }
+
+
+    goingButton.addEventListener(
+        'click',
+        () => {
+            setParticipationStatus(
+                event,
+                'GOING'
+            );
+        }
+    );
+
+
+    const thinkingButton =
+        document.createElement(
+            'button'
+        );
+
+    thinkingButton.type =
+        'button';
+
+    thinkingButton.className =
+        'participation-button';
+
+    thinkingButton.textContent =
+        'Думаю';
+
+
+    if (
+        event.current_member_status ===
+        'THINKING'
+    ) {
+        thinkingButton.classList.add(
+            'active'
+        );
+    }
+
+
+    thinkingButton.addEventListener(
+        'click',
+        () => {
+            setParticipationStatus(
+                event,
+                'THINKING'
+            );
+        }
+    );
+
+
+    participationControls.appendChild(
+        goingButton
+    );
+
+    participationControls.appendChild(
+        thinkingButton
+    );
+
+
+    card.appendChild(
+        participationControls
+    );
+
+        /*
+        Кнопка "Ищу компанию"
+        появляется только после того,
+        как пользователь отметил участие.
+    */
+
+    if (
+        event.current_member_status
+    ) {
+
+        const companyButton =
+            document.createElement(
+                'button'
+            );
+
+        companyButton.type =
+            'button';
+
+        companyButton.className =
+            'company-button';
+
+        companyButton.textContent =
+            event.current_member_looking_for_company
+                ? 'Ищу компанию ✓'
+                : 'Ищу компанию';
+
+
+        if (
+            event.current_member_looking_for_company
+        ) {
+            companyButton.classList.add(
+                'active'
+            );
+        }
+
+
+        companyButton.addEventListener(
+            'click',
+            () => {
+                toggleLookingForCompany(
+                    event
+                );
+            }
+        );
+
+
+        card.appendChild(
+            companyButton
+        );
+
+
+        /*
+            Снять отметку.
+        */
+
+        const removeButton =
+            document.createElement(
+                'button'
+            );
+
+        removeButton.type =
+            'button';
+
+        removeButton.className =
+            'remove-participation-button';
+
+        removeButton.textContent =
+            'Снять отметку';
+
+
+        removeButton.addEventListener(
+            'click',
+            () => {
+                removeParticipation(
+                    event
+                );
+            }
+        );
+
+
+        card.appendChild(
+            removeButton
+        );
+    }
+
+
+    /*
+        ========================================
+        SOCIAL TABS
+        ========================================
     */
 
     const socialTabs =
-        document.createElement('div');
+        document.createElement(
+            'div'
+        );
 
     socialTabs.className =
         'event-social-tabs';
@@ -1368,19 +1615,23 @@ card.appendChild(cardHeader);
     */
 
     const goingSocialButton =
-        document.createElement('button');
-
-
+        document.createElement(
+            'button'
+        );
 
     goingSocialButton.type =
         'button';
 
+    goingSocialButton.dataset.category =
+        'going';
+
     goingSocialButton.textContent =
         `👥 Едут: ${event.going_count}`;
 
+
     goingSocialButton.addEventListener(
         'click',
-        function () {
+        () => {
             toggleSocialPanel(
                 event.id,
                 'going'
@@ -1388,30 +1639,29 @@ card.appendChild(cardHeader);
         }
     );
 
-    socialTabs.appendChild(
-        goingSocialButton
-    );
-
-    goingSocialButton.dataset.category =
-        'going';
-
 
     /*
         Думают.
     */
 
     const thinkingSocialButton =
-        document.createElement('button');
+        document.createElement(
+            'button'
+        );
 
     thinkingSocialButton.type =
         'button';
 
+    thinkingSocialButton.dataset.category =
+        'thinking';
+
     thinkingSocialButton.textContent =
         `🤔 Думают: ${event.thinking_count}`;
 
+
     thinkingSocialButton.addEventListener(
         'click',
-        function () {
+        () => {
             toggleSocialPanel(
                 event.id,
                 'thinking'
@@ -1419,30 +1669,29 @@ card.appendChild(cardHeader);
         }
     );
 
-    socialTabs.appendChild(
-        thinkingSocialButton
-    );
-
-    thinkingSocialButton.dataset.category =
-        'thinking';
-
 
     /*
         Ищут компанию.
     */
 
     const companySocialButton =
-        document.createElement('button');
+        document.createElement(
+            'button'
+        );
 
     companySocialButton.type =
         'button';
 
+    companySocialButton.dataset.category =
+        'company';
+
     companySocialButton.textContent =
         `🙋 Ищут компанию: ${event.looking_for_company_count}`;
 
+
     companySocialButton.addEventListener(
         'click',
-        function () {
+        () => {
             toggleSocialPanel(
                 event.id,
                 'company'
@@ -1450,17 +1699,19 @@ card.appendChild(cardHeader);
         }
     );
 
+
+    socialTabs.appendChild(
+        goingSocialButton
+    );
+
+    socialTabs.appendChild(
+        thinkingSocialButton
+    );
+
     socialTabs.appendChild(
         companySocialButton
     );
 
-    companySocialButton.dataset.category =
-        'company';
-
-
-    /*
-        Добавляем вкладки в карточку.
-    */
 
     card.appendChild(
         socialTabs
@@ -1468,11 +1719,13 @@ card.appendChild(cardHeader);
 
 
     /*
-        Панель со списком людей.
+        Панель со списком участников.
     */
 
     const socialPanel =
-        document.createElement('div');
+        document.createElement(
+            'div'
+        );
 
     socialPanel.id =
         `social-panel-${event.id}`;
@@ -1483,198 +1736,489 @@ card.appendChild(cardHeader);
     socialPanel.style.display =
         'none';
 
+
     card.appendChild(
         socialPanel
     );
 
 
     /*
-        Кнопки.
-    */
-
-    const buttons =
-        document.createElement('div');
-
-    buttons.className =
-        'participation-buttons';
-
-
-    const goingButton =
-        document.createElement('button');
-
-    goingButton.className =
-        'participation-button going-button';
-
-
-    const thinkingButton =
-        document.createElement('button');
-
-    thinkingButton.className =
-        'participation-button thinking-button';
-
-
-
-
-    /*
-        Текущий статус пользователя.
+        Если до перерисовки карточки
+        была открыта social-категория
+        именно этого события,
+        восстанавливаем её.
     */
 
     if (
-        event.current_member_status ===
-        'GOING'
+        openSocialEventId === event.id &&
+        openSocialCategory
     ) {
 
-        goingButton.textContent =
-            'Я еду ✓';
+        const activeButton =
+            socialTabs.querySelector(
+                `[data-category="${openSocialCategory}"]`
+            );
 
-        goingButton.classList.add(
-            'active'
-        );
-
-
-        thinkingButton.textContent =
-            'Думаю';
-
-    } else if (
-        event.current_member_status ===
-        'THINKING'
-    ) {
-
-        goingButton.textContent =
-            'Я еду';
+        if (activeButton) {
+            activeButton.classList.add(
+                'active'
+            );
+        }
 
 
-        thinkingButton.textContent =
-            'Думаю ✓';
+        socialPanel.style.display =
+            'block';
 
-        thinkingButton.classList.add(
-            'active'
-        );
+        socialPanel.innerHTML =
+            '<div class="social-empty">Загрузка...</div>';
 
-    } else {
 
-        goingButton.textContent =
-            'Я еду';
+        loadEventParticipants(
+            event.id,
+            openSocialCategory
+        )
+            .then(data => {
 
-        thinkingButton.textContent =
-            'Думаю';
+                /*
+                    Карточка могла уже
+                    переключиться на другое событие.
+                */
+
+                const currentPanel =
+                    document.getElementById(
+                        `social-panel-${event.id}`
+                    );
+
+                if (!currentPanel) {
+                    return;
+                }
+
+
+                updateSocialCount(
+                    event,
+                    openSocialCategory,
+                    data.count
+                );
+
+
+                renderSocialParticipants(
+                    currentPanel,
+                    data.participants
+                );
+            })
+            .catch(error => {
+
+                console.error(
+                    error
+                );
+
+                const currentPanel =
+                    document.getElementById(
+                        `social-panel-${event.id}`
+                    );
+
+                if (currentPanel) {
+                    currentPanel.innerHTML =
+                        '<div class="social-empty">Не удалось загрузить участников</div>';
+                }
+            });
     }
 
 
     /*
-        Обработчики кнопок.
+        Готовая карточка.
     */
 
-    goingButton.addEventListener(
-        'click',
-        function () {
-
-            setParticipationStatus(
-                event,
-                'GOING'
-            );
-        }
+    eventCardContainer.appendChild(
+        card
     );
+}
 
 
-    thinkingButton.addEventListener(
-        'click',
-        function () {
-
-            setParticipationStatus(
-                event,
-                'THINKING'
-            );
-        }
-    );
-
-
-    buttons.appendChild(
-        goingButton
-    );
-
-    buttons.appendChild(
-        thinkingButton
-    );
 /*
-    Добавляем основные кнопки
-    в карточку.
+    ========================================
+    SOCIAL API
+    ========================================
 */
-    card.appendChild(buttons);
+
+async function loadEventParticipants(
+    eventId,
+    category
+) {
+
+    const response =
+        await fetch(
+            `/api/events/${eventId}/participants/?category=${category}`
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        console.error(
+            'Participants API error:',
+            data
+        );
+
+        throw new Error(
+            'Не удалось загрузить участников'
+        );
+    }
+
+
+    return data;
+}
+
+
+/*
+    ========================================
+    SOCIAL COUNTERS
+    ========================================
+*/
+
+function updateSocialCount(
+    event,
+    category,
+    count
+) {
+
+    if (
+        category === 'going'
+    ) {
+        event.going_count =
+            count;
+    }
+
+
+    if (
+        category === 'thinking'
+    ) {
+        event.thinking_count =
+            count;
+    }
+
+
+    if (
+        category === 'company'
+    ) {
+        event.looking_for_company_count =
+            count;
+    }
+}
+
+
+/*
+    ========================================
+    SOCIAL PANEL
+    ========================================
+*/
+
+async function toggleSocialPanel(
+    eventId,
+    category
+) {
+
+    const panel =
+        document.getElementById(
+            `social-panel-${eventId}`
+        );
+
+
+    if (!panel) {
+        return;
+    }
+
+
+    const socialTabs =
+        panel.previousElementSibling;
+
+
+    const tabButtons =
+        socialTabs.querySelectorAll(
+            'button'
+        );
 
 
     /*
-        Дополнительные действия появляются
-        только если пользователь уже отметил
-        участие в событии.
+        Повторный клик на уже
+        открытую категорию:
+        закрываем её.
     */
-    if (event.current_member_status) {
 
-        /*
-            Ищу компанию
-        */
-        const companyButton =
-            document.createElement('button');
+    if (
+        openSocialEventId === eventId &&
+        openSocialCategory === category
+    ) {
 
-        companyButton.className =
-            'company-button';
+        panel.innerHTML = '';
 
-        if (
-            event.current_member_looking_for_company
-        ) {
-            companyButton.textContent =
-                'Ищу компанию ✓';
+        panel.style.display =
+            'none';
 
-            companyButton.classList.add(
-                'active'
-            );
-        } else {
-            companyButton.textContent =
-                'Ищу компанию';
-        }
 
-        companyButton.addEventListener(
-            'click',
-            function () {
-                toggleLookingForCompany(event);
+        tabButtons.forEach(
+            button => {
+                button.classList.remove(
+                    'active'
+                );
             }
         );
 
-    card.appendChild(companyButton);
+
+        openSocialEventId = null;
+
+        openSocialCategory = null;
+
+
+        return;
+    }
 
 
     /*
-        Снять отметку
+        Запоминаем новое
+        открытое состояние.
     */
-    const removeButton =
-        document.createElement('button');
 
-    removeButton.className =
-        'remove-participation-button';
+    openSocialEventId =
+        eventId;
 
-    removeButton.textContent =
-        'Снять отметку';
+    openSocialCategory =
+        category;
 
-    removeButton.addEventListener(
-        'click',
-        function () {
-            removeParticipation(event);
+
+    /*
+        Снимаем active
+        со всех вкладок.
+    */
+
+    tabButtons.forEach(
+        button => {
+            button.classList.remove(
+                'active'
+            );
         }
     );
 
-    card.appendChild(removeButton);
+
+    /*
+        Подсвечиваем выбранную.
+    */
+
+    const activeButton =
+        socialTabs.querySelector(
+            `[data-category="${category}"]`
+        );
+
+
+    if (activeButton) {
+        activeButton.classList.add(
+            'active'
+        );
+    }
+
+
+    panel.style.display =
+        'block';
+
+    panel.innerHTML =
+        '<div class="social-empty">Загрузка...</div>';
+
+
+    try {
+
+        const data =
+            await loadEventParticipants(
+                eventId,
+                category
+            );
+
+
+        /*
+            Синхронизируем локальный
+            объект event со свежим count
+            от backend.
+        */
+
+        const event =
+            events.find(
+                item =>
+                    item.id === eventId
+            );
+
+
+        if (event) {
+
+            updateSocialCount(
+                event,
+                category,
+                data.count
+            );
+
+
+            /*
+                Обновляем текст именно
+                активной вкладки без
+                полной перерисовки карточки.
+            */
+
+            if (activeButton) {
+
+                if (
+                    category === 'going'
+                ) {
+                    activeButton.textContent =
+                        `👥 Едут: ${data.count}`;
+                }
+
+
+                if (
+                    category === 'thinking'
+                ) {
+                    activeButton.textContent =
+                        `🤔 Думают: ${data.count}`;
+                }
+
+
+                if (
+                    category === 'company'
+                ) {
+                    activeButton.textContent =
+                        `🙋 Ищут компанию: ${data.count}`;
+                }
+            }
+        }
+
+
+        renderSocialParticipants(
+            panel,
+            data.participants
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        panel.innerHTML =
+            `
+                <div class="social-empty">
+                    Не удалось загрузить участников
+                </div>
+            `;
+    }
 }
 
 
-eventCardContainer.appendChild(
-    card
-);
+/*
+    ========================================
+    SOCIAL PARTICIPANTS
+    ========================================
+*/
+
+function renderSocialParticipants(
+    panel,
+    participants
+) {
+
+    if (
+        !Array.isArray(participants) ||
+        participants.length === 0
+    ) {
+
+        panel.innerHTML =
+            `
+                <div class="social-empty">
+                    Пока никого нет
+                </div>
+            `;
+
+        return;
+    }
 
 
+    panel.innerHTML =
+        participants
+            .map(
+                participant => {
 
+                    const username =
+                        participant.username
+                            ? `@${participant.username}`
+                            : '';
+
+
+                    const displayName =
+                        participant.display_name ||
+                        participant.first_name ||
+                        participant.username ||
+                        'Участник';
+
+
+                    const firstLetter =
+                        displayName
+                            .charAt(0)
+                            .toUpperCase();
+
+
+                    /*
+                        Аватар Telegram,
+                        если backend его знает.
+                    */
+
+                    const avatar =
+                        participant.photo_url
+                            ? `
+                                <div class="social-participant-avatar">
+                                    <img
+                                        src="${participant.photo_url}"
+                                        alt=""
+                                    >
+                                </div>
+                            `
+                            : `
+                                <div class="social-participant-avatar">
+                                    <div class="social-participant-avatar-placeholder">
+                                        ${firstLetter}
+                                    </div>
+                                </div>
+                            `;
+
+
+                    return `
+                        <div class="social-participant">
+
+                            ${avatar}
+
+                            <div class="social-participant-info">
+
+                                <div class="social-participant-name">
+                                    ${displayName}
+                                </div>
+
+                                ${
+                                    username
+                                        ? `
+                                            <div class="social-participant-username">
+                                                ${username}
+                                            </div>
+                                        `
+                                        : ''
+                                }
+
+                            </div>
+
+                        </div>
+                    `;
+                }
+            )
+            .join('');
 }
-
-
 
 
 /*
@@ -1685,18 +2229,29 @@ eventCardContainer.appendChild(
 
 prevMonthButton.addEventListener(
     'click',
-    function () {
+    () => {
 
-        currentMonth--;
+        currentMonth -= 1;
 
 
-        if (currentMonth < 0) {
+        if (
+            currentMonth < 0
+        ) {
             currentMonth = 11;
-            currentYear--;
+            currentYear -= 1;
         }
 
 
-        closeEventsPanel();
+        selectedDate = null;
+
+        selectedDayEvents = [];
+
+        currentEventIndex = 0;
+
+        openSocialEventId = null;
+
+        openSocialCategory = null;
+
 
         renderCalendar();
     }
@@ -1705,132 +2260,143 @@ prevMonthButton.addEventListener(
 
 nextMonthButton.addEventListener(
     'click',
-    function () {
+    () => {
 
-        currentMonth++;
+        currentMonth += 1;
 
 
-        if (currentMonth > 11) {
+        if (
+            currentMonth > 11
+        ) {
             currentMonth = 0;
-            currentYear++;
+            currentYear += 1;
         }
 
 
-        closeEventsPanel();
+        selectedDate = null;
+
+        selectedDayEvents = [];
+
+        currentEventIndex = 0;
+
+        openSocialEventId = null;
+
+        openSocialCategory = null;
+
 
         renderCalendar();
     }
 );
 
-
-function closeEventsPanel() {
-
-    selectedDate = null;
-
-    selectedDayEvents = [];
-
-    currentEventIndex = 0;
-
-    showBrandState();
-}
-
-
 /*
     ========================================
-    HELPERS
+    LEGAL CONSENT API
     ========================================
 */
 
-function buildDateString(
-    year,
-    month,
-    day
+async function acceptConsent(
+    documentId
 ) {
 
-    const monthString =
-        String(
-            month + 1
-        ).padStart(
-            2,
-            '0'
+    const response =
+        await fetch(
+            '/api/legal/consents/',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
+
+                body: JSON.stringify({
+                    document_id:
+                        documentId,
+
+                    init_data:
+                        tg.initData
+                })
+            }
         );
 
 
-    const dayString =
-        String(
-            day
-        ).padStart(
-            2,
-            '0'
-        );
+    const data =
+        await response.json();
 
 
-    return (
-        `${year}-` +
-        `${monthString}-` +
-        `${dayString}`
+    console.log(
+        'CONSENT RESPONSE:',
+        data
     );
-}
 
-/*
-    ========================================
-    LEGAL
-    ========================================
-*/
-
-async function acceptConsent(documentId) {
-    const response = await fetch("/api/legal/consents/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            document_id: documentId,
-            init_data: tg.initData,
-        }),
-    });
-
-    const data = await response.json();
-
-    console.log("CONSENT RESPONSE:", data);
 
     if (!response.ok) {
+
         throw new Error(
-            data.error || "Не удалось сохранить согласие"
+            data.error ||
+            'Не удалось сохранить согласие'
         );
     }
+
 
     return data;
 }
 
+
+/*
+    ========================================
+    MEMBERSHIP GATE
+    ========================================
+*/
+
 function showMembershipGate() {
-    document.getElementById(
-        "consent-gate"
-    ).style.display = "none";
 
-    document.getElementById(
-        "calendar-app"
-    ).style.display = "none";
+    const consentGate =
+        document.getElementById(
+            'consent-gate'
+        );
 
-    document.getElementById(
-        "membership-gate"
-    ).style.display = "flex";
+    const membershipGate =
+        document.getElementById(
+            'membership-gate'
+        );
+
+    const calendarApp =
+        document.getElementById(
+            'calendar-app'
+        );
+
+
+    consentGate.style.display =
+        'none';
+
+    calendarApp.style.display =
+        'none';
+
+    membershipGate.style.display =
+        'flex';
+
 
     console.log(
-        "Membership denied:",
+        'Membership denied:',
         membershipStatus,
         membershipError
     );
 }
 
+
 /*
     ========================================
-    START (для коммита)
+    START
     ========================================
 */
+
 async function startApp() {
+
     await authenticateTelegramUser();
+
     await routeAfterAuth();
 }
+
 
 startApp();
