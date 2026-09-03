@@ -1789,7 +1789,7 @@ function showMembershipGate() {
 
 /*
     ========================================
-    START
+    START (для коммита)
     ========================================
 */
 async function startApp() {
