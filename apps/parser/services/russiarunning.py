@@ -1,9 +1,6 @@
 import requests
 from typing import Any, Dict, List
 from datetime import datetime
-
-from eventlet import event
-
 from apps.events.models import Event, EventDistance
 
 
@@ -11,20 +8,7 @@ def fetch_events(
     take: int = 12,
     skip: int = 0,
 ) -> List[Dict[str, Any]]:
-    """
-    Получает список событий из API RussiaRunning.
 
-    Args:
-        take: Количество событий для загрузки.
-        skip: Количество событий, которые нужно пропустить.
-
-    Returns:
-        Список событий RussiaRunning.
-
-    Raises:
-        RuntimeError: Если запрос к API завершился ошибкой.
-        ValueError: Если API вернул ответ неожиданного формата.
-    """
 
     api_url = "https://reg.russiarunning.com/api/events/list"
 
@@ -163,7 +147,7 @@ def save_distances(event, clean_event: Dict[str, Any]) -> None:
 
 
 
-def import_event(events: List[Dict[str, Any]]) -> None:
+def import_events(events: List[Dict[str, Any]]) -> None:
     for raw_event in events:
         clean_event = parse_event(raw_event)
         save_event(clean_event)
