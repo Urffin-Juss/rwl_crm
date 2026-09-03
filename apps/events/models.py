@@ -42,7 +42,7 @@ class Event(models.Model):
 
 class EventDistance(models.Model):
     event = models.ForeignKey(Event, related_name='distances', on_delete=models.CASCADE)
-    name = models.CharField(max_length=50, blank=False)
+    name = models.CharField(max_length=255, blank=False)
     distance = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
