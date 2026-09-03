@@ -7,7 +7,40 @@ from apps.legal.serializers import ConsentCreateSerializer
 from apps.miniapp.telegram_auth import validate_telegram_init_data
 from apps.users.models import ClubMember
 from django.shortcuts import render
+from docx import Document
 
+
+
+def render_legal_document(request, slug):
+    document = (
+        LegalDocument.objects
+        .filter(
+            slug=slug,
+            is_active=True,
+        )
+        .order_by("-published_at", "-id")
+        .first()
+    )
+
+    paragraphs = []
+
+    if document and document.file:
+        docx_document = Document(document.file.path)
+
+        paragraphs = [
+            paragraph.text
+            for paragraph in docx_document.paragraphs
+            if paragraph.text.strip()
+        ]
+
+    return render(
+        request,
+        "legal/document.html",
+        {
+            "document": document,
+            "paragraphs": paragraphs,
+        },
+    )
 
 def render_legal_document(request, slug):
     document = (
@@ -134,3 +167,8 @@ class ConsentCreateAPIView(APIView):
             ),
 
         )
+
+
+
+
+

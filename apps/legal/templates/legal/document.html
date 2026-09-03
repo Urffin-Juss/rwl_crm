@@ -3,39 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        {% if document %}
-            {{ document.title }}
-        {% else %}
-            Документ не найден
-        {% endif %}
-    </title>
+    <title>{{ document.title }}</title>
 </head>
 
 <body>
+    <main class="legal-page">
 
-{% if document %}
+        <header class="legal-header">
+            <div class="legal-brand">RUN WITH LOVE</div>
 
-    <h1>{{ document.title }}</h1>
+            <h1>{{ document.title }}</h1>
 
-    <p>Версия: {{ document.version }}</p>
+            <div class="legal-meta">
+                Версия {{ document.version }}
 
-    {% if document.file %}
-        <p>
-            <a href="{{ document.file.url }}">
-                Открыть документ
-            </a>
-        </p>
-    {% else %}
-        <p>Файл документа отсутствует.</p>
-    {% endif %}
+                {% if document.published_at %}
+                    · {{ document.published_at|date:"d.m.Y" }}
+                {% endif %}
+            </div>
+        </header>
 
-{% else %}
+        <article class="legal-content">
+            {% for paragraph in paragraphs %}
+                <p>{{ paragraph }}</p>
+            {% endfor %}
+        </article>
 
-    <h1>Документ не найден</h1>
-    <p>Актуальная версия документа сейчас недоступна.</p>
+        {% if document.file %}
+            <footer class="legal-footer">
+                <a href="{{ document.file.url }}">
+                    Скачать оригинал
+                </a>
+            </footer>
+        {% endif %}
 
-{% endif %}
-
+    </main>
 </body>
 </html>
