@@ -6,6 +6,7 @@ from apps.legal.models import Consent, LegalDocument
 from apps.legal.serializers import ConsentCreateSerializer
 from apps.miniapp.telegram_auth import validate_telegram_init_data
 from apps.users.models import ClubMember
+from django.shortcuts import render
 
 def privacy(request):
     return render(request, "legal/privacy.html")
