@@ -176,3 +176,8 @@ def fetch_all_events(
         skip += take
 
     return all_events
+
+
+def run_import() -> None:
+    all_events = fetch_all_events()
+    import_events(all_events)
