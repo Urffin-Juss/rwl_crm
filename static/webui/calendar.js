@@ -1730,7 +1730,7 @@ eventCounter.classList.add(
 
 /*
     ========================================
-    CAROUSEL
+    CAROUSEL (for commit)
     ========================================
 */
 
