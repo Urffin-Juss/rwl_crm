@@ -106,6 +106,7 @@ def parse_event(
         "name": event.get("title"),
         "city": event.get("cityName") or event.get("place") or "",
         "date": event.get("beginDate"),
+        "source_code": event.get("code", ""),
         "distances": cleanup_distances(
             event.get("raceItems", [])
         ),
@@ -125,6 +126,7 @@ def save_event(clean_event: Dict[str, Any]):
         defaults={
             "name": clean_event.get("name"),
             "city": clean_event.get("city"),
+            "source_code": clean_event["source_code"],
             "date": datetime.fromisoformat(clean_event.get("date")).date(),
         }
 
