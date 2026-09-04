@@ -1682,7 +1682,17 @@ eventCardContainer.appendChild(
     card
 );
 
-updateCarouselControls();
+eventPrevButton.classList.add(
+    'hidden'
+);
+
+eventNextButton.classList.add(
+    'hidden'
+);
+
+eventCounter.classList.add(
+    'hidden'
+);
 
 }
 

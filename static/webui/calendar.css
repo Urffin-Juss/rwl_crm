@@ -783,3 +783,76 @@ body {
 
     color: rgba(255, 255, 255, 0.45);
 }
+
+
+/* =========================
+   DAY EVENTS GRID
+========================= */
+
+.event-carousel.day-grid-mode {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.event-carousel.day-grid-mode .carousel-button {
+    display: none;
+}
+
+.day-events-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+}
+
+.day-event-tile {
+    min-width: 0;
+    min-height: 110px;
+
+    padding: 12px 10px;
+
+    border: 1px solid #333333;
+    border-radius: 14px;
+
+    background: #222222;
+    color: #ffffff;
+
+    text-align: left;
+    cursor: pointer;
+}
+
+.day-event-title {
+    display: -webkit-box;
+    overflow: hidden;
+
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.day-event-city {
+    margin-top: 8px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: #999999;
+
+    font-size: 11px;
+}
+
+.event-back-button {
+    margin: 0 0 14px;
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+    color: #aaaaaa;
+
+    font-size: 14px;
+    cursor: pointer;
+}
