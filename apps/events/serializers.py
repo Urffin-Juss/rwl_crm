@@ -42,6 +42,7 @@ class EventSerializer(serializers.ModelSerializer):
             'current_member_status',
             'current_participation_id',
             'current_member_looking_for_company',
+            'registration_url',
         )
 
 
