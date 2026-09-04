@@ -52,6 +52,8 @@ const eventPrevButton =
 const eventNextButton =
     document.querySelector('.event-next');
 
+const eventCounter =
+    document.querySelector('.event-counter');
 
 const emptyState =
     document.getElementById('calendar-empty-state');
