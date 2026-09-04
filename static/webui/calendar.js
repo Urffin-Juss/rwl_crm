@@ -1099,7 +1099,123 @@ function openEventsPanel(day) {
         `${monthNamesGenitive[currentMonth]} ` +
         `${currentYear}`;
 
-    renderCurrentEvent();
+    renderDayEventsGrid();
+}
+
+function renderDayEventsGrid() {
+
+    eventCardContainer.innerHTML = '';
+
+    /*
+        Переводим старый carousel-контейнер
+        в режим сетки событий.
+    */
+    const eventCarousel =
+        document.querySelector('.event-carousel');
+
+    eventCarousel.classList.add(
+        'day-grid-mode'
+    );
+
+
+    /*
+        Старая карусель отдельных событий
+        нам на этом экране больше не нужна.
+    */
+    eventPrevButton.classList.add(
+        'hidden'
+    );
+
+    eventNextButton.classList.add(
+        'hidden'
+    );
+
+    eventCounter.classList.add(
+        'hidden'
+    );
+
+
+    if (
+        selectedDayEvents.length === 0
+    ) {
+        return;
+    }
+
+
+    const grid =
+        document.createElement('div');
+
+    grid.className =
+        'day-events-grid';
+
+
+    selectedDayEvents.forEach(
+        function (event, index) {
+
+            const tile =
+                document.createElement(
+                    'button'
+                );
+
+            tile.className =
+                'day-event-tile';
+
+
+            const title =
+                document.createElement(
+                    'div'
+                );
+
+            title.className =
+                'day-event-title';
+
+            title.textContent =
+                event.name;
+
+
+            const city =
+                document.createElement(
+                    'div'
+                );
+
+            city.className =
+                'day-event-city';
+
+            city.textContent =
+                event.city || '';
+
+
+            tile.appendChild(
+                title
+            );
+
+            tile.appendChild(
+                city
+            );
+
+
+            tile.addEventListener(
+                'click',
+                function () {
+
+                    currentEventIndex =
+                        index;
+
+                    renderCurrentEvent();
+                }
+            );
+
+
+            grid.appendChild(
+                tile
+            );
+        }
+    );
+
+
+    eventCardContainer.appendChild(
+        grid
+    );
 }
 
 
