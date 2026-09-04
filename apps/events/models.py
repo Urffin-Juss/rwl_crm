@@ -20,6 +20,7 @@ class Event(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлен")
     source = models.CharField(max_length=100, blank=True,)
     external_id = models.CharField(max_length=100, blank=True,)
+    source_code = models.CharField(max_length=255, blank=True, default='')
 
 
     def __str__(self):
