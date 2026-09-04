@@ -348,6 +348,15 @@ body {
     font-size: 18px;
 }
 
+.events-count {
+    margin-top: -16px;
+    margin-bottom: 24px;
+
+    color: #888888;
+
+    font-size: 14px;
+}
+
 /* =========================
    DISTANCES
 ========================= */

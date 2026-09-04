@@ -1101,6 +1101,12 @@ function openEventsPanel(day) {
         `${monthNamesGenitive[currentMonth]} ` +
         `${currentYear}`;
 
+    const eventsCount =
+        document.querySelector('.events-count');
+
+    eventsCount.textContent =
+        `${selectedDayEvents.length} ${getEventsWord(selectedDayEvents.length)}`;
+
     renderDayEventsGrid();
 }
 
@@ -1892,6 +1898,35 @@ function buildDateString(
         `${monthString}-` +
         `${dayString}`
     );
+}
+
+function getEventsWord(count) {
+
+    const lastTwoDigits =
+        count % 100;
+
+    const lastDigit =
+        count % 10;
+
+    if (
+        lastTwoDigits >= 11 &&
+        lastTwoDigits <= 14
+    ) {
+        return 'забегов';
+    }
+
+    if (lastDigit === 1) {
+        return 'забег';
+    }
+
+    if (
+        lastDigit >= 2 &&
+        lastDigit <= 4
+    ) {
+        return 'забега';
+    }
+
+    return 'забегов';
 }
 
 /*
