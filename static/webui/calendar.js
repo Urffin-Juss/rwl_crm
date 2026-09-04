@@ -1393,6 +1393,35 @@ function renderCurrentEvent() {
             distancesContainer
         );
     }
+    /*
+        URL События
+    */
+
+
+    if (event.registration_url) {
+
+        const registrationLink =
+            document.createElement('a');
+
+        registrationLink.className =
+            'registration-link';
+
+        registrationLink.href =
+            event.registration_url;
+
+        registrationLink.target =
+            '_blank';
+
+        registrationLink.rel =
+            'noopener noreferrer';
+
+        registrationLink.textContent =
+            'Регистрация ↗';
+
+        card.appendChild(
+            registrationLink
+        );
+    }
 
 
     /*
