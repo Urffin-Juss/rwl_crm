@@ -22,6 +22,7 @@ class EventSerializer(serializers.ModelSerializer):
     current_participation_id = serializers.SerializerMethodField()
     current_member_looking_for_company = serializers.SerializerMethodField()
     looking_for_company_count = serializers.SerializerMethodField()
+    registration_url = serializers.SerializerMethodField()
 
 
 
@@ -138,6 +139,17 @@ class EventSerializer(serializers.ModelSerializer):
             looking_for_company=True
         ).count()
 
+    def get_registration_url(self, obj):
+        if (
+                obj.source == "russiarunning"
+                and obj.source_code
+        ):
+            return (
+                "https://reg.russiarunning.com/event/"
+                f"{obj.source_code}"
+            )
+
+        return None
 
 
 
