@@ -1221,6 +1221,16 @@ function renderDayEventsGrid() {
 
 function renderCurrentEvent() {
 
+    const eventCarousel =
+
+        document.querySelector('.event-carousel');
+
+    eventCarousel.classList.remove(
+
+        'day-grid-mode'
+
+    );
+
 
 
     eventCardContainer.innerHTML = '';
@@ -1232,6 +1242,26 @@ function renderCurrentEvent() {
         return;
     }
 
+    const backButton =
+        document.createElement('button');
+
+    backButton.className =
+        'event-back-button';
+
+    backButton.textContent =
+        '← Все забеги дня';
+
+    backButton.addEventListener(
+        'click',
+        function () {
+            renderDayEventsGrid();
+        }
+    );
+
+    eventCardContainer.appendChild(
+        backButton
+
+    );
 
     const event =
         selectedDayEvents[
