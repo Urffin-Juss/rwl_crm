@@ -865,3 +865,21 @@ body {
     font-size: 14px;
     cursor: pointer;
 }
+
+
+.day-event-tile.has-club-participants {
+    border-color: rgba(255, 255, 255, 0.55);
+
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 0 18px rgba(255, 255, 255, 0.08);
+}
+
+.day-event-participants {
+    margin-top: 12px;
+
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 600;
+}

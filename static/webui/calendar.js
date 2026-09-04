@@ -1168,6 +1168,12 @@ function renderDayEventsGrid() {
             tile.className =
                 'day-event-tile';
 
+            if (event.going_count > 0) {
+                tile.classList.add(
+                    'has-club-participants'
+                );
+            }
+
 
             const title =
                 document.createElement(
@@ -1196,6 +1202,23 @@ function renderDayEventsGrid() {
             tile.appendChild(
                 title
             );
+
+
+            if (event.going_count > 0) {
+
+                const participants =
+                    document.createElement('div');
+
+                participants.className =
+                    'day-event-participants';
+
+                participants.textContent =
+                    `👥 ${event.going_count}`;
+
+                tile.appendChild(
+                    participants
+                );
+            }
 
             tile.appendChild(
                 city
