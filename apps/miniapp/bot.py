@@ -58,7 +58,7 @@ async def start_handler(message: Message):
 
                     text="🏃 Открыть календарь",
 
-                    url="https://t.me/TestForChatEasyBot?startapp"
+                    web_app=WebAppInfo(url=MINI_APP_URL),
 
                 )
 
