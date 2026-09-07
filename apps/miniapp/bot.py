@@ -58,13 +58,15 @@ async def start_handler(message: Message):
 
                     text="🏃 Открыть календарь",
 
-                    web_app=WebAppInfo(url=MINI_APP_URL),
+                    url="https://t.me/rwlminiappbot?startapp",
 
                 )
 
             ]
 
         ]
+
+    )
 
     )
 
