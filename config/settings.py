@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from celery.schedules import crontab
 
 load_dotenv()
 
@@ -8,6 +9,9 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+
+
+CLUB_CHAT_ID = os.getenv("CLUB_CHAT_ID")
 
 
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('1', 'true', 'yes', 'on')
@@ -35,6 +39,9 @@ INSTALLED_APPS = [
     'apps.clients',
     'import_export',
     'apps.webui',
+    'apps.miniapp',
+    'apps.legal',
+    'apps.parser',
 
     
 ]
@@ -139,4 +146,10 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+    "import-russiarunning-daily": {
+        "task": "apps.parser.tasks.import_russiarunning_task",
+        "schedule": crontab(hour=4, minute=0),
+    },
+}
 

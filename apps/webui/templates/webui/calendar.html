@@ -1,0 +1,188 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
+
+
+
+    <link
+        rel="stylesheet"
+        href="{% static 'webui/calendar.css' %}?v=3"
+    >
+</head>
+
+<div id="consent-gate" class="consent-gate" style="display: none;">
+
+    <div class="consent-card">
+
+        <div class="consent-progress">
+            <div id="consent-progress-bars" class="consent-progress-bars"></div>
+            <span id="consent-progress-text" class="consent-progress-text"></span>
+        </div>
+
+        <div class="consent-content">
+            <div class="consent-label">
+                RUN WITH LOVE · ДОКУМЕНТЫ
+            </div>
+
+            <h1 id="consent-title" class="consent-title"></h1>
+
+            <div id="consent-version" class="consent-version"></div>
+
+            <p class="consent-description">
+                Перед продолжением ознакомьтесь с документом
+                и подтвердите согласие отдельно.
+            </p>
+        </div>
+
+        <div class="consent-actions">
+            <a
+                id="consent-link"
+                class="consent-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <span>Открыть документ</span>
+                <span>↗</span>
+            </a>
+
+            <button
+                id="consent-accept-button"
+                class="consent-accept-button"
+                type="button"
+            >
+                Согласен
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<div
+    id="membership-gate"
+    class="membership-gate"
+    style="display: none;"
+>
+    <div class="membership-card">
+        <div class="membership-label">
+            RUN WITH LOVE
+        </div>
+
+        <h1>
+            Календарь доступен участникам стаи
+        </h1>
+
+        <p>
+            Чтобы пользоваться клубным календарём
+            и видеть, кто едет на старты,
+            нужно состоять в клубном Telegram-чате.
+        </p>
+    </div>
+</div>
+
+<title>Календарь забегов</title>
+
+<div id="calendar-app">
+
+<div class="app">
+
+    <div class="calendar-header">
+        <button class="month-button prev-month">←</button>
+
+        <h1 class="calendar-title"></h1>
+
+        <button class="month-button next-month">→</button>
+    </div>
+
+    <div class="weekdays">
+        <div>ПН</div>
+        <div>ВТ</div>
+        <div>СР</div>
+        <div>ЧТ</div>
+        <div>ПТ</div>
+        <div>СБ</div>
+        <div>ВС</div>
+    </div>
+
+    <div class="calendar-grid"></div>
+
+    <div id="calendar-empty-state" class="calendar-empty-state">
+
+    <div class="brand-content">
+
+        <div class="brand-logo">
+
+            <div class="brand-line">
+                RUN
+            </div>
+
+            <div class="brand-line">
+                WITH
+            </div>
+
+            <div class="brand-line brand-love">
+                <span class="brand-letter">L</span>
+
+                <span class="brand-heart">
+                    <span class="brand-heart-shape">
+                    </span>
+                </span>
+
+                <span class="brand-letter">VE</span>
+            </div>
+
+        </div>
+
+        <div class="brand-slogan">
+            Это всё по любви
+        </div>
+
+    </div>
+
+</div>
+
+    <section class="events-panel hidden">
+
+        <h2 class="events-date"></h2>
+
+        <div class="events-count"></div>
+
+        <div class="event-carousel">
+
+            <button class="carousel-button event-prev">
+                ←
+            </button>
+
+            <div class="event-card-container"></div>
+
+
+
+            <button class="carousel-button event-next">
+                →
+            </button>
+
+        </div>
+
+
+        <div class="event-counter"></div>
+
+    </section>
+
+</div>
+
+</div>
+
+
+
+
+
+<script src="{% static 'webui/calendar.js' %}?v=3"></script>
+
+</body>
+</html>

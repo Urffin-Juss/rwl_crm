@@ -1,0 +1,2045 @@
+
+
+
+
+let currentMemberId = null;
+
+let requiredConsents = [];
+
+let currentConsentIndex = 0;
+
+let openSocialEventId = null;
+
+let openSocialCategory = null;
+
+let isClubMember = null;
+
+let membershipStatus = null;
+
+let membershipError = null;
+
+
+/*
+    ========================================
+    DOM
+    ========================================
+*/
+
+const calendarTitle =
+    document.querySelector('.calendar-title');
+
+const calendarGrid =
+    document.querySelector('.calendar-grid');
+
+const prevMonthButton =
+    document.querySelector('.prev-month');
+
+const nextMonthButton =
+    document.querySelector('.next-month');
+
+const eventsPanel =
+    document.querySelector('.events-panel');
+
+const eventsDate =
+    document.querySelector('.events-date');
+
+const eventCardContainer =
+    document.querySelector('.event-card-container');
+
+const eventPrevButton =
+    document.querySelector('.event-prev');
+
+const eventNextButton =
+    document.querySelector('.event-next');
+
+const eventCounter =
+    document.querySelector('.event-counter');
+
+const emptyState =
+    document.getElementById('calendar-empty-state');
+
+
+
+
+
+
+/*
+    ========================================
+    TELEGRAM (for commit)
+    ========================================
+*/
+
+const tg = window.Telegram?.WebApp;
+
+if (tg) {
+    tg.ready();
+
+    console.log('Telegram WebApp:', tg);
+    console.log('initData:', tg.initData);
+    console.log('initDataUnsafe:', tg.initDataUnsafe);
+    console.log('Telegram user:', tg.initDataUnsafe?.user);
+} else {
+    console.log('Telegram WebApp не найден');
+}
+
+
+/*
+    ========================================
+    TELEGRAM AUTH
+    ========================================
+*/
+
+async function authenticateTelegramUser() {
+
+    if (!tg?.initData) {
+        console.error(
+            'Telegram initData отсутствует'
+        );
+
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            '/api/auth/telegram/',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
+
+                body: JSON.stringify({
+                    init_data: tg.initData
+                })
+            }
+        );
+
+        const data =
+            await response.json();
+
+        isClubMember =
+            data.is_club_member;
+
+        membershipStatus =
+            data.membership_status;
+
+        membershipError =
+            data.membership_error;
+
+        requiredConsents = data.required_consents || [];
+
+        console.log("AUTH RESPONSE:", data);
+        console.log("REQUIRED CONSENTS:", data.required_consents);
+
+        if (!response.ok) {
+            console.error(
+                'Telegram auth error:',
+                data
+            );
+
+            return;
+        }
+
+        console.log(
+            'Telegram auth success:',
+            data
+        );
+
+        currentMemberId = data.member_id;
+
+        return currentMemberId;
+
+
+
+    } catch (error) {
+        console.error(
+            'Ошибка Telegram auth:',
+            error
+        );
+    }
+}
+
+async function routeAfterAuth() {
+
+    /*
+        1. Сначала Legal Gate.
+    */
+
+    currentConsentIndex = 0;
+
+    if (requiredConsents.length > 0) {
+        showConsentScreen();
+        return;
+    }
+
+
+    /*
+        2. Потом Membership Gate.
+    */
+
+    if (!isClubMember) {
+        showMembershipGate();
+        return;
+    }
+
+
+    /*
+        3. Только после обоих gate —
+        календарь.
+    */
+
+    document.getElementById(
+        "consent-gate"
+    ).style.display = "none";
+
+    document.getElementById(
+        "membership-gate"
+    ).style.display = "none";
+
+    document.getElementById(
+        "calendar-app"
+    ).style.display = "block";
+
+    await loadEvents();
+}
+
+
+function showConsentScreen() {
+    const gate = document.getElementById("consent-gate");
+    const calendarApp = document.getElementById("calendar-app");
+
+    if (requiredConsents.length === 0) {
+        gate.style.display = "none";
+        calendarApp.style.display = "block";
+        return;
+    }
+
+    const documentData = requiredConsents[currentConsentIndex];
+
+    calendarApp.style.display = "none";
+    gate.style.display = "flex";
+
+    const progressBars =
+    document.getElementById("consent-progress-bars");
+
+    progressBars.innerHTML = "";
+
+    requiredConsents.forEach((_, index) => {
+        const bar = document.createElement("div");
+
+        bar.className = "consent-progress-bar";
+
+        if (index <= currentConsentIndex) {
+            bar.classList.add("active");
+        }
+
+        progressBars.appendChild(bar);
+    });
+
+document.getElementById("consent-progress-text").textContent =
+    `${currentConsentIndex + 1} из ${requiredConsents.length}`;
+
+    document.getElementById("consent-title").textContent =
+        documentData.title;
+
+    document.getElementById("consent-version").textContent =
+        `Версия ${documentData.version}`;
+
+    document.getElementById("consent-link").href =
+        documentData.url;
+
+    const acceptButton =
+        document.getElementById("consent-accept-button");
+
+    acceptButton.onclick = handleConsentAccept;
+}
+
+
+async function handleConsentAccept() {
+    const acceptButton =
+        document.getElementById("consent-accept-button");
+
+    const documentData =
+        requiredConsents[currentConsentIndex];
+
+    console.log(
+        "Accepting document:",
+        documentData.id,
+        documentData.title
+    );
+
+    acceptButton.disabled = true;
+    acceptButton.textContent = "Сохраняем...";
+
+    try {
+        await acceptConsent(documentData.id);
+
+        currentConsentIndex += 1;
+
+        if (currentConsentIndex < requiredConsents.length) {
+            acceptButton.disabled = false;
+            acceptButton.textContent = "Согласен";
+
+            showConsentScreen();
+            return;
+        }
+
+        /*
+         * Все документы из текущего набора приняты.
+         * Проверяем backend ещё раз.
+         */
+        await authenticateTelegramUser();
+
+        await authenticateTelegramUser();
+
+        acceptButton.disabled = false;
+        acceptButton.textContent = "Согласен";
+
+        await routeAfterAuth();
+
+    } catch (error) {
+        console.error("Consent error:", error);
+
+        acceptButton.disabled = false;
+        acceptButton.textContent = "Попробовать ещё раз";
+    }
+}
+
+/*
+    ========================================
+    STATE
+    ========================================
+*/
+
+function showBrandState() {
+    emptyState.style.display = 'flex';
+    eventsPanel.classList.add('hidden');
+}
+
+function showEventState() {
+    emptyState.style.display = 'none';
+    eventsPanel.classList.remove('hidden');
+}
+
+
+let events = [];
+
+const now = new Date();
+
+let currentYear =
+    now.getFullYear();
+
+let currentMonth =
+    now.getMonth();
+
+let selectedDate = null;
+
+let selectedDayEvents = [];
+
+let currentEventIndex = 0;
+
+
+/*
+    ========================================
+    MONTH NAMES
+    ========================================
+*/
+
+const monthNames = [
+    'Январь',
+    'Февраль',
+    'Март',
+    'Апрель',
+    'Май',
+    'Июнь',
+    'Июль',
+    'Август',
+    'Сентябрь',
+    'Октябрь',
+    'Ноябрь',
+    'Декабрь'
+];
+
+const monthNamesGenitive = [
+    'января',
+    'февраля',
+    'марта',
+    'апреля',
+    'мая',
+    'июня',
+    'июля',
+    'августа',
+    'сентября',
+    'октября',
+    'ноября',
+    'декабря'
+];
+
+
+/*
+    ========================================
+    LOAD EVENTS
+    ========================================
+*/
+
+async function loadEvents() {
+    try {
+        const response = await fetch(
+            `/api/events/?member=${currentMemberId}`
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP error: ${response.status}`
+            );
+        }
+
+        events = await response.json();
+
+        renderCalendar();
+
+    } catch (error) {
+        console.error(
+            'Ошибка загрузки событий:',
+            error
+        );
+    }
+}
+
+
+/*
+    ========================================
+    PARTICIPATION
+    ========================================
+*/
+
+async function setParticipationStatus(
+    event,
+    status
+) {
+
+    /*
+        Если человек нажал кнопку,
+        которая уже активна,
+        ничего не делаем.
+    */
+    if (
+        event.current_member_status === status
+    ) {
+        return;
+    }
+
+
+    try {
+        const response = await fetch(
+            '/api/participations/',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
+
+                body: JSON.stringify({
+                    event: event.id,
+                    member: currentMemberId,
+                    distance: null,
+                    status: status,
+                    looking_for_company:
+                        event.current_member_looking_for_company
+                })
+            }
+        );
+
+
+        if (!response.ok) {
+            const errorData =
+                await response.json();
+
+            console.error(
+                'Participation error:',
+                errorData
+            );
+
+
+
+            return;
+        }
+
+
+        const participationData =
+            await response.json();
+
+        event.current_participation_id =
+            participationData.id;
+
+
+        /*
+            Запоминаем старый статус,
+            чтобы правильно переставить
+            единичку между счётчиками.
+        */
+
+        const previousStatus =
+            event.current_member_status;
+
+
+        /*
+            Убираем пользователя
+            из старого счётчика.
+        */
+
+        if (
+            previousStatus === 'GOING'
+        ) {
+            event.going_count =
+                Math.max(
+                    0,
+                    event.going_count - 1
+                );
+        }
+
+        if (
+            previousStatus === 'THINKING'
+        ) {
+            event.thinking_count =
+                Math.max(
+                    0,
+                    event.thinking_count - 1
+                );
+        }
+
+
+        /*
+            Добавляем пользователя
+            в новый счётчик.
+        */
+
+        if (status === 'GOING') {
+            event.going_count += 1;
+        }
+
+        if (status === 'THINKING') {
+            event.thinking_count += 1;
+        }
+
+
+        event.current_member_status =
+            status;
+
+
+        await refreshEventCard(event);
+
+    } catch (error) {
+        console.error(
+            'Ошибка изменения участия:',
+            error
+        );
+    }
+}
+
+
+async function toggleLookingForCompany(event) {
+
+    if (!event.current_member_status) {
+        return;
+    }
+
+    const newValue =
+        !event.current_member_looking_for_company;
+
+    try {
+        const response = await fetch(
+            '/api/participations/',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
+
+                body: JSON.stringify({
+                    event: event.id,
+                    member: currentMemberId,
+                    distance: null,
+                    status: event.current_member_status,
+                    looking_for_company: newValue
+                })
+            }
+        );
+
+        if (!response.ok) {
+            const errorData =
+                await response.json();
+
+            console.error(
+                'Looking for company error:',
+                errorData
+            );
+
+            return;
+        }
+
+        const participationData =
+            await response.json();
+
+        event.current_participation_id =
+            participationData.id;
+
+        if (newValue) {
+            event.looking_for_company_count += 1;
+        } else {
+            event.looking_for_company_count =
+                Math.max(
+                    0,
+                    event.looking_for_company_count - 1
+                );
+        }
+
+
+        event.current_member_looking_for_company =
+            newValue;
+
+        await refreshEventCard(event);
+
+    } catch (error) {
+        console.error(
+            'Ошибка изменения поиска компании:',
+            error
+        );
+    }
+}
+
+
+async function removeParticipation(event) {
+
+    if (!event.current_participation_id) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `/api/participations/${event.current_participation_id}/`,
+            {
+                method: 'DELETE'
+            }
+        );
+
+        if (!response.ok) {
+            console.error(
+                'Ошибка удаления участия:',
+                response.status
+            );
+
+            return;
+        }
+
+        if (event.current_member_status === 'GOING') {
+            event.going_count = Math.max(
+                0,
+                event.going_count - 1
+            );
+        }
+
+
+        if (event.current_member_status === 'THINKING') {
+            event.thinking_count = Math.max(
+                0,
+                event.thinking_count - 1
+            );
+        }
+
+
+        if (
+            event.current_member_looking_for_company
+        ) {
+            event.looking_for_company_count =
+                Math.max(
+                    0,
+                    event.looking_for_company_count - 1
+                );
+        }
+
+        event.current_member_status = null;
+        event.current_participation_id = null;
+        event.current_member_looking_for_company = false;
+
+        await refreshEventCard(event);
+
+    } catch (error) {
+        console.error(
+            'Ошибка удаления участия:',
+            error
+        );
+    }
+}
+
+/*
+    ========================================
+    SOCIAL MECHANICS
+    ========================================
+*/
+
+
+async function loadEventParticipants(eventId, category) {
+    const response = await fetch(
+        `/api/events/${eventId}/participants/?category=${category}`
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        console.error("Participants API error:", data);
+        throw new Error("Не удалось загрузить участников");
+    }
+
+    return data;
+}
+
+async function toggleSocialPanel(eventId, category) {
+
+
+    const panel = document.getElementById(
+        `social-panel-${eventId}`
+    );
+
+    if (!panel) {
+        return;
+    }
+    const socialTabs =
+        panel.previousElementSibling;
+
+    const tabButtons =
+        socialTabs.querySelectorAll('button');
+    /*
+     * Нажали повторно на уже открытую категорию —
+     * просто сворачиваем панель.
+     */
+    if (
+        openSocialEventId === eventId &&
+        openSocialCategory === category
+    ) {
+        panel.innerHTML = "";
+        panel.style.display = "none";
+
+        tabButtons.forEach(
+            function (button) {
+            button.classList.remove('active');
+            }
+        );
+
+        openSocialEventId = null;
+        openSocialCategory = null;
+
+        return;
+    }
+
+    openSocialEventId = eventId;
+    openSocialCategory = category;
+
+    tabButtons.forEach(
+        function (button) {
+            button.classList.remove('active');
+        }
+    );
+
+
+
+    const activeButton =
+        socialTabs.querySelector(
+            `[data-category="${category}"]`
+        );
+
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+
+
+
+
+
+    panel.style.display = "block";
+    panel.innerHTML = "<div>Загрузка...</div>";
+
+    try {
+        const data = await loadEventParticipants(
+            eventId,
+            category
+        );
+
+        const event =
+            events.find(
+                event => event.id === eventId
+            );
+
+        if (event) {
+
+            if (category === 'going') {
+                event.going_count =
+                    data.count;
+
+                activeButton.textContent =
+                    `👥 Едут: ${data.count}`;
+            }
+
+            if (category === 'thinking') {
+                event.thinking_count =
+                    data.count;
+
+                activeButton.textContent =
+                    `🤔 Думают: ${data.count}`;
+            }
+
+            if (category === 'company') {
+                event.looking_for_company_count =
+                    data.count;
+
+                activeButton.textContent =
+                    `🙋 Ищут компанию: ${data.count}`;
+            }
+        }
+
+
+        renderSocialParticipants(
+            panel,
+            data.participants
+        );
+
+    } catch (error) {
+        console.error(error);
+
+        panel.innerHTML =
+            "<div>Не удалось загрузить участников</div>";
+    }
+}
+
+function renderSocialParticipants(panel, participants) {
+    if (participants.length === 0) {
+        panel.innerHTML = `
+            <div class="social-empty">
+                Пока никого нет
+            </div>
+        `;
+
+        return;
+    }
+
+    panel.innerHTML = participants
+        .map((participant) => {
+            const username = participant.username
+                ? `@${participant.username}`
+                : "";
+
+            const firstLetter =
+                participant.display_name
+                    ? participant.display_name.charAt(0).toUpperCase()
+                    : "?";
+
+            const avatar = participant.photo_url
+                ? `
+                    <div class="social-participant-avatar">
+                        <img
+                            src="${participant.photo_url}"
+                            alt=""
+                        >
+                    </div>
+                `
+                : `
+                    <div class="social-participant-avatar">
+                        <div class="social-participant-avatar-placeholder">
+                            ${firstLetter}
+                        </div>
+                    </div>
+                `;
+
+            return `
+                <div class="social-participant">
+                    ${avatar}
+
+                    <div class="social-participant-info">
+                        <div class="social-participant-name">
+                            ${participant.display_name}
+                        </div>
+
+                        ${
+                            username
+                                ? `
+                                    <div class="social-participant-username">
+                                        ${username}
+                                    </div>
+                                `
+                                : ""
+                        }
+                    </div>
+                </div>
+            `;
+        })
+        .join("");
+}
+async function refreshEventCard(event) {
+
+    const shouldRestoreSocialPanel =
+        openSocialEventId === event.id &&
+        openSocialCategory !== null;
+
+    const categoryToRestore =
+        openSocialCategory;
+
+
+    /*
+        Перерисовываем карточку
+        с новыми счётчиками и кнопками.
+    */
+
+    renderCurrentEvent();
+
+
+    /*
+        Если social-панель была открыта,
+        открываем ту же категорию заново.
+    */
+
+    if (shouldRestoreSocialPanel) {
+
+        /*
+            Сбрасываем состояние,
+            иначе toggleSocialPanel решит,
+            что мы повторно нажали активный таб
+            и закроет его.
+        */
+
+        openSocialEventId = null;
+        openSocialCategory = null;
+
+        await toggleSocialPanel(
+            event.id,
+            categoryToRestore
+        );
+    }
+}
+/*
+    ========================================
+    CALENDAR
+    ========================================
+*/
+
+function renderCalendar() {
+
+
+
+    calendarGrid.innerHTML = '';
+
+    calendarTitle.textContent =
+        `${monthNames[currentMonth]} ${currentYear}`;
+
+
+    const firstDay =
+        new Date(
+            currentYear,
+            currentMonth,
+            1
+        );
+
+
+    const daysInMonth =
+        new Date(
+            currentYear,
+            currentMonth + 1,
+            0
+        ).getDate();
+
+
+    /*
+        JS:
+        Sunday = 0
+        Monday = 1
+
+        Нам надо:
+        Monday = 0
+        Sunday = 6
+    */
+
+    let startOffset =
+        firstDay.getDay() - 1;
+
+    if (startOffset < 0) {
+        startOffset = 6;
+    }
+
+
+    /*
+        Пустые клетки
+        перед первым числом месяца.
+    */
+
+    for (
+        let i = 0;
+        i < startOffset;
+        i++
+    ) {
+        const emptyCell =
+            document.createElement('div');
+
+        emptyCell.className =
+            'calendar-day';
+
+        calendarGrid.appendChild(
+            emptyCell
+        );
+    }
+
+
+    /*
+        Дни месяца.
+    */
+
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
+    ) {
+
+        const cell =
+            document.createElement('div');
+
+        cell.className =
+            'calendar-day';
+
+
+        const dayNumber =
+            document.createElement('div');
+
+        dayNumber.className =
+            'day-number';
+
+        dayNumber.textContent =
+            day;
+
+
+        const dateString =
+            buildDateString(
+                currentYear,
+                currentMonth,
+                day
+            );
+
+
+        const dayEvents =
+            events.filter(
+                event =>
+                    event.date ===
+                    dateString
+            );
+
+
+        if (dayEvents.length > 0) {
+
+            cell.classList.add(
+                'has-event'
+            );
+
+
+            cell.addEventListener(
+                'click',
+                function () {
+
+                    selectedDate =
+                        dateString;
+
+                    selectedDayEvents =
+                        dayEvents;
+
+                    currentEventIndex = 0;
+
+                    renderCalendar();
+
+                    openEventsPanel(
+                        day
+                    );
+                }
+            );
+        }
+
+
+        if (
+            selectedDate ===
+            dateString
+        ) {
+            cell.classList.add(
+                'selected'
+            );
+        }
+
+
+        cell.appendChild(
+            dayNumber
+        );
+
+        calendarGrid.appendChild(
+            cell
+        );
+    }
+}
+
+
+/*
+    ========================================
+    EVENT PANEL
+    ========================================
+*/
+
+function openEventsPanel(day) {
+
+    showEventState();
+
+    eventsDate.textContent =
+        `${day} ` +
+        `${monthNamesGenitive[currentMonth]} ` +
+        `${currentYear}`;
+
+    const eventsCount =
+        document.querySelector('.events-count');
+
+    eventsCount.textContent =
+        `${selectedDayEvents.length} ${getEventsWord(selectedDayEvents.length)}`;
+
+    renderDayEventsGrid();
+}
+
+function renderDayEventsGrid() {
+
+    eventCardContainer.innerHTML = '';
+
+    /*
+        Переводим старый carousel-контейнер
+        в режим сетки событий.
+    */
+    const eventCarousel =
+        document.querySelector('.event-carousel');
+
+    eventCarousel.classList.add(
+        'day-grid-mode'
+    );
+
+
+    /*
+        Старая карусель отдельных событий
+        нам на этом экране больше не нужна.
+    */
+    eventPrevButton.classList.add(
+        'hidden'
+    );
+
+    eventNextButton.classList.add(
+        'hidden'
+    );
+
+    eventCounter.classList.add(
+        'hidden'
+    );
+
+
+    if (
+        selectedDayEvents.length === 0
+    ) {
+        return;
+    }
+
+
+    const grid =
+        document.createElement('div');
+
+    grid.className =
+        'day-events-grid';
+
+
+    selectedDayEvents.forEach(
+        function (event, index) {
+
+            const tile =
+                document.createElement(
+                    'button'
+                );
+
+            tile.className =
+                'day-event-tile';
+
+            if (event.going_count > 0) {
+                tile.classList.add(
+                    'has-club-participants'
+                );
+            }
+
+
+            const title =
+                document.createElement(
+                    'div'
+                );
+
+            title.className =
+                'day-event-title';
+
+            title.textContent =
+                event.name;
+
+
+            const city =
+                document.createElement(
+                    'div'
+                );
+
+            city.className =
+                'day-event-city';
+
+            city.textContent =
+                event.city || '';
+
+
+            tile.appendChild(
+                title
+            );
+
+
+            if (event.going_count > 0) {
+
+                const participants =
+                    document.createElement('div');
+
+                participants.className =
+                    'day-event-participants';
+
+                participants.textContent =
+                    `👥 ${event.going_count}`;
+
+                tile.appendChild(
+                    participants
+                );
+            }
+
+            tile.appendChild(
+                city
+            );
+
+
+            tile.addEventListener(
+                'click',
+                function () {
+
+                    currentEventIndex =
+                        index;
+
+                    renderCurrentEvent();
+                }
+            );
+
+
+            grid.appendChild(
+                tile
+            );
+        }
+    );
+
+
+    eventCardContainer.appendChild(
+        grid
+    );
+}
+
+
+function renderCurrentEvent() {
+
+    const eventCarousel =
+
+        document.querySelector('.event-carousel');
+
+    eventCarousel.classList.remove(
+
+        'day-grid-mode'
+
+    );
+
+
+
+    eventCardContainer.innerHTML = '';
+
+
+    if (
+        selectedDayEvents.length === 0
+    ) {
+        return;
+    }
+
+    const backButton =
+        document.createElement('button');
+
+    backButton.className =
+        'event-back-button';
+
+    backButton.textContent =
+        '← Все забеги дня';
+
+    backButton.addEventListener(
+        'click',
+        function () {
+            renderDayEventsGrid();
+        }
+    );
+
+    eventCardContainer.appendChild(
+        backButton
+
+    );
+
+    const event =
+        selectedDayEvents[
+            currentEventIndex
+        ];
+
+
+    /*
+        Карточка.
+    */
+
+    const card =
+        document.createElement('div');
+
+    card.className =
+        'event-card';
+
+
+    /*
+        Название.
+    */
+
+    const title =
+        document.createElement('h3');
+
+    title.className =
+        'event-name';
+
+    title.textContent =
+        event.name;
+
+    card.appendChild(
+        title
+    );
+
+
+    /*
+        Город.
+    */
+
+    const city =
+        document.createElement('div');
+
+    city.className =
+        'event-city';
+
+    city.textContent =
+        event.city;
+
+    card.appendChild(
+        city
+    );
+
+
+    /*
+        Дистанции.
+    */
+
+    if (
+        event.distances &&
+        event.distances.length > 0
+    ) {
+
+        const distancesContainer =
+            document.createElement('div');
+
+        distancesContainer.className =
+            'distances';
+
+
+        event.distances.forEach(
+            function (distance) {
+
+                const badge =
+                    document.createElement(
+                        'div'
+                    );
+
+                badge.className =
+                    'distance-badge';
+
+                /*
+                    Нам важнее красивое name,
+                    чем голое число distance.
+                */
+
+                badge.textContent =
+                    distance.name;
+
+                distancesContainer.appendChild(
+                    badge
+                );
+            }
+        );
+
+
+        card.appendChild(
+            distancesContainer
+        );
+    }
+    /*
+        URL События
+    */
+
+
+    if (event.registration_url) {
+
+        const registrationLink =
+            document.createElement('a');
+
+        registrationLink.className =
+            'registration-link';
+
+        registrationLink.href =
+            event.registration_url;
+
+        registrationLink.target =
+            '_blank';
+
+        registrationLink.rel =
+            'noopener noreferrer';
+
+        registrationLink.textContent =
+            'Регистрация ↗';
+
+        card.appendChild(
+            registrationLink
+        );
+    }
+
+
+    /*
+        Счётчики участия.
+    */
+
+    const socialTabs =
+        document.createElement('div');
+
+    socialTabs.className =
+        'event-social-tabs';
+
+
+    /*
+        Едут.
+    */
+
+    const goingSocialButton =
+        document.createElement('button');
+
+
+
+    goingSocialButton.type =
+        'button';
+
+    goingSocialButton.textContent =
+        `👥 Едут: ${event.going_count}`;
+
+    goingSocialButton.addEventListener(
+        'click',
+        function () {
+            toggleSocialPanel(
+                event.id,
+                'going'
+            );
+        }
+    );
+
+    socialTabs.appendChild(
+        goingSocialButton
+    );
+
+    goingSocialButton.dataset.category =
+        'going';
+
+
+    /*
+        Думают.
+    */
+
+    const thinkingSocialButton =
+        document.createElement('button');
+
+    thinkingSocialButton.type =
+        'button';
+
+    thinkingSocialButton.textContent =
+        `🤔 Думают: ${event.thinking_count}`;
+
+    thinkingSocialButton.addEventListener(
+        'click',
+        function () {
+            toggleSocialPanel(
+                event.id,
+                'thinking'
+            );
+        }
+    );
+
+    socialTabs.appendChild(
+        thinkingSocialButton
+    );
+
+    thinkingSocialButton.dataset.category =
+        'thinking';
+
+
+    /*
+        Ищут компанию.
+    */
+
+    const companySocialButton =
+        document.createElement('button');
+
+    companySocialButton.type =
+        'button';
+
+    companySocialButton.textContent =
+        `🙋 Ищут компанию: ${event.looking_for_company_count}`;
+
+    companySocialButton.addEventListener(
+        'click',
+        function () {
+            toggleSocialPanel(
+                event.id,
+                'company'
+            );
+        }
+    );
+
+    socialTabs.appendChild(
+        companySocialButton
+    );
+
+    companySocialButton.dataset.category =
+        'company';
+
+
+    /*
+        Добавляем вкладки в карточку.
+    */
+
+    card.appendChild(
+        socialTabs
+    );
+
+
+    /*
+        Панель со списком людей.
+    */
+
+    const socialPanel =
+        document.createElement('div');
+
+    socialPanel.id =
+        `social-panel-${event.id}`;
+
+    socialPanel.className =
+        'event-social-panel';
+
+    socialPanel.style.display =
+        'none';
+
+    card.appendChild(
+        socialPanel
+    );
+
+
+    /*
+        Кнопки.
+    */
+
+    const buttons =
+        document.createElement('div');
+
+    buttons.className =
+        'participation-buttons';
+
+
+    const goingButton =
+        document.createElement('button');
+
+    goingButton.className =
+        'participation-button going-button';
+
+
+    const thinkingButton =
+        document.createElement('button');
+
+    thinkingButton.className =
+        'participation-button thinking-button';
+
+
+
+
+    /*
+        Текущий статус пользователя.
+    */
+
+    if (
+        event.current_member_status ===
+        'GOING'
+    ) {
+
+        goingButton.textContent =
+            'Я еду ✓';
+
+        goingButton.classList.add(
+            'active'
+        );
+
+
+        thinkingButton.textContent =
+            'Думаю';
+
+    } else if (
+        event.current_member_status ===
+        'THINKING'
+    ) {
+
+        goingButton.textContent =
+            'Я еду';
+
+
+        thinkingButton.textContent =
+            'Думаю ✓';
+
+        thinkingButton.classList.add(
+            'active'
+        );
+
+    } else {
+
+        goingButton.textContent =
+            'Я еду';
+
+        thinkingButton.textContent =
+            'Думаю';
+    }
+
+
+    /*
+        Обработчики кнопок.
+    */
+
+    goingButton.addEventListener(
+        'click',
+        function () {
+
+            setParticipationStatus(
+                event,
+                'GOING'
+            );
+        }
+    );
+
+
+    thinkingButton.addEventListener(
+        'click',
+        function () {
+
+            setParticipationStatus(
+                event,
+                'THINKING'
+            );
+        }
+    );
+
+
+    buttons.appendChild(
+        goingButton
+    );
+
+    buttons.appendChild(
+        thinkingButton
+    );
+/*
+    Добавляем основные кнопки
+    в карточку.
+*/
+    card.appendChild(buttons);
+
+
+    /*
+        Дополнительные действия появляются
+        только если пользователь уже отметил
+        участие в событии.
+    */
+    if (event.current_member_status) {
+
+        /*
+            Ищу компанию
+        */
+        const companyButton =
+            document.createElement('button');
+
+        companyButton.className =
+            'company-button';
+
+        if (
+            event.current_member_looking_for_company
+        ) {
+            companyButton.textContent =
+                'Ищу компанию ✓';
+
+            companyButton.classList.add(
+                'active'
+            );
+        } else {
+            companyButton.textContent =
+                'Ищу компанию';
+        }
+
+        companyButton.addEventListener(
+            'click',
+            function () {
+                toggleLookingForCompany(event);
+            }
+        );
+
+    card.appendChild(companyButton);
+
+
+    /*
+        Снять отметку
+    */
+    const removeButton =
+        document.createElement('button');
+
+    removeButton.className =
+        'remove-participation-button';
+
+    removeButton.textContent =
+        'Снять отметку';
+
+    removeButton.addEventListener(
+        'click',
+        function () {
+            removeParticipation(event);
+        }
+    );
+
+    card.appendChild(removeButton);
+}
+
+
+eventCardContainer.appendChild(
+    card
+);
+
+eventPrevButton.classList.add(
+    'hidden'
+);
+
+eventNextButton.classList.add(
+    'hidden'
+);
+
+eventCounter.classList.add(
+    'hidden'
+);
+
+}
+
+
+/*
+    ========================================
+    CAROUSEL (for commit)
+    ========================================
+*/
+
+function updateCarouselControls() {
+
+    const total =
+        selectedDayEvents.length;
+
+
+    if (total <= 1) {
+
+        eventPrevButton.classList.add(
+            'hidden'
+        );
+
+        eventNextButton.classList.add(
+            'hidden'
+        );
+
+        eventCounter.classList.add(
+            'hidden'
+        );
+
+        return;
+    }
+
+
+    eventPrevButton.classList.remove(
+        'hidden'
+    );
+
+    eventNextButton.classList.remove(
+        'hidden'
+    );
+
+    eventCounter.classList.remove(
+        'hidden'
+    );
+
+
+    eventCounter.textContent =
+        `${currentEventIndex + 1} / ${total}`;
+}
+
+
+eventPrevButton.addEventListener(
+    'click',
+    function () {
+
+        if (
+            selectedDayEvents.length <= 1
+        ) {
+            return;
+        }
+
+
+        currentEventIndex--;
+
+
+        if (currentEventIndex < 0) {
+            currentEventIndex =
+                selectedDayEvents.length - 1;
+        }
+
+
+        renderCurrentEvent();
+    }
+);
+
+
+eventNextButton.addEventListener(
+    'click',
+    function () {
+
+        if (
+            selectedDayEvents.length <= 1
+        ) {
+            return;
+        }
+
+
+        currentEventIndex++;
+
+
+        if (
+            currentEventIndex >=
+            selectedDayEvents.length
+        ) {
+            currentEventIndex = 0;
+        }
+
+
+        renderCurrentEvent();
+    }
+);
+
+
+/*
+    ========================================
+    MONTH NAVIGATION
+    ========================================
+*/
+
+prevMonthButton.addEventListener(
+    'click',
+    function () {
+
+        currentMonth--;
+
+
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+
+
+        closeEventsPanel();
+
+        renderCalendar();
+    }
+);
+
+
+nextMonthButton.addEventListener(
+    'click',
+    function () {
+
+        currentMonth++;
+
+
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+
+
+        closeEventsPanel();
+
+        renderCalendar();
+    }
+);
+
+
+function closeEventsPanel() {
+
+    selectedDate = null;
+
+    selectedDayEvents = [];
+
+    currentEventIndex = 0;
+
+    showBrandState();
+}
+
+
+/*
+    ========================================
+    HELPERS
+    ========================================
+*/
+
+function buildDateString(
+    year,
+    month,
+    day
+) {
+
+    const monthString =
+        String(
+            month + 1
+        ).padStart(
+            2,
+            '0'
+        );
+
+
+    const dayString =
+        String(
+            day
+        ).padStart(
+            2,
+            '0'
+        );
+
+
+    return (
+        `${year}-` +
+        `${monthString}-` +
+        `${dayString}`
+    );
+}
+
+function getEventsWord(count) {
+
+    const lastTwoDigits =
+        count % 100;
+
+    const lastDigit =
+        count % 10;
+
+    if (
+        lastTwoDigits >= 11 &&
+        lastTwoDigits <= 14
+    ) {
+        return 'забегов';
+    }
+
+    if (lastDigit === 1) {
+        return 'забег';
+    }
+
+    if (
+        lastDigit >= 2 &&
+        lastDigit <= 4
+    ) {
+        return 'забега';
+    }
+
+    return 'забегов';
+}
+
+/*
+    ========================================
+    LEGAL
+    ========================================
+*/
+
+async function acceptConsent(documentId) {
+    const response = await fetch("/api/legal/consents/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            document_id: documentId,
+            init_data: tg.initData,
+        }),
+    });
+
+    const data = await response.json();
+
+    console.log("CONSENT RESPONSE:", data);
+
+    if (!response.ok) {
+        throw new Error(
+            data.error || "Не удалось сохранить согласие"
+        );
+    }
+
+    return data;
+}
+
+function showMembershipGate() {
+    document.getElementById(
+        "consent-gate"
+    ).style.display = "none";
+
+    document.getElementById(
+        "calendar-app"
+    ).style.display = "none";
+
+    document.getElementById(
+        "membership-gate"
+    ).style.display = "flex";
+
+    console.log(
+        "Membership denied:",
+        membershipStatus,
+        membershipError
+    );
+}
+
+/*
+    ========================================
+    START
+    ========================================
+*/
+async function startApp() {
+    await authenticateTelegramUser();
+    await routeAfterAuth();
+}
+
+startApp();

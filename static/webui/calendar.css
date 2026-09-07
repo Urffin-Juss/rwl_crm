@@ -1,0 +1,906 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #111111;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+.app {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 16px 50px;
+}
+
+/* =========================
+   CALENDAR
+========================= */
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.calendar-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.month-button {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: #eeeeee;
+    color: #111111;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 10px;
+    color: #888888;
+    font-size: 13px;
+    text-align: center;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    row-gap: 14px;
+}
+
+.calendar-day {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 42px;
+    font-size: 16px;
+}
+
+.day-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+}
+
+.calendar-day.has-event .day-number {
+    background: #ef3936;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.calendar-day.selected .day-number {
+    outline: 3px solid #aaaaaa;
+    outline-offset: 4px;
+}
+
+/* ============================================
+   КОНТЕЙНЕР ПУСТОГО СОСТОЯНИЯ КАЛЕНДАРЯ
+   ============================================ */
+.calendar-empty-state {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 420px;
+    overflow: hidden;
+}
+
+/* ============================================
+   ФОНОВОЕ СВЕЧЕНИЕ
+   ============================================ */
+.calendar-empty-state::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 255, 255, 0.10) 0%,
+        rgba(255, 255, 255, 0.055) 20%,
+        rgba(255, 255, 255, 0.02) 42%,
+        transparent 72%
+    );
+    filter: blur(4px);
+    pointer-events: none;
+}
+
+/* ============================================
+   ОСНОВНОЙ КОНТЕНТ
+   ============================================ */
+.brand-content {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+}
+
+/* ============================================
+   ЛОГОТИП "RUN WITH LOVE"
+   ============================================ */
+.brand-logo {
+    text-align: center;
+    font-weight: 900;
+    font-size: clamp(68px, 17vw, 116px);
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    color: #4a4a4a;
+
+    /* Глубокая объёмная тень */
+    text-shadow:
+        -1px -1px 0 rgba(255, 255, 255, 0.10),
+        1px 1px 0 rgba(0, 0, 0, 0.95),
+        3px 4px 6px rgba(0, 0, 0, 0.8),
+        7px 10px 18px rgba(0, 0, 0, 0.6);
+}
+
+.brand-line {
+    white-space: nowrap;
+}
+
+/* ----- Строка с LOVE и сердечком ----- */
+.brand-love {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================
+   СЕРДЕЧКО (CSS-only)
+   ============================================ */
+.brand-heart {
+    position: relative;
+    display: inline-flex;
+    width: 0.40em;
+    height: 0.40em;
+    margin: 0 0.04em;
+    transform: translateY(0.05em);
+}
+
+/* ---- Основная форма сердечка ---- */
+.brand-heart-shape {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #ff2d2d;
+    transform: rotate(45deg);
+    border-radius: 12% 0 12% 0;
+
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.18),
+        0 4px 10px rgba(0, 0, 0, 0.75);
+}
+
+/* Круги для округления верхней части */
+.brand-heart-shape::before,
+.brand-heart-shape::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    border-radius: 50%;
+}
+
+.brand-heart-shape::before {
+    left: -50%;
+    top: 0;
+}
+
+.brand-heart-shape::after {
+    top: -50%;
+    left: 0;
+}
+
+/* ---- Внутренний тёмный контур ---- */
+.brand-heart-inner {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 50%;
+    width: 0.32em;
+    height: 0.32em;
+    transform: translate(-50%, -48%) rotate(45deg);
+    background: #1b1b1b;
+}
+
+.brand-heart-inner::before,
+.brand-heart-inner::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    border-radius: 50%;
+}
+
+.brand-heart-inner::before {
+    left: -50%;
+}
+
+.brand-heart-inner::after {
+    top: -50%;
+}
+
+/* ============================================
+   СЛОГАН
+   ============================================ */
+/* ============================================
+   СЛОГАН
+   ============================================ */
+.brand-slogan {
+    position: static;
+
+    display: block;
+    width: 100%;
+
+    margin: 30px 0 0 0;
+
+    color: #8b8b8b;
+
+    font-size: clamp(18px, 4vw, 26px);
+    font-weight: 400;
+
+    line-height: 1.2;
+    text-align: center;
+
+    transform: none;
+}
+
+/* ============================================
+   АДАПТИВНОСТЬ
+   ============================================ */
+
+
+/* ============================================
+   ДОПОЛНИТЕЛЬНО: ТЁМНАЯ ТЕМА (опционально)
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+    .brand-logo {
+        color: #d0d0d0;
+        text-shadow:
+            -1px -1px 0 rgba(255, 255, 255, 0.05),
+            1px 1px 0 rgba(0, 0, 0, 0.95),
+            3px 4px 6px rgba(0, 0, 0, 0.9),
+            7px 10px 18px rgba(0, 0, 0, 0.7);
+    }
+
+    .brand-slogan {
+        color: #a0a0a0;
+    }
+}
+
+
+/* =========================
+   EVENT PANEL
+========================= */
+
+.events-panel {
+    margin-top: 34px;
+}
+
+.events-panel.hidden {
+    display: none;
+}
+
+.events-date {
+    margin: 0 0 24px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.event-carousel {
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr) 50px;
+    align-items: center;
+    gap: 12px;
+}
+
+.carousel-button {
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    background: #f1f1f1;
+    color: #111111;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.carousel-button.hidden {
+    visibility: hidden;
+}
+
+.event-card {
+    width: 100%;
+    background: #222222;
+    border-radius: 22px;
+    padding: 22px;
+}
+
+.event-name {
+    margin: 0;
+    font-size: 23px;
+    line-height: 1.2;
+}
+
+.event-city {
+    margin-top: 8px;
+    color: #aaaaaa;
+    font-size: 18px;
+}
+
+.events-count {
+    margin-top: -16px;
+    margin-bottom: 24px;
+
+    color: #888888;
+
+    font-size: 14px;
+}
+
+/* =========================
+   DISTANCES
+========================= */
+
+.distances {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.distance-badge {
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: #363636;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.25;
+}
+
+/* =========================
+   PARTICIPATION
+========================= */
+
+.participation-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #333333;
+    color: #bcbcbc;
+    font-size: 15px;
+}
+
+.participation-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.participation-button {
+    flex: 1;
+    min-height: 52px;
+    border: none;
+    border-radius: 15px;
+    padding: 12px 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    transition:
+        transform 0.1s ease,
+        opacity 0.1s ease;
+}
+
+.participation-button:active {
+    transform: scale(0.98);
+}
+
+.going-button {
+    background: #ef3936;
+}
+
+.thinking-button {
+    background: #3a3a3a;
+}
+
+.participation-button.active {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+.participation-button:disabled {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.remove-participation-button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: #888888;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.remove-participation-button:hover {
+    color: #ffffff;
+}
+
+.company-button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px;
+    border: 1px solid #555555;
+    border-radius: 14px;
+    background: transparent;
+    color: #bbbbbb;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.company-button.active {
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.company-button:hover {
+    color: #ffffff;
+}
+
+
+.event-counter {
+    margin-top: 18px;
+    text-align: center;
+    color: #777777;
+    font-size: 14px;
+}
+
+.event-counter.hidden {
+    display: none;
+}
+
+@media (max-width: 420px) {
+    .app {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .event-carousel {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        gap: 7px;
+    }
+
+    .carousel-button {
+        width: 38px;
+        height: 38px;
+        font-size: 23px;
+    }
+
+    .event-card {
+        padding: 18px;
+    }
+
+    .event-name {
+        font-size: 20px;
+    }
+
+    .participation-info {
+        flex-direction: column;
+        gap: 7px;
+    }
+}
+
+.consent-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    box-sizing: border-box;
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(255, 255, 255, 0.04),
+            transparent 35%
+        ),
+        #0d0d0d;
+}
+
+.consent-card {
+    display: flex;
+    flex-direction: column;
+
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 560px;
+    min-height: 100vh;
+
+    margin: 0 auto;
+    padding: 28px 24px 32px;
+}
+
+.consent-progress {
+    width: 100%;
+}
+
+.consent-progress-bars {
+    display: flex;
+    gap: 7px;
+}
+
+.consent-progress-bar {
+    height: 3px;
+    flex: 1;
+
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.consent-progress-bar.active {
+    background: #ff2d2d;
+}
+
+.consent-progress-text {
+    display: block;
+
+    margin-top: 12px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.consent-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 48px 0;
+}
+
+.consent-label {
+    margin-bottom: 18px;
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+
+    color: #ff2d2d;
+}
+
+.consent-title {
+    max-width: 500px;
+
+    margin: 0;
+
+    font-size: clamp(34px, 9vw, 48px);
+    font-weight: 750;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+
+    color: #f4f4f4;
+}
+
+.consent-version {
+    margin-top: 18px;
+
+    font-size: 14px;
+
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.consent-description {
+    max-width: 430px;
+
+    margin: 32px 0 0;
+
+    font-size: 16px;
+    line-height: 1.55;
+
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.consent-actions {
+    width: 100%;
+}
+
+.consent-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 54px;
+
+    margin-bottom: 12px;
+    padding: 0 18px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+
+    color: rgba(255, 255, 255, 0.85);
+
+    font-size: 15px;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+.consent-accept-button {
+    width: 100%;
+    min-height: 58px;
+
+    padding: 0 20px;
+
+    border: 0;
+    border-radius: 16px;
+
+    background: #ff2d2d;
+    color: #ffffff;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.consent-accept-button:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.event-social-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 8px;
+
+    margin-top: 16px;
+}
+
+.event-social-tabs button {
+    min-height: 48px;
+
+    padding: 8px 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.72);
+
+    font-size: 13px;
+    line-height: 1.2;
+
+    cursor: pointer;
+}
+
+.event-social-tabs button.active {
+    border-color: rgba(255, 45, 45, 0.55);
+
+    background: rgba(255, 45, 45, 0.12);
+    color: #ffffff;
+}
+
+.event-social-panel {
+    margin-top: 12px;
+    padding-top: 14px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.social-participant {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px 0;
+}
+
+.social-participant + .social-participant {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.social-participant-avatar {
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    overflow: hidden;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.social-participant-avatar img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.social-participant-avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.social-participant-info {
+    min-width: 0;
+}
+
+.social-participant-name {
+    font-size: 15px;
+    font-weight: 600;
+
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.social-participant-username {
+    margin-top: 2px;
+
+    font-size: 13px;
+
+    color: rgba(255, 255, 255, 0.42);
+}
+
+.social-empty {
+    padding: 14px 0;
+
+    font-size: 14px;
+
+    color: rgba(255, 255, 255, 0.45);
+}
+
+
+/* =========================
+   DAY EVENTS GRID
+========================= */
+
+.event-carousel.day-grid-mode {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.event-carousel.day-grid-mode .carousel-button {
+    display: none;
+}
+
+.day-events-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+}
+
+.day-event-tile {
+    min-width: 0;
+    min-height: 110px;
+
+    padding: 12px 10px;
+
+    border: 1px solid #333333;
+    border-radius: 14px;
+
+    background: #222222;
+    color: #ffffff;
+
+    text-align: left;
+    cursor: pointer;
+}
+
+.day-event-title {
+    display: -webkit-box;
+    overflow: hidden;
+
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.day-event-city {
+    margin-top: 8px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: #999999;
+
+    font-size: 11px;
+}
+
+.event-back-button {
+    margin: 0 0 14px;
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+    color: #aaaaaa;
+
+    font-size: 14px;
+    cursor: pointer;
+}
+
+
+.day-event-tile.has-club-participants {
+    border-color: #ff3838;
+
+    box-shadow:
+        0 0 0 1px rgba(255, 56, 56, 0.12),
+        0 0 16px rgba(255, 56, 56, 0.10);
+}
+
+.day-event-participants {
+    margin-top: 12px;
+
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.registration-link {
+    display: inline-flex;
+    align-items: center;
+
+    margin-top: 18px;
+    padding: 12px 16px;
+
+    border: 1px solid #444444;
+    border-radius: 12px;
+
+    color: #ffffff;
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.registration-link:active {
+    opacity: 0.8;
+}

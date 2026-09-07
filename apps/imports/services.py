@@ -1,6 +1,4 @@
 ﻿from __future__ import annotations
-
-
 from apps.imports.utils import get_tech_stock_location
 from apps.orders.models import OrderItem, Order
 from apps.stock.models import Product
@@ -16,6 +14,8 @@ from openpyxl import load_workbook
 from apps.clients.models import Client
 from apps.imports.models import RawExcelRow, ImportBatch
 from apps.imports.rules import EXACT, CONTAINS, PRODUCT_KEYWORDS
+
+
 
 
 def _s(val: Any) -> str:

@@ -1,0 +1,111 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% if document %}
+            {{ document.title }}
+        {% else %}
+            Документ не найден
+        {% endif %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'legal/legal.css' %}"
+    >
+</head>
+
+<body>
+
+<main class="legal-page">
+
+    <div class="legal-brand">
+        RUN WITH LOVE
+    </div>
+
+    {% if document %}
+
+        <header class="legal-header">
+
+            <h1>
+                {{ document.title }}
+            </h1>
+
+            <div class="legal-meta">
+
+                <span>
+                    Версия {{ document.version }}
+                </span>
+
+                {% if document.published_at %}
+                    <span>·</span>
+
+                    <span>
+                        {{ document.published_at|date:"d.m.Y" }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+        </header>
+
+
+        <article class="legal-content">
+
+            {% for paragraph in paragraphs %}
+
+                {% if paragraph.is_heading %}
+                    <h2>{{ paragraph.text }}</h2>
+                {% else %}
+                    <p>{{ paragraph.text }}</p>
+                {% endif %}
+
+            {% endfor %}
+
+        </article>
+
+
+        {% if document.file %}
+
+            <footer class="legal-footer">
+
+                <a
+                    class="legal-download"
+                    href="{{ document.file.url }}"
+                >
+                    Скачать оригинал
+                </a>
+
+            </footer>
+
+        {% endif %}
+
+    {% else %}
+
+        <div class="legal-unavailable">
+
+            <h1>
+                Документ не найден
+            </h1>
+
+            <p>
+                Актуальная версия документа сейчас недоступна.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</main>
+
+</body>
+</html>

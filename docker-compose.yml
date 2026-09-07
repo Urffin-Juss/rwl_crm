@@ -16,6 +16,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    ports:
+      - "127.0.0.1:5432:5432"
 
   redis:
     image: redis:7-alpine
@@ -53,6 +55,26 @@ services:
     command: celery -A config worker -l info
     volumes:
       - media_data:/app/media
+
+  celery_beat:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: celery -A config beat -l info
+
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - web
+    command: python -m apps.miniapp.bot
 
   nginx:
     image: nginx:1.27-alpine
