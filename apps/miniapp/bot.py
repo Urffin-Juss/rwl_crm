@@ -68,7 +68,7 @@ async def start_handler(message: Message):
 
     )
 
-    )
+
 
     await message.answer(
         'Календарь стартов Run With Love',
