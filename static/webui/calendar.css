@@ -904,3 +904,11 @@ body {
 .registration-link:active {
     opacity: 0.8;
 }
+.rwl-signature {
+    margin-top: 24px;
+    padding: 12px 0 18px;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.38);
+    letter-spacing: 0.04em;
+}
