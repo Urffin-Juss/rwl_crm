@@ -24,5 +24,5 @@ jobs:
       - name: Django check
         run: python manage.py check
 
-      - name: Pytest
+      - name: Django tests
         run: python manage.py test
