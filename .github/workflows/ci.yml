@@ -23,3 +23,6 @@ jobs:
 
       - name: Django check
         run: python manage.py check
+
+      - name: Pytest
+        run: python manage.py test
