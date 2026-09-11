@@ -25,4 +25,4 @@ jobs:
         run: python manage.py check
 
       - name: Django tests
-        run: python manage.py test
+        run: python manage.py test --settings=config.settings_test
