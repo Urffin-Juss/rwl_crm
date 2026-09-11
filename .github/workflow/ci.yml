@@ -2,7 +2,7 @@ name: ci test
 
 on:
   push:
-    branches: ["club_calendar"]
+    branches: ["club-calendar"]
 
 jobs:
   check:
