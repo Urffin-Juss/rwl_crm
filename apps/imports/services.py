@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 from apps.imports.utils import get_tech_stock_location
 from apps.orders.models import OrderItem, Order
 from apps.stock.models import Product
@@ -29,7 +29,7 @@ def normalize_header(text: str) -> str:
         return ""
     text = str(text).lower().strip()
 
-    text = re.sub(r"[^0-9a-zР°-СЏС‘]+", " ", text, flags=re.IGNORECASE)
+    text = re.sub(r"[^0-9a-zа-яё]+", " ", text, flags=re.IGNORECASE)
 
     text = re.sub(r"\s+", " ", text).strip()
     return text
@@ -37,13 +37,13 @@ def normalize_header(text: str) -> str:
 
 def normalize_cell_value(val: Any) -> Any:
     """
-    Р”РµР»Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ Р±РµР·РѕРїР°СЃРЅС‹Рј РґР»СЏ JSONField.
-    datetime/date -> ISO СЃС‚СЂРѕРєР°
-    РѕСЃС‚Р°Р»СЊРЅРѕРµ -> РєР°Рє РµСЃС‚СЊ (str/int/float/bool/None)
+    Делает значение безопасным для JSONField.
+    datetime/date -> ISO строка
+    остальное -> как есть (str/int/float/bool/None)
     """
     if val is None:
         return None
-    # openpyxl РјРѕР¶РµС‚ РѕС‚РґР°РІР°С‚СЊ datetime/date
+    # openpyxl может отдавать datetime/date
     try:
         import datetime as _dt
         if isinstance(val, (_dt.datetime, _dt.date)):
@@ -114,7 +114,7 @@ def normalize_phone(val: Any) -> str:
     if not raw:
         return ""
 
-    # Excel-С‡РёСЃР»Р° С‚РёРїР° 79161234567.0
+    # Excel-числа типа 79161234567.0
     if raw.endswith(".0"):
         raw = raw[:-2]
 
@@ -135,13 +135,13 @@ def normalize_phone(val: Any) -> str:
 
 def normalize_date(val: Any) -> str:
     """
-    РџСЂРµРѕР±СЂР°Р·СѓРµС‚ РґР°С‚Сѓ РІ YYYY-MM-DD
-    РџСЂРёРЅРёРјР°РµС‚: datetime, date, ISO СЃС‚СЂРѕРєСѓ, СЃС‚СЂРѕРєСѓ DD.MM.YYYY
+    Преобразует дату в YYYY-MM-DD
+    Принимает: datetime, date, ISO строку, строку DD.MM.YYYY
     """
     if val is None:
         return ""
 
-    # Р•СЃР»Рё СЌС‚Рѕ datetime/date РѕР±СЉРµРєС‚
+    # Если это datetime/date объект
     if hasattr(val, 'strftime'):
         return val.strftime('%Y-%m-%d')
 
@@ -149,7 +149,7 @@ def normalize_date(val: Any) -> str:
     if not raw:
         return ""
 
-    # Р•СЃР»Рё СЌС‚Рѕ ISO СЃС‚СЂРѕРєР° СЃ РІСЂРµРјРµРЅРµРј (1996-05-27T00:00:00)
+    # Если это ISO строка с временем (1996-05-27T00:00:00)
     if 'T' in raw:
         return raw.split('T')[0]
 
@@ -178,18 +178,18 @@ def build_full_name(row: Dict[str, Any]) -> str:
 
 
 def build_notes(row: Dict[str, Any]) -> str:
-    """РЎРѕР±РёСЂР°РµС‚ РІСЃРµ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ РІ РѕРґРЅСѓ СЃС‚СЂРѕРєСѓ РґР»СЏ notes"""
+    """Собирает все дополнительные поля в одну строку для notes"""
     parts = []
 
-    # РџСЂРѕС„РµСЃСЃРёСЏ
+    # Профессия
     profession = _s(pick_any(row, exact=EXACT["profession"]))
     if profession:
-        parts.append(f"РџСЂРѕС„РµСЃСЃРёСЏ: {profession}")
+        parts.append(f"Профессия: {profession}")
 
-    # РљР»СѓР±
+    # Клуб
     club = _s(pick_any(row, exact=EXACT["club"]))
     if club:
-        parts.append(f"РљР»СѓР±: {club}")
+        parts.append(f"Клуб: {club}")
 
 
 
@@ -197,40 +197,40 @@ def build_notes(row: Dict[str, Any]) -> str:
 
 
 def build_address(row: Dict[str, Any]) -> str:
-    """РЎРѕР±РёСЂР°РµС‚ РїРѕР»РЅС‹Р№ Р°РґСЂРµСЃ РёР· СЃРѕСЃС‚Р°РІРЅС‹С… С‡Р°СЃС‚РµР№"""
+    """Собирает полный адрес из составных частей"""
     parts = []
 
 
     city = _s(pick_any(row, exact=EXACT["city"]))
     if city:
-        parts.append(f"Рі. {city}")
+        parts.append(f"г. {city}")
 
 
     street = _s(pick_any(row, exact=EXACT["street"]))
     if street:
-        parts.append(f"СѓР». {street}")
+        parts.append(f"ул. {street}")
 
-    # Р”РѕРј
+    # Дом
     house = _s(pick_any(row, exact=EXACT["house"]))
     if house:
-        parts.append(f"Рґ. {house}")
+        parts.append(f"д. {house}")
 
-    # РљРІР°СЂС‚РёСЂР°
+    # Квартира
     flat = _s(pick_any(row, exact=EXACT["flat"]))
     if flat:
-        parts.append(f"РєРІ. {flat}")
+        parts.append(f"кв. {flat}")
 
-    # Р•СЃР»Рё РµСЃС‚СЊ РіРѕС‚РѕРІС‹Р№ Р°РґСЂРµСЃ (РЅР°РїСЂРёРјРµСЂ, РёР· РїРѕР»СЏ "РЈРєР°Р¶РёС‚Рµ Р°РґСЂРµСЃ РґР»СЏ РґРѕСЃС‚Р°РІРєРё")
+    # Если есть готовый адрес (например, из поля "Укажите адрес для доставки")
     full_address = _s(pick_any(row, contains=CONTAINS.get("delivery_address_text", [])))
-    if full_address and not parts:  # РёСЃРїРѕР»СЊР·СѓРµРј С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅРµС‚ СЃРѕСЃС‚Р°РІРЅС‹С… С‡Р°СЃС‚РµР№
+    if full_address and not parts:  # используем только если нет составных частей
         return full_address
 
     return ", ".join(parts)
 
 def is_empty_row(values) -> bool:
     """
-    РџСЂРѕРІРµСЂСЏРµРј, РїРѕР»РЅРѕСЃС‚СЊСЋ Р»Рё СЃС‚СЂРѕРєР° РїСѓСЃС‚Р°СЏ.
-    РџСѓСЃС‚Р°СЏ = РІСЃРµ СЏС‡РµР№РєРё None РёР»Рё РїСѓСЃС‚С‹Рµ СЃС‚СЂРѕРєРё.
+    Проверяем, полностью ли строка пустая.
+    Пустая = все ячейки None или пустые строки.
     """
     for v in values:
         if v is None:
@@ -244,8 +244,8 @@ def is_empty_row(values) -> bool:
 
 def parse_product_column(header: str, value: Any) -> Optional[Dict]:
     """
-    РџР°СЂСЃРёС‚ РєРѕР»РѕРЅРєСѓ СЃ С‚РѕРІР°СЂРѕРј.
-    Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»РѕРІР°СЂСЊ СЃ С‚РёРїРѕРј С‚РѕРІР°СЂР°, СЂР°Р·РјРµСЂРѕРј, С†РІРµС‚РѕРј Рё РєРѕР»РёС‡РµСЃС‚РІРѕРј
+    Парсит колонку с товаром.
+    Возвращает словарь с типом товара, размером, цветом и количеством
     """
     if not value or str(value).strip() == "":
         return None
@@ -253,7 +253,7 @@ def parse_product_column(header: str, value: Any) -> Optional[Dict]:
     header_lower = header.lower()
     value_str = str(value).strip()
 
-    # РћРїСЂРµРґРµР»СЏРµРј С‚РёРї С‚РѕРІР°СЂР°
+    # Определяем тип товара
     product_type = None
     for ptype, keywords in PRODUCT_KEYWORDS.items():
         if any(kw in header_lower for kw in keywords):
@@ -265,23 +265,23 @@ def parse_product_column(header: str, value: Any) -> Optional[Dict]:
 
     result = {
         'type': product_type,
-        'name': header[:200],  # РѕР±СЂРµР·Р°РµРј РґР»РёРЅРЅРѕРµ РЅР°Р·РІР°РЅРёРµ
+        'name': header[:200],  # обрезаем длинное название
         'size': None,
         'color': None,
-        'quantity': 1  # РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 1, РµСЃР»Рё РЅРµ СѓРєР°Р·Р°РЅРѕ РёРЅРѕРµ
+        'quantity': 1  # по умолчанию 1, если не указано иное
     }
 
-    # РџС‹С‚Р°РµРјСЃСЏ РёР·РІР»РµС‡СЊ СЂР°Р·РјРµСЂ
-    size_match = re.search(r'СЂР°Р·РјРµСЂ\s+([\d\-SML\/]+)', header_lower, re.IGNORECASE)
+    # Пытаемся извлечь размер
+    size_match = re.search(r'размер\s+([\d\-SML\/]+)', header_lower, re.IGNORECASE)
     if size_match:
         result['size'] = size_match.group(1)
 
-    # РџС‹С‚Р°РµРјСЃСЏ РёР·РІР»РµС‡СЊ С†РІРµС‚
-    color_match = re.search(r'С†РІРµС‚\s+([Р°-СЏС‘]+)', header_lower, re.IGNORECASE)
+    # Пытаемся извлечь цвет
+    color_match = re.search(r'цвет\s+([а-яё]+)', header_lower, re.IGNORECASE)
     if color_match:
         result['color'] = color_match.group(1)
 
-    # Р•СЃР»Рё Р·РЅР°С‡РµРЅРёРµ - С‡РёСЃР»Рѕ, СЌС‚Рѕ РјРѕР¶РµС‚ Р±С‹С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ
+    # Если значение - число, это может быть количество
     if value_str.isdigit() and int(value_str) > 0:
         result['quantity'] = int(value_str)
 
@@ -294,21 +294,21 @@ def make_product_title(p: dict) -> str:
     t = p.get("type")
 
     if t == "socks":
-        base = "РќРѕСЃРєРё Р±РµРіРѕРІС‹Рµ"
+        base = "Носки беговые"
     elif t == "headband":
-        base = "РџРѕРІСЏР·РєР° СЃРїРѕСЂС‚РёРІРЅР°СЏ"
+        base = "Повязка спортивная"
     elif t == "belt":
-        base = "РџРѕСЏСЃ РґР»СЏ СЃРѕСЂРµРІРЅРѕРІР°РЅРёР№"
+        base = "Пояс для соревнований"
     elif t == "mug":
-        base = "РљСЂСѓР¶РєР°"
+        base = "Кружка"
     elif t == "donation":
-        base = "Р”РѕРЅР°С‚ РІ РїСЂРёСЋС‚"
+        base = "Донат в приют"
     elif t == "insurance":
-        base = "РЎС‚СЂР°С…РѕРІРєР°"
+        base = "Страховка"
     elif t == "sticker":
-        base = "РќР°РєР»РµР№РєР°"
+        base = "Наклейка"
     else:
-        base = "РўРѕРІР°СЂ"
+        base = "Товар"
 
     parts = [base]
 
@@ -326,13 +326,13 @@ def make_product_title(p: dict) -> str:
 
 def build_order_items(row: Dict[str, Any]) -> List[Dict]:
     """
-    РЎРѕР±РёСЂР°РµС‚ РІСЃРµ С‚РѕРІР°СЂС‹ РёР· СЃС‚СЂРѕРєРё Excel
+    Собирает все товары из строки Excel
     """
     items = []
 
     for header, value in row.items():
-        # РџСЂРѕРІРµСЂСЏРµРј, РїРѕС…РѕР¶Рµ Р»Рё РЅР° С‚РѕРІР°СЂРЅСѓСЋ РєРѕР»РѕРЅРєСѓ
-        if any(kw in header.lower() for kw in ['РЅРѕСЃРѕРє', 'РЅРѕСЃРєРё', 'РїРѕРІСЏР·Рє', 'РїРѕСЏСЃ', 'РєСЂСѓР¶Рє', 'РґРѕРЅР°С‚']):
+        # Проверяем, похоже ли на товарную колонку
+        if any(kw in header.lower() for kw in ['носок', 'носки', 'повязк', 'пояс', 'кружк', 'донат']):
             product_data = parse_product_column(header, value)
             if product_data:
                 items.append(product_data)
@@ -342,18 +342,18 @@ def build_order_items(row: Dict[str, Any]) -> List[Dict]:
 
 def get_or_create_product(product_data: Dict) -> Product:
     """
-    РќР°С…РѕРґРёС‚ РёР»Рё СЃРѕР·РґР°РµС‚ С‚РѕРІР°СЂ РїРѕ РґР°РЅРЅС‹Рј РёР· Excel
+    Находит или создает товар по данным из Excel
     """
-    # Р¤РѕСЂРјРёСЂСѓРµРј РЅР°Р·РІР°РЅРёРµ С‚РѕРІР°СЂР°
+    # Формируем название товара
     name_parts = [product_data['name']]
     if product_data.get('size'):
-        name_parts.append(f"СЂР°Р·РјРµСЂ {product_data['size']}")
+        name_parts.append(f"размер {product_data['size']}")
     if product_data.get('color'):
-        name_parts.append(f"С†РІРµС‚ {product_data['color']}")
+        name_parts.append(f"цвет {product_data['color']}")
 
     product_name = make_product_title(product_data)
 
-    # РџС‹С‚Р°РµРјСЃСЏ РЅР°Р№С‚Рё СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№
+    # Пытаемся найти существующий
     product, created = Product.objects.get_or_create(
         name=product_name,
         defaults={
@@ -382,7 +382,7 @@ class ExcelProcessor:
             file_path = convert_xls_to_xlsx(file_path)
 
         elif ext != ".xlsx":
-            raise ValidationError("РџРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ .xls РёР»Рё .xlsx")
+            raise ValidationError("Поддерживается только .xls или .xlsx")
 
         headers, rows = read_xlsx(file_path)
 
@@ -399,14 +399,14 @@ class ExcelProcessor:
 
 
         if not batch.file:
-            raise ValidationError("Р¤Р°Р№Р» РЅРµ Р·Р°РіСЂСѓР¶РµРЅ.")
+            raise ValidationError("Файл не загружен.")
         ext = os.path.splitext(batch.file.name)[1].lower()
         file_path = batch.file.path
         if ext == ".xls":
             from apps.imports.convert import convert_xls_to_xlsx
             file_path = convert_xls_to_xlsx(file_path)
         elif ext != ".xlsx":
-            raise ValidationError("РџРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ .xls РёР»Рё .xlsx")
+            raise ValidationError("Поддерживается только .xls или .xlsx")
 
         headers, rows = read_xlsx(file_path)
 
@@ -420,7 +420,7 @@ class ExcelProcessor:
         skipped_empty = 0
 
         for row_num, values in rows:
-            # 1) РїСЂРѕРїСѓСЃРєР°РµРј СЂРµР°Р»СЊРЅРѕ РїСѓСЃС‚С‹Рµ СЃС‚СЂРѕРєРё
+            # 1) пропускаем реально пустые строки
             if not any(v is not None and _s(v) != "" for v in values):
                 skipped_empty += 1
                 continue
@@ -436,7 +436,7 @@ class ExcelProcessor:
 
             phone = normalize_phone(pick_any(data, exact=EXACT["phone"]))
             if not phone:
-                raw.error_message = "РџСѓСЃС‚РѕР№/РЅРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ С‚РµР»РµС„РѕРЅ"
+                raw.error_message = "Пустой/некорректный телефон"
                 raw.save(update_fields=["error_message"])
                 errors += 1
                 continue
@@ -457,10 +457,10 @@ class ExcelProcessor:
                 "name": full_name,
                 "email": email,
                 "city": city,
-                "address": address,  # в†ђ РёСЃРїСЂР°РІР»РµРЅРЅС‹Р№ Р°РґСЂРµСЃ
+                "address": address,  # ← исправленный адрес
                 "contact": contact,
                 "pets": pets,
-                "notes": notes,  # в†ђ РЅРѕРІС‹Рµ Р·Р°РјРµС‚РєРё
+                "notes": notes,  # ← новые заметки
                 "dob": dob or None,
             }
 
@@ -514,7 +514,7 @@ class ExcelProcessor:
                 payment_status='NOT_PAID',
                 payment_type='cash',
                 registration_date=timezone.now(),
-                comments=f"РќРѕРјРµСЂ: {bib}, Р§РёРї: {chip}".strip(", "),
+                comments=f"Номер: {bib}, Чип: {chip}".strip(", "),
                 stock_location=tech_loc,
 
             )
