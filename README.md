@@ -107,3 +107,11 @@
 
 Проект разрабатывался как реальный кейс с меняющимися вводными.  
 Ряд решений сделан в пользу скорости поставки и подтверждения бизнес-гипотез на MVP-этапе.
+
+
+
+## CI/CD
+
+Development changes are validated through GitHub Actions before deployment to DEV.## CI/CD
+
+Development changes are validated through GitHub Actions before deployment to DEV.
