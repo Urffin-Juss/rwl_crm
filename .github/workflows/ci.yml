@@ -1,4 +1,4 @@
-name: ci test
+name: CI
 
 on:
   push:
@@ -26,3 +26,18 @@ jobs:
 
       - name: Django tests
         run: python manage.py test --settings=config.settings_test
+
+
+
+
+  build:
+    needs: check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t rwl_crm:${{ github.sha }} .
+
