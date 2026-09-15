@@ -25,7 +25,7 @@ services:
       - redis_data:/data
 
   web:
-    build: ${RWL_IMAGE}
+    image: ${RWL_IMAGE}
     restart: unless-stopped
     env_file: .env
     depends_on:
@@ -42,7 +42,7 @@ services:
       - media_data:/app/media
 
   celery_worker:
-    build: ${RWL_IMAGE}
+    image: ${RWL_IMAGE}
     restart: unless-stopped
     env_file: .env
     depends_on:
@@ -55,7 +55,7 @@ services:
       - media_data:/app/media
 
   celery_beat:
-    build: ${RWL_IMAGE}
+    image: ${RWL_IMAGE}
     restart: unless-stopped
     env_file:
       - .env
@@ -67,7 +67,7 @@ services:
     command: celery -A config beat -l info
 
   bot:
-    build: ${RWL_IMAGE}
+    image: ${RWL_IMAGE}
     restart: unless-stopped
     env_file: .env
     depends_on:
