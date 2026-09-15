@@ -29,3 +29,27 @@ jobs:
 
       - name: Push Docker Image
         run: docker push ghcr.io/urffin-juss/rwl_crm:${{ github.sha }}
+
+      - name: Prepare SSH
+        run: |
+          
+          mkdir -p ~/.ssh
+          
+          chmod 700 ~/.ssh
+          
+          echo "${{ secrets.DEV_SSH_KEY }}" > ~/.ssh/id_ed25519
+          
+          chmod 600 ~/.ssh/id_ed25519
+          
+          echo "[${{ secrets.DEV_HOST }}]:${{ secrets.DEV_PORT }} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBnVi2TXGVUEBFbXaWnaZc6htfpOQL2EDeUAsjCNF/46" > ~/.ssh/known_hosts
+          
+          chmod 644 ~/.ssh/known_hosts 
+
+
+      - name: Test SSH connection
+        run: |
+          ssh \
+            -i ~/.ssh/id_ed25519 \
+            -p "${{ secrets.DEV_PORT }}" \
+            "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}" \
+            "whoami && hostname && docker ps --format 'table {{.Names}}\t{{.Status}}'"
