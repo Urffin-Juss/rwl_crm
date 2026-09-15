@@ -55,39 +55,54 @@ jobs:
             "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}:/opt/rwl/deploy/"  
 
 
-      - name: Deploy to DEV
+      - name: Deploy to DEV with rollback
         run: |
           ssh \
             -i ~/.ssh/id_ed25519 \
             -p "${{ secrets.DEV_PORT }}" \
             "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}" \
-            "cd /opt/rwl/deploy && \
-             export RWL_IMAGE=ghcr.io/urffin-juss/rwl_crm:${{ github.sha }} && \
-             docker pull \$RWL_IMAGE && \
-             docker compose \
-               -p rwl_crm \
-               -f docker-compose.yml \
-               -f docker-compose.dev.yml \
-               up -d && \
-             docker compose \
-               -p rwl_crm \
-               -f docker-compose.yml \
-               -f docker-compose.dev.yml \
-               ps"
+            'bash -s' <<'REMOTE'
+          set -e
 
-      - name: Smoke test DEV
-        run: |
-          ssh \
-            -i ~/.ssh/id_ed25519 \
-            -p "${{ secrets.DEV_PORT }}" \
-            "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}" \
-            "for i in {1..10}; do
-               if curl -fsS http://127.0.0.1:8000/ > /dev/null; then
-                 echo 'DEV smoke test passed'
-                 exit 0
-               fi
-               echo \"Waiting for DEV... attempt \$i/10\"
-               sleep 3
-             done
-             echo 'DEV smoke test FAILED'
-             exit 1"
+          cd /opt/rwl/deploy
+
+          CURRENT_IMAGE=$(docker inspect rwl_crm-web-1 --format '{{.Config.Image}}')
+          NEW_IMAGE="ghcr.io/urffin-juss/rwl_crm:${{ github.sha }}"
+
+          echo "Current image: $CURRENT_IMAGE"
+          echo "New image:     $NEW_IMAGE"
+
+          docker pull "$NEW_IMAGE"
+
+          export RWL_IMAGE="$NEW_IMAGE"
+
+          docker compose \
+            -p rwl_crm \
+            -f docker-compose.yml \
+            -f docker-compose.dev.yml \
+            up -d
+
+          for i in {1..10}; do
+            if curl -fsS http://127.0.0.1:8000/ > /dev/null; then
+              echo "DEV smoke test passed"
+              exit 0
+            fi
+
+            echo "Waiting for DEV... attempt $i/10"
+            sleep 3
+          done
+
+          echo "DEV smoke test FAILED"
+          echo "Rolling back to $CURRENT_IMAGE"
+
+          export RWL_IMAGE="$CURRENT_IMAGE"
+
+          docker compose \
+            -p rwl_crm \
+            -f docker-compose.yml \
+            -f docker-compose.dev.yml \
+            up -d
+
+          echo "Rollback completed"
+          exit 1
+          REMOTE
