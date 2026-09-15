@@ -74,3 +74,20 @@ jobs:
                -f docker-compose.yml \
                -f docker-compose.dev.yml \
                ps"
+
+      - name: Smoke test DEV
+        run: |
+          ssh \
+            -i ~/.ssh/id_ed25519 \
+            -p "${{ secrets.DEV_PORT }}" \
+            "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}" \
+            "for i in {1..10}; do
+               if curl -fsS http://127.0.0.1:8000/ > /dev/null; then
+                 echo 'DEV smoke test passed'
+                 exit 0
+               fi
+               echo \"Waiting for DEV... attempt \$i/10\"
+               sleep 3
+             done
+             echo 'DEV smoke test FAILED'
+             exit 1"
