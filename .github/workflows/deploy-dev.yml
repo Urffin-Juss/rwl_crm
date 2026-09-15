@@ -62,6 +62,7 @@ jobs:
             -p "${{ secrets.DEV_PORT }}" \
             "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}" \
             'bash -s' <<'REMOTE'
+
           set -e
 
           cd /opt/rwl/deploy
@@ -72,8 +73,10 @@ jobs:
           echo "Current image: $CURRENT_IMAGE"
           echo "New image:     $NEW_IMAGE"
 
+          echo "Pulling new image..."
           docker pull "$NEW_IMAGE"
 
+          echo "Deploying new image..."
           export RWL_IMAGE="$NEW_IMAGE"
 
           docker compose \
@@ -82,9 +85,12 @@ jobs:
             -f docker-compose.dev.yml \
             up -d
 
+          echo "Waiting for DEV..."
+
           for i in {1..10}; do
             if curl -fsS http://127.0.0.1:8000/ > /dev/null; then
               echo "DEV smoke test passed"
+              echo "Deployment successful: $NEW_IMAGE"
               exit 0
             fi
 
@@ -93,9 +99,11 @@ jobs:
           done
 
           echo "DEV smoke test FAILED"
-          echo "Rolling back to $CURRENT_IMAGE"
+          echo "Rolling back to: $CURRENT_IMAGE"
 
           export RWL_IMAGE="$CURRENT_IMAGE"
+
+          docker pull "$CURRENT_IMAGE"
 
           docker compose \
             -p rwl_crm \
@@ -103,6 +111,21 @@ jobs:
             -f docker-compose.dev.yml \
             up -d
 
-          echo "Rollback completed"
-          exit 1
+          echo "Waiting for rollback..."
+
+          for i in {1..10}; do
+            if curl -fsS http://127.0.0.1:8000/ > /dev/null; then
+              echo "Rollback successful"
+              echo "DEV restored to: $CURRENT_IMAGE"
+              exit 1
+            fi
+
+            echo "Waiting for rollback... attempt $i/10"
+            sleep 3
+          done
+
+          echo "ROLLBACK FAILED"
+          echo "DEV requires manual intervention"
+          exit 2
+
           REMOTE
