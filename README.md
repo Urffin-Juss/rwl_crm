@@ -114,4 +114,3 @@
 
 Development changes are validated through GitHub Actions before deployment to DEV.
 
-(for commit change)
