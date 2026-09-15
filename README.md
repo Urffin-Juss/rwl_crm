@@ -112,6 +112,4 @@
 
 ## CI/CD
 
-Development changes are validated through GitHub Actions before deployment to DEV.## CI/CD
-
 Development changes are validated through GitHub Actions before deployment to DEV.
