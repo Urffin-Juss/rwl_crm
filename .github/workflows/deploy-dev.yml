@@ -55,10 +55,22 @@ jobs:
             "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}:/opt/rwl/deploy/"  
 
 
-      - name: Verify DEV deployment files
+      - name: Deploy to DEV
         run: |
           ssh \
             -i ~/.ssh/id_ed25519 \
             -p "${{ secrets.DEV_PORT }}" \
             "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}" \
-            "ls -lah /opt/rwl/deploy && sha256sum /opt/rwl/deploy/docker-compose*.yml"
+            "cd /opt/rwl/deploy && \
+             export RWL_IMAGE=ghcr.io/urffin-juss/rwl_crm:${{ github.sha }} && \
+             docker pull \$RWL_IMAGE && \
+             docker compose \
+               -p rwl_crm \
+               -f docker-compose.yml \
+               -f docker-compose.dev.yml \
+               up -d && \
+             docker compose \
+               -p rwl_crm \
+               -f docker-compose.yml \
+               -f docker-compose.dev.yml \
+               ps"
