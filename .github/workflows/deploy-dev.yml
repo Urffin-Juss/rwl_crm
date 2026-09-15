@@ -44,12 +44,21 @@ jobs:
           echo "[${{ secrets.DEV_HOST }}]:${{ secrets.DEV_PORT }} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBnVi2TXGVUEBFbXaWnaZc6htfpOQL2EDeUAsjCNF/46" > ~/.ssh/known_hosts
           
           chmod 644 ~/.ssh/known_hosts 
+          
+      - name: Copy DEV deployment files
+        run: |
+          scp \
+            -i ~/.ssh/id_ed25519 \
+            -P "${{ secrets.DEV_PORT }}" \
+            docker-compose.yml \
+            docker-compose.dev.yml \
+            "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}:/opt/rwl/deploy/"  
 
 
-      - name: Test SSH connection
+      - name: Verify DEV deployment files
         run: |
           ssh \
             -i ~/.ssh/id_ed25519 \
             -p "${{ secrets.DEV_PORT }}" \
             "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}" \
-            "whoami && hostname && docker ps --format 'table {{.Names}}\t{{.Status}}'"
+            "ls -lah /opt/rwl/deploy && sha256sum /opt/rwl/deploy/docker-compose*.yml"
