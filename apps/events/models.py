@@ -69,6 +69,19 @@ class EventActivity(models.Model):
             )
         ]
 
+    def get_activity_dates(self):
+
+        activity_dates = []
+
+        for activity in self.activities.all():
+
+            if activity.race_datetime is not None:
+                activity_dates.append(
+                    activity.race_datetime.date()
+               )
+
+        return activity_dates
+
 
 
 
