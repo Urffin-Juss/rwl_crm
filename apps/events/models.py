@@ -42,6 +42,24 @@ class Event(models.Model):
         verbose_name_plural = "Ивенты"
 
 
+    def get_activity_dates(self):
+
+        activity_dates = set()
+
+
+        for activity in self.activities.all():
+
+            if activity.race_datetime is not None:
+                activity_dates.append(
+                    activity.race_datetime.date()
+               )
+
+        unique_activity_dates = set(activity_dates)
+
+
+        return sorted(unique_activity_dates)
+
+
 
 class EventActivity(models.Model):
     event = models.ForeignKey(Event, related_name='activities', on_delete=models.CASCADE)
@@ -69,18 +87,7 @@ class EventActivity(models.Model):
             )
         ]
 
-    def get_activity_dates(self):
 
-        activity_dates = []
-
-        for activity in self.activities.all():
-
-            if activity.race_datetime is not None:
-                activity_dates.append(
-                    activity.race_datetime.date()
-               )
-
-        return activity_dates
 
 
 
