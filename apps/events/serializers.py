@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from apps.events.models import EventDistance, Event, EventParticipation
+from apps.events.models import EventActivity, Event, EventParticipation
 from apps.users.models import ClubMember
 
 
-class EventDistanceSerializer(serializers.ModelSerializer):
+class EventActivitySerializer(serializers.ModelSerializer):
     class Meta:
-        model = EventDistance
+        model = EventActivity
         fields = (
             'id',
             'name',
@@ -15,7 +15,7 @@ class EventDistanceSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
 
-    distances = EventDistanceSerializer(read_only=True, many=True)
+    distances = EventActivitySerializer(read_only=True, many=True)
     going_count = serializers.SerializerMethodField()
     thinking_count = serializers.SerializerMethodField()
     current_member_status = serializers.SerializerMethodField()

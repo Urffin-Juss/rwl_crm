@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from apps.events.models import Event, EventParticipation, EventDistance
+from apps.events.models import Event, EventParticipation, EventActivity
 
 
-class EventDistanceInline(admin.TabularInline):
-    model = EventDistance
+class EventActivityInline(admin.TabularInline):
+    model = EventActivity
     extra = 8
 
 
@@ -15,7 +15,7 @@ class EventAdmin(admin.ModelAdmin):
     search_fields = ('name', 'city', 'status')
     date_hierarchy = 'date'
 
-    inlines = [EventDistanceInline]
+    inlines = [EventActivityInline]
 
 
 @admin.register(EventParticipation)
