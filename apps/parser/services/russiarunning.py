@@ -146,7 +146,7 @@ def save_event(clean_event: Dict[str, Any]):
             "end_datetime": (datetime.fromisoformat(clean_event["end_datetime"])
                 if clean_event.get("end_datetime")
                 else None),
-            "timezone_offset": clean_event.get("timeZoneOffset"),
+            "timezone_offset": clean_event.get("timezone_offset"),
 
         }
 
@@ -164,12 +164,12 @@ def save_distances(event, clean_event: Dict[str, Any]) -> None:
             defaults={
                 "name": distance.get("name"),
                 "distance": distance.get("distance"),
-                "discipline_code": distance.get("disciplineCode") or "",
-                "discipline_name": distance.get("disciplineName") or "",
+                "discipline_code": distance.get("discipline_code") or "",
+                "discipline_name": distance.get("discipline_name") or "",
                 "race_datetime": (datetime.fromisoformat(distance["race_datetime"])
                     if distance.get("race_datetime")
                     else None),
-                "hide_race_date": distance.get("hideRaceDate"),
+                "hide_race_date": distance.get("hide_race_date"),
             },
         )
 
