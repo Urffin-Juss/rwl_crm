@@ -82,8 +82,9 @@ def cleanup_distances(
             continue
 
         code = race_item.get("code", "")
+        name = str(race_item.get("name") or "").strip().lower()
 
-        if str(code).startswith("online_"):
+        if code == "online" or code.startswith("online_") or name == "online":
             continue
 
         clean_item = {
