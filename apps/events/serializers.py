@@ -9,7 +9,7 @@ class EventActivitySerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'distance',
+            'activities',
         )
 
 
@@ -164,7 +164,7 @@ class EventParticipationSerializer(serializers.ModelSerializer):
             'id',
             'event',
             'member',
-            'distance',
+            'activities',
             'status',
             'looking_for_company',
         )

@@ -1352,8 +1352,8 @@ function renderCurrentEvent() {
     */
 
     if (
-        event.distances &&
-        event.distances.length > 0
+        event.activities &&
+        event.activities.length > 0
     ) {
 
         const distancesContainer =
@@ -1363,8 +1363,8 @@ function renderCurrentEvent() {
             'distances';
 
 
-        event.distances.forEach(
-            function (distance) {
+        event.activities.forEach(
+            function (activities) {
 
                 const badge =
                     document.createElement(
@@ -1380,7 +1380,7 @@ function renderCurrentEvent() {
                 */
 
                 badge.textContent =
-                    distance.name;
+                    activities.name;
 
                 distancesContainer.appendChild(
                     badge
