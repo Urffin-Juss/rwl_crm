@@ -94,13 +94,13 @@ class EventParticipation(models.Model):
         verbose_name='Участник клуба',
     )
 
-    distance = models.ForeignKey(
+    activity = models.ForeignKey(
         EventActivity,
         related_name='participations',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name='Дистанция',
+        verbose_name='Активность',
     )
 
     status = models.CharField(
@@ -129,10 +129,10 @@ class EventParticipation(models.Model):
         return f'{self.member} — {self.event}'
 
     def clean(self):
-        if self.distance:
-            if self.distance.event != self.event:
+        if self.activity:
+            if self.activity.event != self.event:
                 raise ValidationError(
-                    'Выбранная дистанция не относится к этому ивенту'
+                    'Выбранная активность не относится к этому ивенту'
                 )
 
 

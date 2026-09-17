@@ -23,7 +23,7 @@ class EventParticipationAdmin(admin.ModelAdmin):
     list_display = (
         'member',
         'event',
-        'distance',
+        'activity',
         'status',
         'looking_for_company',
         'created_at',
