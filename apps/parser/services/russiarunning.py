@@ -67,7 +67,7 @@ RUNNING_DISCIPLINE_CODES = {
 }
 
 
-def cleanup_distances(
+def cleanup_activities(
     race_items: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     """
@@ -102,6 +102,9 @@ def cleanup_distances(
     return clean_data
 
 
+
+
+
 def parse_event(
     event: Dict[str, Any]
 ) -> Dict[str, Any]:
@@ -119,7 +122,7 @@ def parse_event(
         "end_datetime": event.get("endDate"),
         "timezone_offset": event.get("timeZoneOffset"),
         "source_code": event.get("code", ""),
-        "distances": cleanup_distances(
+        "activities": cleanup_activities(
             event.get("raceItems", [])
         ),
     }
@@ -152,12 +155,12 @@ def save_event(clean_event: Dict[str, Any]):
 
     )
 
-    save_distances(event, clean_event)
+    save_activities(event, clean_event)
     return event
 
 
-def save_distances(event, clean_event: Dict[str, Any]) -> None:
-    for distance in clean_event.get("distances", []):
+def save_activities(event, clean_event: Dict[str, Any]) -> None:
+    for distance in clean_event.get("activities", []):
         EventActivity.objects.update_or_create(
             event=event,
             external_id=distance.get("external_id"),

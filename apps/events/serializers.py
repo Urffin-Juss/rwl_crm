@@ -15,7 +15,7 @@ class EventActivitySerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
 
-    distances = EventActivitySerializer(read_only=True, many=True)
+    activities = EventActivitySerializer(read_only=True, many=True)
     going_count = serializers.SerializerMethodField()
     thinking_count = serializers.SerializerMethodField()
     current_member_status = serializers.SerializerMethodField()
@@ -35,7 +35,7 @@ class EventSerializer(serializers.ModelSerializer):
             'city',
             'date',
             'status',
-            'distances',
+            'activities',
             'going_count',
             'thinking_count',
             'looking_for_company_count',
