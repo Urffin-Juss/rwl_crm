@@ -60,7 +60,11 @@ def fetch_events(
     return events
 
 
-
+RUNNING_DISCIPLINE_CODES = {
+    "run",
+    "trail",
+    "run-relay",
+}
 
 
 def cleanup_distances(
@@ -74,7 +78,7 @@ def cleanup_distances(
     clean_data = []
 
     for race_item in race_items:
-        if race_item.get("disciplineCode") != "run":
+        if race_item.get("disciplineCode") not in RUNNING_DISCIPLINE_CODES:
             continue
 
         code = race_item.get("code", "")
