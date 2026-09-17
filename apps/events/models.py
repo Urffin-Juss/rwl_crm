@@ -1,4 +1,3 @@
-from django.db import models
 from django.core.exceptions import ValidationError
 from django.db import models
 from apps.users.models import ClubMember
@@ -16,7 +15,7 @@ class Event(models.Model):
     city = models.CharField(max_length=200, verbose_name="Город")
     date = models.DateField(verbose_name="Дата")
     begin_datetime = models.DateTimeField(null=True, blank=True, verbose_name="Начало события")
-    end_datetime = models.DateTimeField(null=True, blank=True, verbose_name="Окончание событий")
+    end_datetime = models.DateTimeField(null=True, blank=True, verbose_name="Окончание события")
     timezone_offset = models.IntegerField(null=True, blank=True, verbose_name="Смещение часового пояса")
     status = models.CharField(choices=STATUS_CHOICES, max_length=200, default='OPEN', verbose_name="Статус")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создан")
@@ -60,8 +59,8 @@ class EventActivity(models.Model):
         return f'{self.event} — {self.name} ({self.distance} км)'
 
     class Meta:
-        verbose_name = "Дистанция"
-        verbose_name_plural = "Дистанции"
+        verbose_name = "Активность"
+        verbose_name_plural = "Активности"
         constraints = [
             models.UniqueConstraint(
                 fields=['event', 'external_id'],

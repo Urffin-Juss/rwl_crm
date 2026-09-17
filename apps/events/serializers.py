@@ -9,7 +9,11 @@ class EventActivitySerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'activities',
+            'distance',
+            'discipline_code',
+            'discipline_name',
+            'race_datetime',
+            'hide_race_date',
         )
 
 
