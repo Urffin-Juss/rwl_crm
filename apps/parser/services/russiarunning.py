@@ -112,7 +112,7 @@ def parse_event(
         "date": event.get("beginDate"),
         "begin_datetime": event.get("beginDate"),
         "end_datetime": event.get("endDate"),
-        "timezone_offset": event.get("timezoneOffset"),
+        "timezone_offset": event.get("timeZoneOffset"),
         "source_code": event.get("code", ""),
         "distances": cleanup_distances(
             event.get("raceItems", [])
