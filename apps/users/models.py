@@ -19,3 +19,4 @@ class ClubMember(models.Model):
         verbose_name_plural = "Адепты"
 
 
+

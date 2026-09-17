@@ -86,6 +86,10 @@ def cleanup_distances(
             "external_id": race_item.get("id"),
             "name": race_item.get("name"),
             "distance": race_item.get("distance"),
+            "discipline_code": race_item.get("disciplineCode"),
+            "discipline_name": race_item.get("disciplineName"),
+            "race_datetime": race_item.get("raceDate"),
+            "hide_race_date": race_item.get("hideRaceDate"),
         }
 
         clean_data.append(clean_item)
@@ -106,6 +110,9 @@ def parse_event(
         "name": event.get("title"),
         "city": event.get("cityName") or event.get("place") or "",
         "date": event.get("beginDate"),
+        "begin_datetime": event.get("beginDate"),
+        "end_datetime": event.get("endDate"),
+        "timezone_offset": event.get("timezoneOffset"),
         "source_code": event.get("code", ""),
         "distances": cleanup_distances(
             event.get("raceItems", [])
