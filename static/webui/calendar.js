@@ -1031,8 +1031,10 @@ function renderCalendar() {
         const dayEvents =
             events.filter(
                 event =>
-                    event.date ===
-                    dateString
+                    event.activity_dates?.includes(
+                        dateString
+                    ) ||
+                    event.date === dateString
             );
 
 
