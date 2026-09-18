@@ -41,23 +41,16 @@ class Event(models.Model):
         verbose_name = "Ивент"
         verbose_name_plural = "Ивенты"
 
-
     def get_activity_dates(self):
-
         activity_dates = set()
 
-
         for activity in self.activities.all():
-
             if activity.race_datetime is not None:
-                activity_dates.append(
+                activity_dates.add(
                     activity.race_datetime.date()
-               )
+                )
 
-        unique_activity_dates = set(activity_dates)
-
-
-        return sorted(unique_activity_dates)
+        return sorted(activity_dates)
 
 
 
