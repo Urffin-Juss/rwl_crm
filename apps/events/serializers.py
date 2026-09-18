@@ -55,8 +55,14 @@ class EventSerializer(serializers.ModelSerializer):
     current_member_looking_for_company = serializers.SerializerMethodField()
     looking_for_company_count = serializers.SerializerMethodField()
     registration_url = serializers.SerializerMethodField()
+    activity_dates = serializers.SerializerMethodField()
+    is_multiday = serializers.SerializerMethodField()
 
+    def get_activity_dates(self, obj):
+        return obj.get_activity_dates()
 
+    def get_is_multiday(self, obj):
+        return obj.is_multiday
 
 
     class Meta:
@@ -78,6 +84,8 @@ class EventSerializer(serializers.ModelSerializer):
             'current_participation_id',
             'current_member_looking_for_company',
             'registration_url',
+            'activity_dates',
+            'is_multiday',
         )
 
 
