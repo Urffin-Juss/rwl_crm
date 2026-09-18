@@ -52,6 +52,10 @@ class Event(models.Model):
 
         return sorted(activity_dates)
 
+    @property
+    def is_multiday(self):
+        return len(self.get_activity_dates()) > 1
+
 
 
 class EventActivity(models.Model):
