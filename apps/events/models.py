@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from apps.users.models import ClubMember
 from django.db.models import Q
+from datetime import timedelta, timezone, datetime
 
 
 class Event(models.Model):
@@ -44,10 +45,23 @@ class Event(models.Model):
     def get_activity_dates(self):
         activity_dates = set()
 
+        timezone_offset = self.timezone_offset
+
+        if timezone_offset is None:
+            timezone_offset = 0
+
+        event_timezone = timezone(
+            timedelta(hours=timezone_offset)
+        )
+
         for activity in self.activities.all():
             if activity.race_datetime is not None:
+                local_datetime = activity.race_datetime.astimezone(
+                    event_timezone
+                )
+
                 activity_dates.add(
-                    activity.race_datetime.date()
+                    local_datetime.date()
                 )
 
         return sorted(activity_dates)
