@@ -1,9 +1,37 @@
 from rest_framework import serializers
 from apps.events.models import EventActivity, Event, EventParticipation
 from apps.users.models import ClubMember
+from datetime import timedelta, timezone
 
 
 class EventActivitySerializer(serializers.ModelSerializer):
+
+    race_datetime = serializers.SerializerMethodField()
+
+    def get_race_datetime(self, activity):
+        if activity.race_datetime is None:
+            return None
+
+        timezone_offset = activity.event.timezone_offset
+
+        if timezone_offset is None:
+            timezone_offset = 0
+
+        event_timezone = timezone(
+
+            timedelta(hours=timezone_offset)
+
+        )
+
+        local_datetime = activity.race_datetime.astimezone(
+
+            event_timezone
+
+        )
+
+        return local_datetime.isoformat()
+
+
     class Meta:
         model = EventActivity
         fields = (
