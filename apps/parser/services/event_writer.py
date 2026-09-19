@@ -8,7 +8,7 @@ from typing import Any, Dict
 
 def save_event(clean_event: Dict[str, Any]):
 
-    source = "russiarunning"
+    source = clean_event["source"]
     external_id = clean_event.get("external_id")
 
     event, _ = Event.objects.update_or_create(

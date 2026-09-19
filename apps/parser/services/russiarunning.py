@@ -114,6 +114,7 @@ def parse_event(
     """
 
     clean_event = {
+        "source": 'russiarunning',
         "external_id": event.get("id"),
         "name": event.get("title"),
         "city": event.get("cityName") or event.get("place") or "",
