@@ -1,6 +1,7 @@
 import requests
 from typing import Any, Dict, List
 from apps.parser.services.event_writer import save_event
+from datetime import datetime
 
 
 
@@ -172,6 +173,7 @@ def run_import() -> None:
 
 
 
+"""
 def normalize_datetime(value, timezone_offset):
 
     if not value:
@@ -191,3 +193,4 @@ def normalize_datetime(value, timezone_offset):
         dt = dt.replace(tzinfo=event_timezone)
 
     return dt.isoformat()
+"""
