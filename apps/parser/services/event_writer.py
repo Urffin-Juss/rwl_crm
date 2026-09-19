@@ -36,18 +36,18 @@ def save_event(clean_event: Dict[str, Any]):
 
 
 def save_activities(event, clean_event: Dict[str, Any]) -> None:
-    for distance in clean_event.get("activities", []):
+    for activity in clean_event.get("activities", []):
         EventActivity.objects.update_or_create(
             event=event,
-            external_id=distance.get("external_id"),
+            external_id=activity.get("external_id"),
             defaults={
-                "name": distance.get("name"),
-                "distance": distance.get("distance"),
-                "discipline_code": distance.get("discipline_code") or "",
-                "discipline_name": distance.get("discipline_name") or "",
-                "race_datetime": (datetime.fromisoformat(distance["race_datetime"])
-                    if distance.get("race_datetime")
+                "name": activity.get("name"),
+                "distance": activity.get("distance"),
+                "discipline_code": activity.get("discipline_code") or "",
+                "discipline_name": activity.get("discipline_name") or "",
+                "race_datetime": (datetime.fromisoformat(activity["race_datetime"])
+                    if activity.get("race_datetime")
                     else None),
-                "hide_race_date": distance.get("hide_race_date"),
+                "hide_race_date": activity.get("hide_race_date"),
             },
         )
