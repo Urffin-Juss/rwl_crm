@@ -169,3 +169,25 @@ def fetch_all_events(
 def run_import() -> None:
     all_events = fetch_all_events()
     import_events(all_events)
+
+
+
+def normalize_datetime(value, timezone_offset):
+
+    if not value:
+
+        return None
+
+    dt = datetime.fromisoformat(value)
+
+    if dt.tzinfo is None:
+
+        event_timezone = timezone(
+
+            timedelta(hours=timezone_offset)
+
+        )
+
+        dt = dt.replace(tzinfo=event_timezone)
+
+    return dt.isoformat()
