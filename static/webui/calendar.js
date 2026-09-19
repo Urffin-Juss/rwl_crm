@@ -1029,6 +1029,7 @@ function renderCalendar() {
 
 
         const dayEvents =
+
             events.filter(
                 event =>
                     event.activity_dates?.includes(
