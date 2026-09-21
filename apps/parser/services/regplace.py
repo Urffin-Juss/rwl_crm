@@ -8,11 +8,11 @@ from datetime import datetime
 BASE_URL = "https://reg.place"
 
 
-def fetch_events_page():
+def fetch_events_page(page_url="/events"):
 
     response = requests.get(
 
-        f"{BASE_URL}/events",
+        f"{BASE_URL}{page_url}",
 
         timeout=30,
 
