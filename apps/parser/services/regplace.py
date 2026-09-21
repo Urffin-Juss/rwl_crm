@@ -103,41 +103,23 @@ def fetch_events():
 
 
 def parse_race_card(card):
-
     title = card.select_one(".race-card__title")
 
-    action = card.select_one(".race-card__button")
-
+    name = title.get_text(" ", strip=True)
     distance = None
 
     for item in card.select(".race-card__meta-item"):
-
         label = item.select_one(".race-card__meta-label")
 
         if label and label.get_text(strip=True) == "Дистанция":
-
             values = list(item.stripped_strings)
-
-            distance = values[-1]
-
+            distance = parse_distance(values[-1])
             break
 
-    race_id = None
-
-    if action:
-
-        query = parse_qs(
-
-            urlparse(action.get("href")).query
-
-        )
-
-        race_id = query.get("race_id", [None])[0]
-
     return {
-        "external_id": race_id,
-        "name": title.get_text(" ", strip=True),
-        "distance": parse_distance(distance),
+        "external_id": build_activity_external_id(name, distance),
+        "name": name,
+        "distance": distance,
     }
 
 
@@ -174,3 +156,7 @@ def parse_event_date(value):
         return None
 
     return datetime.strptime(value, "%d.%m.%Y").date()
+
+
+def build_activity_external_id(name, distance):
+    return f"{name}:{distance}"
