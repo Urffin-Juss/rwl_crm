@@ -23,13 +23,39 @@ def fetch_events_page():
 
 
 def fetch_event_page(event_url):
+
     response = requests.get(
+
         f"{BASE_URL}{event_url}",
+
         timeout=30,
+
     )
+
     response.raise_for_status()
 
     return response.text
+
+
+def parse_event_page(event_card, html):
+    soup = BeautifulSoup(html, "html.parser")
+
+    title = soup.select_one(".event-page__title")
+    date = soup.select_one(".event-page__date")
+
+    activities = [
+        parse_race_card(card)
+        for card in soup.select(".race-card")
+    ]
+
+    return {
+        "source": "regplace",
+        "external_id": parse_event_external_id(event_card["url"]),
+        "name": title.get_text(" ", strip=True),
+        "city": event_card["city"],
+        "date_raw": date.get_text(" ", strip=True),
+        "activities": activities,
+    }
 
 
 def parse_event_card(card):
@@ -133,3 +159,10 @@ def parse_distance(value):
         return meters / 1000
 
     return None
+
+
+def parse_event_external_id(event_url):
+
+    path = urlparse(event_url).path
+
+    return path.rstrip("/").split("/")[-1]
