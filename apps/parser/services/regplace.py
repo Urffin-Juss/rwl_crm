@@ -160,3 +160,27 @@ def parse_event_date(value):
 
 def build_activity_external_id(name, distance):
     return f"{name}:{distance}"
+
+
+
+def fetch_all_events():
+    events = []
+    page_url = "/events"
+
+    while page_url:
+        html = fetch_events_page(page_url)
+        soup = BeautifulSoup(html, "html.parser")
+
+        cards = soup.select("article.b-event-card")
+
+        for card in cards:
+            events.append(parse_event_card(card))
+
+        next_link = soup.select_one('a[rel="next"]')
+
+        if next_link:
+            page_url = next_link.get("href")
+        else:
+            page_url = None
+
+    return events
