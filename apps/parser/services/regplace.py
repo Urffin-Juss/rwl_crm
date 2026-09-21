@@ -1,7 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse, parse_qs
 
-BASE_URL = "https://www.reg.place"
+
+
+BASE_URL = "https://reg.place"
 
 
 def fetch_events_page():
@@ -19,26 +22,114 @@ def fetch_events_page():
     return response.text
 
 
+def fetch_event_page(event_url):
+    response = requests.get(
+        f"{BASE_URL}{event_url}",
+        timeout=30,
+    )
+    response.raise_for_status()
+
+    return response.text
+
+
 def parse_event_card(card):
     title_link = card.select_one(".b-event-card__title-link")
     meta = card.select_one(".b-event-card__meta")
 
+    meta_parts = [
+        text
+        for text in meta.stripped_strings
+        if text != "•"
+    ]
+
     return {
         "name": title_link.get_text(strip=True),
         "url": title_link.get("href"),
-        "meta": meta.get_text(" ", strip=True),
+        "date": meta_parts[0],
+        "city": meta_parts[1] if len(meta_parts) == 3 else "",
+        "sport": meta_parts[-1],
     }
 
 
-def fetch_first_event():
+
+def fetch_running_events():
+    events = fetch_events()
+
+    return [
+        event
+        for event in events
+        if event["sport"] == "Бег"
+    ]
+
+
+def fetch_events():
     html = fetch_events_page()
     soup = BeautifulSoup(html, "html.parser")
 
-    card = soup.select_one("article.b-event-card")
+    cards = soup.select("article.b-event-card")
 
-    if card is None:
+    return [
+        parse_event_card(card)
+        for card in cards
+    ]
+
+
+
+def parse_race_card(card):
+
+    title = card.select_one(".race-card__title")
+
+    action = card.select_one(".race-card__button")
+
+    distance = None
+
+    for item in card.select(".race-card__meta-item"):
+
+        label = item.select_one(".race-card__meta-label")
+
+        if label and label.get_text(strip=True) == "Дистанция":
+
+            values = list(item.stripped_strings)
+
+            distance = values[-1]
+
+            break
+
+    race_id = None
+
+    if action:
+
+        query = parse_qs(
+
+            urlparse(action.get("href")).query
+
+        )
+
+        race_id = query.get("race_id", [None])[0]
+
+    return {
+        "external_id": race_id,
+        "name": title.get_text(" ", strip=True),
+        "distance": parse_distance(distance),
+    }
+
+
+def parse_distance(value):
+
+    if not value:
+
         return None
 
-    return parse_event_card(card)
+    value = value.strip().lower().replace(",", ".")
 
+    if value.endswith("км"):
 
+        return float(value.removesuffix("км").strip())
+
+    if value.endswith("м"):
+
+        meters = float(value.removesuffix("м").strip())
+
+        return meters / 1000
+
+    return None
