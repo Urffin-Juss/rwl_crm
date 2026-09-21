@@ -16,6 +16,23 @@ def normalize_event_date(value):
     return None
 
 
+def normalize_event_datetime(value):
+    if isinstance(value, datetime):
+        return value
+
+    if isinstance(value, date):
+        return datetime.combine(
+            value,
+            datetime.min.time(),
+        )
+
+    if isinstance(value, str):
+        return datetime.fromisoformat(value)
+
+    return None
+
+
+
 def save_event(clean_event: Dict[str, Any]):
 
     source = clean_event["source"]
@@ -29,12 +46,10 @@ def save_event(clean_event: Dict[str, Any]):
             "city": clean_event.get("city"),
             "source_code": clean_event.get("source_code", ""),
             "date": normalize_event_date(clean_event.get("date")),
-            "begin_datetime": (datetime.fromisoformat(clean_event["begin_datetime"])
-                if clean_event.get("begin_datetime")
-                else None),
-            "end_datetime": (datetime.fromisoformat(clean_event["end_datetime"])
-                if clean_event.get("end_datetime")
-                else None),
+            "begin_datetime": normalize_event_datetime(
+            clean_event.get("begin_datetime") ),
+            "end_datetime": normalize_event_datetime(
+                clean_event.get("end_datetime")),
             "timezone_offset": clean_event.get("timezone_offset"),
 
         }
