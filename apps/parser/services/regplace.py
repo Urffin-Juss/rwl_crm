@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
+from datetime import datetime
 
 
 
@@ -53,7 +54,7 @@ def parse_event_page(event_card, html):
         "external_id": parse_event_external_id(event_card["url"]),
         "name": title.get_text(" ", strip=True),
         "city": event_card["city"],
-        "date_raw": date.get_text(" ", strip=True),
+        "date": parse_event_date(date.get_text(" ", strip=True)),
         "activities": activities,
     }
 
@@ -166,3 +167,10 @@ def parse_event_external_id(event_url):
     path = urlparse(event_url).path
 
     return path.rstrip("/").split("/")[-1]
+
+
+def parse_event_date(value):
+    if not value:
+        return None
+
+    return datetime.strptime(value, "%d.%m.%Y").date()
