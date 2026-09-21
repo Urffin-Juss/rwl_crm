@@ -1,9 +1,19 @@
-from datetime import datetime
+from datetime import datetime, date
 from apps.events.models import Event, EventActivity
 from typing import Any, Dict
 
 
+def normalize_event_date(value):
+    if isinstance(value, datetime):
+        return value.date()
 
+    if isinstance(value, date):
+        return value
+
+    if isinstance(value, str):
+        return datetime.fromisoformat(value).date()
+
+    return None
 
 
 def save_event(clean_event: Dict[str, Any]):
@@ -17,8 +27,8 @@ def save_event(clean_event: Dict[str, Any]):
         defaults={
             "name": clean_event.get("name"),
             "city": clean_event.get("city"),
-            "source_code": clean_event["source_code"],
-            "date": datetime.fromisoformat(clean_event.get("date")).date(),
+            "source_code": clean_event.get("source_code", ""),
+            "date": normalize_event_date(clean_event.get("date")),
             "begin_datetime": (datetime.fromisoformat(clean_event["begin_datetime"])
                 if clean_event.get("begin_datetime")
                 else None),
@@ -51,3 +61,8 @@ def save_activities(event, clean_event: Dict[str, Any]) -> None:
                 "hide_race_date": activity.get("hide_race_date"),
             },
         )
+
+
+
+
+
