@@ -59,9 +59,14 @@ const emptyState =
     document.getElementById('calendar-empty-state');
 
 
+const calendarHeader =
+    document.querySelector('.calendar-header');
 
+const weekdays =
+    document.querySelector('.weekdays');
 
-
+const eventsBackButton =
+    document.querySelector('.events-back-button');
 
 /*
     ========================================
@@ -314,11 +319,19 @@ async function handleConsentAccept() {
 */
 
 function showBrandState() {
+    calendarHeader.style.display = '';
+    weekdays.style.display = '';
+    calendarGrid.style.display = '';
+
     emptyState.style.display = 'flex';
     eventsPanel.classList.add('hidden');
 }
 
 function showEventState() {
+    calendarHeader.style.display = 'none';
+    weekdays.style.display = 'none';
+    calendarGrid.style.display = 'none';
+
     emptyState.style.display = 'none';
     eventsPanel.classList.remove('hidden');
 }
@@ -1881,6 +1894,14 @@ prevMonthButton.addEventListener(
 
         closeEventsPanel();
 
+        renderCalendar();
+    }
+);
+
+eventsBackButton.addEventListener(
+    'click',
+    function () {
+        closeEventsPanel();
         renderCalendar();
     }
 );
