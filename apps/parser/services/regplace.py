@@ -123,8 +123,10 @@ def parse_race_card(card):
             values = list(item.stripped_strings)
             distance = parse_distance(values[-1])
             break
-        if distance is None:
-            distance = parse_distance_from_name(name)
+
+    if distance is None:
+        distance = parse_distance_from_name(name)
+
     return {
         "external_id": build_activity_external_id(name, distance),
         "name": name,
@@ -262,3 +264,11 @@ def import_events():
         imported.append(event)
 
     return imported
+
+
+def run_import():
+    events = import_events()
+
+    print(f"RegPlace import completed: {len(events)} events")
+
+    return events
