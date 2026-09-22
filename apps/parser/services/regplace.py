@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 from datetime import datetime
-
+from apps.parser.services.event_writer import save_event
+import re
 
 
 BASE_URL = "https://reg.place"
@@ -47,10 +48,16 @@ def parse_event_page(event_card, html):
     start_date, end_date = parse_event_dates(
         date_element.get_text(" ", strip=True)
     )
-    activities = [
-        parse_race_card(card)
-        for card in soup.select(".race-card")
-    ]
+    activities = []
+
+    for card in soup.select(".race-card"):
+
+        activity = parse_race_card(card)
+
+        if activity["distance"] is None:
+            continue
+
+        activities.append(activity)
 
     return {
         "source": "regplace",
@@ -58,8 +65,6 @@ def parse_event_page(event_card, html):
         "name": title.get_text(" ", strip=True),
         "city": event_card["city"],
         "date": start_date,
-        "begin_datetime": start_date,
-        "end_datetime": end_date,
         "activities": activities,
     }
 
@@ -118,7 +123,8 @@ def parse_race_card(card):
             values = list(item.stripped_strings)
             distance = parse_distance(values[-1])
             break
-
+        if distance is None:
+            distance = parse_distance_from_name(name)
     return {
         "external_id": build_activity_external_id(name, distance),
         "name": name,
@@ -217,3 +223,42 @@ def parse_event_dates(value):
     ).date()
 
     return start_date, end_date
+
+
+def parse_distance_from_name(name):
+
+    if not name:
+        return None
+
+    match = re.search(
+        r"(\d+(?:[.,]\d+)?)\s*(км|м)\.?(?:\s|$)",
+        name.lower(),
+    )
+
+    if not match:
+        return None
+
+    value = float(
+        match.group(1).replace(",", ".")
+    )
+
+    unit = match.group(2)
+
+    if unit == "м":
+        return value / 1000
+
+    return value
+
+
+def import_events():
+    event_cards = fetch_running_events()
+    imported = []
+
+    for event_card in event_cards:
+        html = fetch_event_page(event_card["url"])
+        clean_event = parse_event_page(event_card, html)
+
+        event = save_event(clean_event)
+        imported.append(event)
+
+    return imported

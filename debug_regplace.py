@@ -1,25 +1,25 @@
-from apps.parser.services.regplace import (
-    fetch_running_events,
-    fetch_event_page,
-    parse_event_page,
-)
+import os
+
+import django
 
 
-running_events = fetch_running_events()
-parsed_events = []
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+django.setup()
 
-for event_card in running_events:
-    print("Parsing:", event_card["name"])
 
-    html = fetch_event_page(event_card["url"])
-    event = parse_event_page(event_card, html)
+from apps.parser.services.regplace import import_events
 
-    parsed_events.append(event)
 
-    print(
-        "  date:", event["date"],
-        "| activities:", len(event["activities"]),
-    )
+events = import_events()
 
 print()
-print("TOTAL:", len(parsed_events))
+print("IMPORTED:", len(events))
+
+for event in events:
+    print(
+        event.id,
+        "|",
+        event.name,
+        "| activities:",
+        event.activities.count(),
+    )
