@@ -59,9 +59,14 @@ const emptyState =
     document.getElementById('calendar-empty-state');
 
 
+const calendarHeader =
+    document.querySelector('.calendar-header');
 
+const weekdays =
+    document.querySelector('.weekdays');
 
-
+const eventsBackButton =
+    document.querySelector('.events-back-button');
 
 /*
     ========================================
@@ -314,11 +319,19 @@ async function handleConsentAccept() {
 */
 
 function showBrandState() {
+    calendarHeader.style.display = '';
+    weekdays.style.display = '';
+    calendarGrid.style.display = '';
+
     emptyState.style.display = 'flex';
     eventsPanel.classList.add('hidden');
 }
 
 function showEventState() {
+    calendarHeader.style.display = 'none';
+    weekdays.style.display = 'none';
+    calendarGrid.style.display = 'none';
+
     emptyState.style.display = 'none';
     eventsPanel.classList.remove('hidden');
 }
@@ -1029,10 +1042,13 @@ function renderCalendar() {
 
 
         const dayEvents =
+
             events.filter(
                 event =>
-                    event.date ===
-                    dateString
+                    event.activity_dates?.includes(
+                        dateString
+                    ) ||
+                    event.date === dateString
             );
 
 
@@ -1352,8 +1368,8 @@ function renderCurrentEvent() {
     */
 
     if (
-        event.distances &&
-        event.distances.length > 0
+        event.activities &&
+        event.activities.length > 0
     ) {
 
         const distancesContainer =
@@ -1363,8 +1379,8 @@ function renderCurrentEvent() {
             'distances';
 
 
-        event.distances.forEach(
-            function (distance) {
+        event.activities.forEach(
+            function (activities) {
 
                 const badge =
                     document.createElement(
@@ -1380,7 +1396,7 @@ function renderCurrentEvent() {
                 */
 
                 badge.textContent =
-                    distance.name;
+                    activities.name;
 
                 distancesContainer.appendChild(
                     badge
@@ -1878,6 +1894,14 @@ prevMonthButton.addEventListener(
 
         closeEventsPanel();
 
+        renderCalendar();
+    }
+);
+
+eventsBackButton.addEventListener(
+    'click',
+    function () {
+        closeEventsPanel();
         renderCalendar();
     }
 );

@@ -1,7 +1,8 @@
 import requests
 from typing import Any, Dict, List
+from apps.parser.services.event_writer import save_event
 from datetime import datetime
-from apps.events.models import Event, EventDistance
+
 
 
 def fetch_events(
@@ -60,10 +61,14 @@ def fetch_events(
     return events
 
 
+RUNNING_DISCIPLINE_CODES = {
+    "run",
+    "trail",
+    "run-relay",
+}
 
 
-
-def cleanup_distances(
+def cleanup_activities(
     race_items: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     """
@@ -74,23 +79,31 @@ def cleanup_distances(
     clean_data = []
 
     for race_item in race_items:
-        if race_item.get("disciplineCode") != "run":
+        if race_item.get("disciplineCode") not in RUNNING_DISCIPLINE_CODES:
             continue
 
         code = race_item.get("code", "")
+        name = str(race_item.get("name") or "").strip().lower()
 
-        if str(code).startswith("online_"):
+        if code == "online" or code.startswith("online_") or name == "online":
             continue
 
         clean_item = {
             "external_id": race_item.get("id"),
             "name": race_item.get("name"),
             "distance": race_item.get("distance"),
+            "discipline_code": race_item.get("disciplineCode"),
+            "discipline_name": race_item.get("disciplineName"),
+            "race_datetime": race_item.get("raceDate"),
+            "hide_race_date": race_item.get("hideRaceDate"),
         }
 
         clean_data.append(clean_item)
 
     return clean_data
+
+
+
 
 
 def parse_event(
@@ -102,12 +115,16 @@ def parse_event(
     """
 
     clean_event = {
+        "source": 'russiarunning',
         "external_id": event.get("id"),
         "name": event.get("title"),
         "city": event.get("cityName") or event.get("place") or "",
         "date": event.get("beginDate"),
+        "begin_datetime": event.get("beginDate"),
+        "end_datetime": event.get("endDate"),
+        "timezone_offset": event.get("timeZoneOffset"),
         "source_code": event.get("code", ""),
-        "distances": cleanup_distances(
+        "activities": cleanup_activities(
             event.get("raceItems", [])
         ),
     }
@@ -115,37 +132,7 @@ def parse_event(
     return clean_event
 
 
-def save_event(clean_event: Dict[str, Any]):
 
-    source = "russiarunning"
-    external_id = clean_event.get("external_id")
-
-    event, _ = Event.objects.update_or_create(
-        source=source,
-        external_id=external_id,
-        defaults={
-            "name": clean_event.get("name"),
-            "city": clean_event.get("city"),
-            "source_code": clean_event["source_code"],
-            "date": datetime.fromisoformat(clean_event.get("date")).date(),
-        }
-
-    )
-
-    save_distances(event, clean_event)
-    return event
-
-
-def save_distances(event, clean_event: Dict[str, Any]) -> None:
-    for distance in clean_event.get("distances", []):
-        EventDistance.objects.update_or_create(
-            event=event,
-            external_id=distance.get("external_id"),
-            defaults={
-                "name": distance.get("name"),
-                "distance": distance.get("distance"),
-            },
-        )
 
 
 
@@ -183,3 +170,27 @@ def fetch_all_events(
 def run_import() -> None:
     all_events = fetch_all_events()
     import_events(all_events)
+
+
+
+"""
+def normalize_datetime(value, timezone_offset):
+
+    if not value:
+
+        return None
+
+    dt = datetime.fromisoformat(value)
+
+    if dt.tzinfo is None:
+
+        event_timezone = timezone(
+
+            timedelta(hours=timezone_offset)
+
+        )
+
+        dt = dt.replace(tzinfo=event_timezone)
+
+    return dt.isoformat()
+"""

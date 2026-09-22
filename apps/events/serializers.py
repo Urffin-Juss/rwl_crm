@@ -1,21 +1,53 @@
 from rest_framework import serializers
-from apps.events.models import EventDistance, Event, EventParticipation
+from apps.events.models import EventActivity, Event, EventParticipation
 from apps.users.models import ClubMember
+from datetime import timedelta, timezone
 
 
-class EventDistanceSerializer(serializers.ModelSerializer):
+class EventActivitySerializer(serializers.ModelSerializer):
+
+    race_datetime = serializers.SerializerMethodField()
+
+    def get_race_datetime(self, activity):
+        if activity.race_datetime is None:
+            return None
+
+        timezone_offset = activity.event.timezone_offset
+
+        if timezone_offset is None:
+            timezone_offset = 0
+
+        event_timezone = timezone(
+
+            timedelta(hours=timezone_offset)
+
+        )
+
+        local_datetime = activity.race_datetime.astimezone(
+
+            event_timezone
+
+        )
+
+        return local_datetime.isoformat()
+
+
     class Meta:
-        model = EventDistance
+        model = EventActivity
         fields = (
             'id',
             'name',
             'distance',
+            'discipline_code',
+            'discipline_name',
+            'race_datetime',
+            'hide_race_date',
         )
 
 
 class EventSerializer(serializers.ModelSerializer):
 
-    distances = EventDistanceSerializer(read_only=True, many=True)
+    activities = EventActivitySerializer(read_only=True, many=True)
     going_count = serializers.SerializerMethodField()
     thinking_count = serializers.SerializerMethodField()
     current_member_status = serializers.SerializerMethodField()
@@ -23,8 +55,14 @@ class EventSerializer(serializers.ModelSerializer):
     current_member_looking_for_company = serializers.SerializerMethodField()
     looking_for_company_count = serializers.SerializerMethodField()
     registration_url = serializers.SerializerMethodField()
+    activity_dates = serializers.SerializerMethodField()
+    is_multiday = serializers.SerializerMethodField()
 
+    def get_activity_dates(self, obj):
+        return obj.get_activity_dates()
 
+    def get_is_multiday(self, obj):
+        return obj.is_multiday
 
 
     class Meta:
@@ -34,8 +72,11 @@ class EventSerializer(serializers.ModelSerializer):
             'name',
             'city',
             'date',
+            'begin_datetime',
+            'end_datetime',
+            'timezone_offset',
             'status',
-            'distances',
+            'activities',
             'going_count',
             'thinking_count',
             'looking_for_company_count',
@@ -43,6 +84,8 @@ class EventSerializer(serializers.ModelSerializer):
             'current_participation_id',
             'current_member_looking_for_company',
             'registration_url',
+            'activity_dates',
+            'is_multiday',
         )
 
 
@@ -164,7 +207,7 @@ class EventParticipationSerializer(serializers.ModelSerializer):
             'id',
             'event',
             'member',
-            'distance',
+            'activity',
             'status',
             'looking_for_company',
         )
@@ -173,11 +216,11 @@ class EventParticipationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         event = attrs.get('event')
-        distance = attrs.get('distance')
+        activity = attrs.get('activity')
 
-        if distance and distance.event != event:
+        if activity and activity.event != event:
             raise serializers.ValidationError(
-                'Выбранная дистанция не относится к этому ивенту'
+                'Выбранная активность не относится к этому ивенту'
             )
         return attrs
 
