@@ -1435,26 +1435,6 @@ function parseCalendarDate(dateString) {
 }
 
 
-function formatEventDay(dateString) {
-    const date =
-        parseCalendarDate(dateString);
-
-    const day =
-        date.getDate();
-
-    const weekday =
-        date.toLocaleDateString(
-            'ru-RU',
-            {
-                weekday: 'short',
-            }
-        )
-        .replace('.', '')
-        .toUpperCase();
-
-    return `${day} ${weekday}`;
-}
-
 
 function formatEventDateRange(dateStrings) {
 
