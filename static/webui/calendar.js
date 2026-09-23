@@ -1518,6 +1518,63 @@ function renderCurrentEvent() {
         city
     );
 
+    /*
+    Дата события.
+    */
+
+    const eventDate =
+        document.createElement('div');
+
+    eventDate.className =
+        'event-date';
+
+    eventDate.textContent =
+        event.date;
+
+    card.appendChild(
+        eventDate
+    );
+
+    /*
+    Дни многодневного события.
+    */
+
+    if (
+        event.is_multiday &&
+        event.activity_dates &&
+        event.activity_dates.length > 1
+    ) {
+
+        const eventDays =
+            document.createElement('div');
+
+        eventDays.className =
+            'event-days';
+
+
+        event.activity_dates.forEach(
+            function (date) {
+
+                const day =
+                    document.createElement('div');
+
+                day.className =
+                    'event-day';
+
+                day.textContent =
+                    date;
+
+                eventDays.appendChild(
+                    day
+                );
+            }
+        );
+
+
+        card.appendChild(
+            eventDays
+        );
+    }
 
     /*
         Дистанции.
