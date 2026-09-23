@@ -912,3 +912,72 @@ body {
     color: rgba(255, 255, 255, 0.38);
     letter-spacing: 0.04em;
 }
+
+
+/* ========================================
+   DAY EVENTS PAGINATION
+   ======================================== */
+
+.day-events-pagination {
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    align-items: center;
+
+    width: 100%;
+    margin-top: 18px;
+}
+
+.day-events-page-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.day-events-page-dot {
+    width: 8px;
+    height: 8px;
+
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+
+    background: #3a3a3a;
+}
+
+.day-events-page-dot.active {
+    background: #42c77a;
+}
+
+.day-events-page-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    padding: 0;
+    border: 1px solid #2d2d2d;
+    border-radius: 50%;
+
+    background: #1d1d1d;
+    color: #ffffff;
+
+    font-size: 20px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.day-events-page-button:first-child {
+    justify-self: start;
+}
+
+.day-events-page-button:last-child {
+    justify-self: end;
+}
+
+.day-events-page-button:disabled {
+    visibility: hidden;
+}
