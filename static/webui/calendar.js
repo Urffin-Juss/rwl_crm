@@ -1683,8 +1683,9 @@ function renderCurrentEvent() {
         city
     );
 
+
     /*
-    Дата события.
+    Дата / диапазон дат события.
     */
 
     const eventDate =
@@ -1693,12 +1694,31 @@ function renderCurrentEvent() {
     eventDate.className =
         'event-date';
 
-    eventDate.textContent =
-        event.date;
+
+    if (
+        event.is_multiday &&
+        event.activity_dates &&
+        event.activity_dates.length > 1
+    ) {
+
+        eventDate.textContent =
+            `📅 ${formatEventDateRange(
+                event.activity_dates
+            )}`;
+
+    } else {
+
+        eventDate.textContent =
+            `📅 ${formatEventDateRange(
+                [event.date]
+            )}`;
+    }
+
 
     card.appendChild(
         eventDate
     );
+
 
     /*
     Дни многодневного события.
@@ -1741,40 +1761,7 @@ function renderCurrentEvent() {
         );
     }
 
-    /*
-    Дата / диапазон дат события.
-    */
 
-    const eventDate =
-        document.createElement('div');
-
-    eventDate.className =
-        'event-date';
-
-
-    if (
-        event.is_multiday &&
-        event.activity_dates &&
-        event.activity_dates.length > 1
-    ) {
-
-        eventDate.textContent =
-            `📅 ${formatEventDateRange(
-                event.activity_dates
-            )}`;
-
-    } else {
-
-        eventDate.textContent =
-            `📅 ${formatEventDateRange(
-                [event.date]
-            )}`;
-    }
-
-
-    card.appendChild(
-        eventDate
-    );
 
 
     /*
