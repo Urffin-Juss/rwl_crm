@@ -351,6 +351,10 @@ let selectedDate = null;
 
 let selectedDayEvents = [];
 
+let currentDayEventsPage = 0;
+
+const DAY_EVENTS_PAGE_SIZE = 9;
+
 let currentEventIndex = 0;
 
 
@@ -1069,6 +1073,8 @@ function renderCalendar() {
                     selectedDayEvents =
                         dayEvents;
 
+                    currentDayEventsPage = 0;
+
                     currentEventIndex = 0;
 
                     renderCalendar();
@@ -1165,6 +1171,19 @@ function renderDayEventsGrid() {
         return;
     }
 
+    const pageStart =
+        currentDayEventsPage * DAY_EVENTS_PAGE_SIZE;
+
+    const pageEnd =
+        pageStart + DAY_EVENTS_PAGE_SIZE;
+
+    const pageEvents =
+        selectedDayEvents.slice(
+            pageStart,
+            pageEnd
+        );
+
+
 
     const grid =
         document.createElement('div');
@@ -1173,7 +1192,7 @@ function renderDayEventsGrid() {
         'day-events-grid';
 
 
-    selectedDayEvents.forEach(
+    pageEvents.forEach.forEach(
         function (event, index) {
 
             const tile =
@@ -1246,7 +1265,7 @@ function renderDayEventsGrid() {
                 function () {
 
                     currentEventIndex =
-                        index;
+                        pageStart + index;
 
                     renderCurrentEvent();
                 }
@@ -1932,6 +1951,8 @@ function closeEventsPanel() {
     selectedDate = null;
 
     selectedDayEvents = [];
+
+    currentDayEventsPage = 0;
 
     currentEventIndex = 0;
 
