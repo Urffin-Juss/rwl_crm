@@ -8,7 +8,9 @@ amqp==5.3.1
 annotated-types==0.8.0
 asgiref==3.11.1
 attrs==26.1.0
+beautifulsoup4==4.15.0
 billiard==4.2.4
+bs4==0.0.2
 celery==5.6.2
 celery-types==0.26.0
 certifi==2026.7.22
@@ -59,6 +61,7 @@ python-socks==3.0.0
 redis==8.1.0
 requests==2.34.2
 six==1.17.0
+soupsieve==2.9.2
 sqlparse==0.5.5
 tablib==3.9.0
 types-PyYAML==6.0.12.20260815
