@@ -1183,7 +1183,11 @@ function renderDayEventsGrid() {
             pageEnd
         );
 
-
+    const totalPages =
+        Math.ceil(
+            selectedDayEvents.length /
+            DAY_EVENTS_PAGE_SIZE
+        );
 
     const grid =
         document.createElement('div');
@@ -1282,6 +1286,139 @@ function renderDayEventsGrid() {
     eventCardContainer.appendChild(
         grid
     );
+
+    if (totalPages <= 1) {
+    return;
+    }
+
+
+    const pagination =
+        document.createElement('div');
+
+    pagination.className =
+        'day-events-pagination';
+
+
+    const prevPageButton =
+        document.createElement('button');
+
+    prevPageButton.type =
+        'button';
+
+    prevPageButton.className =
+        'day-events-page-button';
+
+    prevPageButton.textContent =
+        '←';
+
+
+    const dots =
+        document.createElement('div');
+
+    dots.className =
+        'day-events-page-dots';
+
+
+    const nextPageButton =
+        document.createElement('button');
+
+    nextPageButton.type =
+        'button';
+
+
+    nextPageButton.className =
+        'day-events-page-button';
+
+    nextPageButton.textContent =
+        '→';
+
+    for (
+        let page = 0;
+        page < totalPages;
+        page++
+    ) {
+
+        const dot =
+            document.createElement('button');
+
+        dot.type =
+            'button';
+
+        dot.className =
+            'day-events-page-dot';
+
+        if (page === currentDayEventsPage) {
+            dot.classList.add('active');
+        }
+
+        dot.addEventListener(
+            'click',
+            function () {
+                currentDayEventsPage = page;
+                renderDayEventsGrid();
+            }
+        );
+
+            dots.appendChild(dot);
+        }
+
+    prevPageButton.disabled =
+        currentDayEventsPage === 0;
+
+    nextPageButton.disabled =
+        currentDayEventsPage === totalPages - 1;
+
+
+    prevPageButton.addEventListener(
+        'click',
+        function () {
+
+            if (currentDayEventsPage === 0) {
+                return;
+            }
+
+            currentDayEventsPage--;
+
+            renderDayEventsGrid();
+        }
+    );
+
+
+    nextPageButton.addEventListener(
+        'click',
+        function () {
+
+            if (
+                currentDayEventsPage ===
+                totalPages - 1
+            ) {
+                return;
+            }
+
+            currentDayEventsPage++;
+
+            renderDayEventsGrid();
+        }
+    );
+
+
+    pagination.appendChild(
+        prevPageButton
+    );
+
+    pagination.appendChild(
+        dots
+    );
+
+    pagination.appendChild(
+        nextPageButton
+    );
+
+    eventCardContainer.appendChild(
+        pagination
+    );
+
+
 }
 
 
