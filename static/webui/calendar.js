@@ -1435,26 +1435,6 @@ function parseCalendarDate(dateString) {
 }
 
 
-function formatEventDay(dateString) {
-    const date =
-        parseCalendarDate(dateString);
-
-    const day =
-        date.getDate();
-
-    const weekday =
-        date.toLocaleDateString(
-            'ru-RU',
-            {
-                weekday: 'short',
-            }
-        )
-        .replace('.', '')
-        .toUpperCase();
-
-    return `${day} ${weekday}`;
-}
-
 
 function formatEventDateRange(dateStrings) {
 
@@ -1719,47 +1699,6 @@ function renderCurrentEvent() {
         eventDate
     );
 
-
-    /*
-    Дни многодневного события.
-    */
-
-    if (
-        event.is_multiday &&
-        event.activity_dates &&
-        event.activity_dates.length > 1
-    ) {
-
-        const eventDays =
-            document.createElement('div');
-
-        eventDays.className =
-            'event-days';
-
-
-        event.activity_dates.forEach(
-            function (date) {
-
-                const day =
-                    document.createElement('div');
-
-                day.className =
-                    'event-day';
-
-                day.textContent =
-                    formatEventDay(date);
-
-                eventDays.appendChild(
-                    day
-                );
-            }
-        );
-
-
-        card.appendChild(
-            eventDays
-        );
-    }
 
 
 
