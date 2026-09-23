@@ -1421,7 +1421,172 @@ function renderDayEventsGrid() {
 
 }
 
+function parseCalendarDate(dateString) {
+    const [year, month, day] =
+        dateString
+            .split('-')
+            .map(Number);
 
+    return new Date(
+        year,
+        month - 1,
+        day
+    );
+}
+
+
+function formatEventDay(dateString) {
+    const date =
+        parseCalendarDate(dateString);
+
+    const day =
+        date.getDate();
+
+    const weekday =
+        date.toLocaleDateString(
+            'ru-RU',
+            {
+                weekday: 'short',
+            }
+        )
+        .replace('.', '')
+        .toUpperCase();
+
+    return `${day} ${weekday}`;
+}
+
+
+function formatEventDateRange(dateStrings) {
+
+    if (
+        !dateStrings ||
+        dateStrings.length === 0
+    ) {
+        return '';
+    }
+
+    const dates =
+        dateStrings
+            .map(parseCalendarDate)
+            .sort(
+                (a, b) => a - b
+            );
+
+    const first =
+        dates[0];
+
+    const last =
+        dates[dates.length - 1];
+
+
+    /*
+        Одна дата.
+    */
+
+    if (
+        first.getTime() ===
+        last.getTime()
+    ) {
+        return first.toLocaleDateString(
+            'ru-RU',
+            {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            }
+        );
+    }
+
+
+    /*
+        Один месяц и один год:
+        3–4 октября 2026
+    */
+
+    if (
+        first.getFullYear() ===
+            last.getFullYear() &&
+        first.getMonth() ===
+            last.getMonth()
+    ) {
+
+        const monthAndYear =
+            last.toLocaleDateString(
+                'ru-RU',
+                {
+                    month: 'long',
+                    year: 'numeric',
+                }
+            );
+
+        return (
+            `${first.getDate()}–` +
+            `${last.getDate()} ` +
+            monthAndYear
+        );
+    }
+
+
+    /*
+        Разные месяцы одного года:
+        30 сентября – 1 октября 2026
+    */
+
+    if (
+        first.getFullYear() ===
+        last.getFullYear()
+    ) {
+
+        const firstPart =
+            first.toLocaleDateString(
+                'ru-RU',
+                {
+                    day: 'numeric',
+                    month: 'long',
+                }
+            );
+
+        const lastPart =
+            last.toLocaleDateString(
+                'ru-RU',
+                {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                }
+            );
+
+        return `${firstPart} – ${lastPart}`;
+    }
+
+
+    /*
+        Разные годы:
+        31 декабря 2026 – 1 января 2027
+    */
+
+    const firstPart =
+        first.toLocaleDateString(
+            'ru-RU',
+            {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            }
+        );
+
+    const lastPart =
+        last.toLocaleDateString(
+            'ru-RU',
+            {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            }
+        );
+
+    return `${firstPart} – ${lastPart}`;
+}
 function renderCurrentEvent() {
 
     const eventCarousel =
@@ -1562,7 +1727,7 @@ function renderCurrentEvent() {
                     'event-day';
 
                 day.textContent =
-                    date;
+                    formatEventDay(date);
 
                 eventDays.appendChild(
                     day
@@ -1577,41 +1742,39 @@ function renderCurrentEvent() {
     }
 
     /*
-        DATE FORMAT
+    Дата / диапазон дат события.
     */
 
-    function formatEventDate(dateString) {
-        const date =
-            new Date(`${dateString}T00:00:00`);
+    const eventDate =
+        document.createElement('div');
 
-        return date.toLocaleDateString(
-            'ru-RU',
-            {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-            }
-        );
+    eventDate.className =
+        'event-date';
+
+
+    if (
+        event.is_multiday &&
+        event.activity_dates &&
+        event.activity_dates.length > 1
+    ) {
+
+        eventDate.textContent =
+            `📅 ${formatEventDateRange(
+                event.activity_dates
+            )}`;
+
+    } else {
+
+        eventDate.textContent =
+            `📅 ${formatEventDateRange(
+                [event.date]
+            )}`;
     }
 
 
-    function formatEventDay(dateString) {
-        const date =
-            new Date(`${dateString}T00:00:00`);
-
-        const day =
-            date.getDate();
-
-        const weekday =
-            date.toLocaleDateString(
-                'ru-RU',
-                { weekday: 'short' }
-            )
-            .replace('.', '')
-            .toUpperCase();
-
-        return `${day} ${weekday}`;
-    }
+    card.appendChild(
+        eventDate
+    );
 
 
     /*
