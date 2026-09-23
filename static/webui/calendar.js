@@ -1192,7 +1192,7 @@ function renderDayEventsGrid() {
         'day-events-grid';
 
 
-    pageEvents.forEach.forEach(
+    pageEvents.forEach(
         function (event, index) {
 
             const tile =
