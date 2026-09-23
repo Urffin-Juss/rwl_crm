@@ -1577,6 +1577,44 @@ function renderCurrentEvent() {
     }
 
     /*
+        DATE FORMAT
+    */
+
+    function formatEventDate(dateString) {
+        const date =
+            new Date(`${dateString}T00:00:00`);
+
+        return date.toLocaleDateString(
+            'ru-RU',
+            {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            }
+        );
+    }
+
+
+    function formatEventDay(dateString) {
+        const date =
+            new Date(`${dateString}T00:00:00`);
+
+        const day =
+            date.getDate();
+
+        const weekday =
+            date.toLocaleDateString(
+                'ru-RU',
+                { weekday: 'short' }
+            )
+            .replace('.', '')
+            .toUpperCase();
+
+        return `${day} ${weekday}`;
+    }
+
+
+    /*
         Дистанции.
     */
 
