@@ -390,17 +390,22 @@ body {
 .distances {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 8px 12px;
     margin-top: 18px;
 }
 
 .distance-badge {
-    padding: 9px 12px;
-    border-radius: 12px;
-    background: #363636;
-    color: #ffffff;
-    font-size: 14px;
-    line-height: 1.25;
+    max-width: 100%;
+
+    padding: 6px 10px;
+
+    border-radius: 9px;
+
+    background: #303030;
+    color: #e2e2e2;
+
+    font-size: 13px;
+    line-height: 1.3;
 }
 
 /* =========================
