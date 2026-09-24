@@ -1804,17 +1804,13 @@ function renderCurrentEvent() {
             registrationLink
         );
 
-        if (event.registration_url) {
-            ...
-        }
 
-        card.appendChild(
-        middle
-    );
 
     }
 
-
+    card.appendChild(
+        middle
+    );
 
 
     /*
