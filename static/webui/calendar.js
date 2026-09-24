@@ -1571,6 +1571,9 @@ function formatEventDateRange(dateStrings) {
 
     return `${firstPart} – ${lastPart}`;
 }
+
+
+
 function renderCurrentEvent() {
 
     const eventCarousel =
@@ -1635,6 +1638,12 @@ function renderCurrentEvent() {
     card.className =
         'event-card';
 
+    const top =
+        document.createElement('div');
+
+    top.className =
+        'event-card-top';
+
 
     /*
         Название.
@@ -1649,7 +1658,7 @@ function renderCurrentEvent() {
     title.textContent =
         event.name;
 
-    card.appendChild(
+    top.appendChild(
         title
     );
 
@@ -1667,7 +1676,7 @@ function renderCurrentEvent() {
     city.textContent =
         event.city;
 
-    card.appendChild(
+    top.appendChild(
         city
     );
 
@@ -1703,12 +1712,14 @@ function renderCurrentEvent() {
     }
 
 
-    card.appendChild(
+    top.appendChild(
         eventDate
     );
 
 
-
+    card.appendChild(
+        top
+    );
 
 
     /*

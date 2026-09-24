@@ -333,8 +333,13 @@ body {
     width: 100%;
     background: #222222;
     border-radius: 22px;
-    padding: 22px;
+    padding: 22px 16px 24px;
 }
+
+.event-card-top {
+    padding: 0 8px 22px;
+}
+
 
 .event-name {
     margin: 0;
@@ -523,7 +528,11 @@ body {
     }
 
     .event-card {
-        padding: 18px;
+        padding: 18px 12px 22px;
+    }
+
+    .event-card-top {
+        padding: 0 6px 18px;
     }
 
     .event-name {
