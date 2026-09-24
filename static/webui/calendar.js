@@ -1143,6 +1143,10 @@ function renderDayEventsGrid() {
     const eventCarousel =
         document.querySelector('.event-carousel');
 
+    eventCarousel.classList.remove(
+        'event-card-mode'
+    );
+
     eventCarousel.classList.add(
         'day-grid-mode'
     );
@@ -1577,6 +1581,10 @@ function renderCurrentEvent() {
 
         'day-grid-mode'
 
+    );
+
+    eventCarousel.classList.add(
+        'event-card-mode'
     );
 
 

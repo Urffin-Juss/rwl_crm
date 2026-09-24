@@ -831,7 +831,9 @@ body {
 .event-carousel.day-grid-mode .carousel-button {
     display: none;
 }
-
+.event-carousel.event-card-mode {
+    grid-template-columns: minmax(0, 1fr);
+}
 .day-events-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
