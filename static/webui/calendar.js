@@ -1722,6 +1722,12 @@ function renderCurrentEvent() {
     );
 
 
+    const middle =
+        document.createElement('div');
+
+    middle.className =
+        'event-card-middle';
+
     /*
         Дистанции.
     */
@@ -1764,9 +1770,10 @@ function renderCurrentEvent() {
         );
 
 
-        card.appendChild(
-            distancesContainer
-        );
+        middle.appendChild(
+        distancesContainer
+    );
+
     }
     /*
         URL События
@@ -1793,10 +1800,21 @@ function renderCurrentEvent() {
         registrationLink.textContent =
             'Регистрация ↗';
 
-        card.appendChild(
+        middle.appendChild(
             registrationLink
         );
+
+        if (event.registration_url) {
+            ...
+        }
+
+        card.appendChild(
+        middle
+    );
+
     }
+
+
 
 
     /*
