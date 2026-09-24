@@ -338,14 +338,35 @@ body {
 
 .event-name {
     margin: 0;
+
     font-size: 23px;
-    line-height: 1.2;
+    font-weight: 700;
+    line-height: 1.18;
+
+    color: #ffffff;
 }
 
 .event-city {
-    margin-top: 8px;
-    color: #aaaaaa;
-    font-size: 18px;
+    margin-top: 14px;
+
+    color: #a8a8a8;
+
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.event-city::before {
+    content: "📍";
+    margin-right: 6px;
+}
+
+.event-date {
+    margin-top: 6px;
+
+    color: #d8d8d8;
+
+    font-size: 16px;
+    line-height: 1.35;
 }
 
 .events-count {
@@ -507,6 +528,11 @@ body {
 
     .event-name {
         font-size: 20px;
+    }
+
+    .event-city,
+    .event-date {
+        font-size: 15px;
     }
 
     .participation-info {
