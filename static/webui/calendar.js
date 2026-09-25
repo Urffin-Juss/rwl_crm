@@ -68,6 +68,9 @@ const weekdays =
 const eventsBackButton =
     document.querySelector('.events-back-button');
 
+const calendarSection =
+    document.querySelector('.calendar-section');
+
 const bottomNavItems =
     document.querySelectorAll('.bottom-nav-item');
 
@@ -341,7 +344,16 @@ function setActiveMainNav(sectionName) {
 }
 
 
-function hideMainSections() {
+
+function showMainSection(sectionName) {
+
+    /*
+        Сначала скрываем все три
+        верхнеуровневых раздела.
+    */
+    calendarSection.classList.add(
+        'hidden'
+    );
 
     myRacesSection.classList.add(
         'hidden'
@@ -350,24 +362,17 @@ function hideMainSections() {
     searchSection.classList.add(
         'hidden'
     );
-}
-
-
-function showMainSection(sectionName) {
-
-    /*
-        Сначала убираем отдельные
-        верхнеуровневые разделы.
-    */
-    hideMainSections();
 
 
     if (sectionName === 'calendar') {
 
+        calendarSection.classList.remove(
+            'hidden'
+        );
+
         /*
-            Календарь всегда возвращает
-            пользователя на HOME,
-            а не в ранее открытую Event Card.
+            Центральная кнопка всегда
+            возвращает календарь на HOME.
         */
         selectedDate = null;
         selectedDayEvents = [];
@@ -379,48 +384,31 @@ function showMainSection(sectionName) {
 
     } else if (sectionName === 'my-races') {
 
-        calendarHeader.style.display =
-            'none';
-
-        weekdays.style.display =
-            'none';
-
-        calendarGrid.style.display =
-            'none';
-
-        emptyState.style.display =
-            'none';
-
-        eventsPanel.classList.add(
-            'hidden'
-        );
-
         myRacesSection.classList.remove(
             'hidden'
         );
 
     } else if (sectionName === 'search') {
 
-        calendarHeader.style.display =
-            'none';
-
-        weekdays.style.display =
-            'none';
-
-        calendarGrid.style.display =
-            'none';
-
-        emptyState.style.display =
-            'none';
-
-        eventsPanel.classList.add(
-            'hidden'
-        );
-
         searchSection.classList.remove(
             'hidden'
         );
     }
+
+
+    setActiveMainNav(
+        sectionName
+    );
+
+    /*
+        Новый раздел всегда открываем
+        с его начала.
+    */
+    window.scrollTo(
+        0,
+        0
+    );
+}
 
 
     setActiveMainNav(
