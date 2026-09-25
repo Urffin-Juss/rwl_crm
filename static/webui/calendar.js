@@ -1744,30 +1744,127 @@ function renderCurrentEvent() {
             'distances';
 
 
-        event.activities.forEach(
-            function (activities) {
+        /*
+            В карточке сразу показываем
+            не больше четырёх активностей.
+        */
+        const visibleActivities =
+            event.activities.slice(0, 4);
 
-                const badge =
-                    document.createElement(
-                        'div'
-                    );
+        const hiddenActivities =
+            event.activities.slice(4);
 
-                badge.className =
-                    'distance-badge';
 
-                /*
-                    Нам важнее красивое name,
-                    чем голое число distance.
-                */
+        function createActivityBadge(activity) {
 
-                badge.textContent =
-                    activities.name;
+            const badge =
+                document.createElement('div');
+
+            badge.className =
+                'distance-badge';
+
+            /*
+                Нам важнее красивое name,
+                чем голое число distance.
+            */
+            badge.textContent =
+                activity.name;
+
+            return badge;
+        }
+
+
+        visibleActivities.forEach(
+            function (activity) {
 
                 distancesContainer.appendChild(
-                    badge
+                    createActivityBadge(activity)
                 );
             }
         );
+
+
+        /*
+            Если активностей больше четырёх,
+            остальные сначала скрыты.
+        */
+        if (hiddenActivities.length > 0) {
+
+            const hiddenContainer =
+                document.createElement('div');
+
+            hiddenContainer.className =
+                'hidden-distances';
+
+            hiddenContainer.style.display =
+                'none';
+
+
+            hiddenActivities.forEach(
+                function (activity) {
+
+                    hiddenContainer.appendChild(
+                        createActivityBadge(activity)
+                    );
+                }
+            );
+
+
+            const toggleButton =
+                document.createElement('button');
+
+            toggleButton.type =
+                'button';
+
+            toggleButton.className =
+                'distances-toggle';
+
+            toggleButton.textContent =
+                'Ещё ↓';
+
+
+            toggleButton.addEventListener(
+                'click',
+                function () {
+
+                    const isHidden =
+                        hiddenContainer.style.display ===
+                        'none';
+
+                    if (isHidden) {
+
+                        hiddenContainer.style.display =
+                            'flex';
+
+                        toggleButton.textContent =
+                            'Скрыть ↑';
+
+                    } else {
+
+                        hiddenContainer.style.display =
+                            'none';
+
+                        toggleButton.textContent =
+                            'Ещё ↓';
+                    }
+                }
+            );
+
+
+            distancesContainer.appendChild(
+                hiddenContainer
+            );
+
+            distancesContainer.appendChild(
+                toggleButton
+            );
+        }
+
+
+        middle.appendChild(
+            distancesContainer
+        );
+    }
 
 
         middle.appendChild(

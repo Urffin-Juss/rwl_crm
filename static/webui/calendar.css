@@ -408,6 +408,31 @@ body {
     line-height: 1.3;
 }
 
+.hidden-distances {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+}
+
+.distances-toggle {
+    padding: 8px 2px;
+
+    border: none;
+
+    background: transparent;
+    color: #aaaaaa;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.distances-toggle:hover {
+    color: #ffffff;
+}
+
 /* =========================
    PARTICIPATION
 ========================= */
