@@ -508,7 +508,7 @@ async function loadEvents() {
 
         events = await response.json();
 
-        renderCalendar();
+        showMainSection('calendar');
 
     } catch (error) {
         console.error(
