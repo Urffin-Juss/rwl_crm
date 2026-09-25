@@ -68,6 +68,15 @@ const weekdays =
 const eventsBackButton =
     document.querySelector('.events-back-button');
 
+const bottomNavItems =
+    document.querySelectorAll('.bottom-nav-item');
+
+const myRacesSection =
+    document.querySelector('.my-races-section');
+
+const searchSection =
+    document.querySelector('.search-section');
+
 /*
     ========================================
     TELEGRAM (for commit)
@@ -317,6 +326,108 @@ async function handleConsentAccept() {
     STATE
     ========================================
 */
+
+function setActiveMainNav(sectionName) {
+
+    bottomNavItems.forEach(
+        function (item) {
+
+            item.classList.toggle(
+                'active',
+                item.dataset.section === sectionName
+            );
+        }
+    );
+}
+
+
+function hideMainSections() {
+
+    myRacesSection.classList.add(
+        'hidden'
+    );
+
+    searchSection.classList.add(
+        'hidden'
+    );
+}
+
+
+function showMainSection(sectionName) {
+
+    /*
+        Сначала убираем отдельные
+        верхнеуровневые разделы.
+    */
+    hideMainSections();
+
+
+    if (sectionName === 'calendar') {
+
+        /*
+            Календарь всегда возвращает
+            пользователя на HOME,
+            а не в ранее открытую Event Card.
+        */
+        selectedDate = null;
+        selectedDayEvents = [];
+        currentDayEventsPage = 0;
+        currentEventIndex = 0;
+
+        showBrandState();
+        renderCalendar();
+
+    } else if (sectionName === 'my-races') {
+
+        calendarHeader.style.display =
+            'none';
+
+        weekdays.style.display =
+            'none';
+
+        calendarGrid.style.display =
+            'none';
+
+        emptyState.style.display =
+            'none';
+
+        eventsPanel.classList.add(
+            'hidden'
+        );
+
+        myRacesSection.classList.remove(
+            'hidden'
+        );
+
+    } else if (sectionName === 'search') {
+
+        calendarHeader.style.display =
+            'none';
+
+        weekdays.style.display =
+            'none';
+
+        calendarGrid.style.display =
+            'none';
+
+        emptyState.style.display =
+            'none';
+
+        eventsPanel.classList.add(
+            'hidden'
+        );
+
+        searchSection.classList.remove(
+            'hidden'
+        );
+    }
+
+
+    setActiveMainNav(
+        sectionName
+    );
+}
+
 
 function showBrandState() {
     calendarHeader.style.display = '';
@@ -2369,6 +2480,19 @@ eventsBackButton.addEventListener(
     function () {
         closeEventsPanel();
         renderCalendar();
+    }
+);
+
+bottomNavItems.forEach(
+    function (item) {
+        item.addEventListener(
+            'click',
+            function () {
+                showMainSection(
+                    item.dataset.section
+                );
+            }
+        );
     }
 );
 

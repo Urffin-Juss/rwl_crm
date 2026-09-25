@@ -978,6 +978,7 @@ body {
 }
 .rwl-signature {
     margin-top: 24px;
+    margin-bottom: 24px;
     padding: 12px 0 18px;
     text-align: center;
     font-size: 12px;
@@ -1114,4 +1115,37 @@ body {
 
 .bottom-nav-item.active {
     color: #ffffff;
+}
+
+
+/* ========================================
+   MAIN SECTIONS
+   ======================================== */
+
+.main-section {
+    width: 100%;
+    min-height: 420px;
+    padding: 8px 0 24px;
+}
+
+.main-section-title {
+    margin: 0 0 18px;
+
+    color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.main-section-placeholder {
+    padding: 24px 16px;
+
+    border: 1px solid #2d2d2d;
+    border-radius: 16px;
+
+    background: #1d1d1d;
+    color: #888888;
+
+    font-size: 14px;
+    line-height: 1.4;
 }
