@@ -1053,3 +1053,53 @@ body {
 .day-events-page-button:disabled {
     visibility: hidden;
 }
+
+
+/* ========================================
+   BOTTOM NAVIGATION
+   ======================================== */
+
+.bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    width: 100%;
+    margin-top: 22px;
+
+    border-top: 1px solid #2d2d2d;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    min-width: 0;
+    min-height: 64px;
+
+    padding: 8px 4px;
+
+    border: 0;
+
+    background: transparent;
+    color: #777777;
+
+    cursor: pointer;
+}
+
+.bottom-nav-icon {
+    font-size: 19px;
+    line-height: 1;
+}
+
+.bottom-nav-label {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.bottom-nav-item.active {
+    color: #ffffff;
+}
