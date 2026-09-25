@@ -411,10 +411,6 @@ function showMainSection(sectionName) {
 }
 
 
-    setActiveMainNav(
-        sectionName
-    );
-}
 
 
 function showBrandState() {
