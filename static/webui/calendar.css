@@ -56,7 +56,12 @@ body {
     min-height: 100%;
 
 }
-
+.calendar-header,
+.weekdays,
+.calendar-grid {
+    position: relative;
+    z-index: 2;
+}
 
 .calendar-header {
     display: flex;
@@ -134,38 +139,41 @@ body {
 
     left: 0;
     right: 0;
-
-    /*
-        Логотип живёт в свободной области
-        под календарной сеткой и больше
-        не увеличивает высоту страницы.
-    */
-    top: 390px;
+    top: 0;
     bottom: 0;
 
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
 
+    padding-bottom: 70px;
+
     overflow: hidden;
+
     pointer-events: none;
 }
 
 /* ============================================
    ФОНОВОЕ СВЕЧЕНИЕ
    ============================================ */
-.calendar-empty-state::before {
-    content: '';
+.calendar-empty-state {
     position: absolute;
-    inset: 0;
-    background: radial-gradient(
-        ellipse at center,
-        rgba(255, 255, 255, 0.10) 0%,
-        rgba(255, 255, 255, 0.055) 20%,
-        rgba(255, 255, 255, 0.02) 42%,
-        transparent 72%
-    );
-    filter: blur(4px);
+
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    z-index: 1;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    padding-bottom: 70px;
+
+    overflow: hidden;
+
     pointer-events: none;
 }
 
@@ -1202,3 +1210,5 @@ body {
     font-size: 14px;
     line-height: 1.4;
 }
+
+
