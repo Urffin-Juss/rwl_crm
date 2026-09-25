@@ -33,6 +33,7 @@ body {
     flex-direction: column;
 
     overflow: hidden;
+    position: relative;
 }
 
 .main-workspace {
@@ -48,6 +49,14 @@ body {
 /* =========================
    CALENDAR
 ========================= */
+.calendar-section {
+
+    position: relative;
+
+    min-height: 100%;
+
+}
+
 
 .calendar-header {
     display: flex;
@@ -121,12 +130,25 @@ body {
    КОНТЕЙНЕР ПУСТОГО СОСТОЯНИЯ КАЛЕНДАРЯ
    ============================================ */
 .calendar-empty-state {
-    position: relative;
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    /*
+        Логотип живёт в свободной области
+        под календарной сеткой и больше
+        не увеличивает высоту страницы.
+    */
+    top: 390px;
+    bottom: 0;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 420px;
+
     overflow: hidden;
+    pointer-events: none;
 }
 
 /* ============================================
@@ -1005,15 +1027,25 @@ body {
     opacity: 0.8;
 }
 .rwl-signature {
-    margin-top: 24px;
-    margin-bottom: 24px;
-    padding: 12px 0 18px;
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 74px;
+
+    z-index: 20;
+
+    margin: 0;
+    padding: 0 16px;
+
     text-align: center;
+
     font-size: 12px;
     color: rgba(255, 255, 255, 0.38);
     letter-spacing: 0.04em;
-}
 
+    pointer-events: none;
+}
 
 /* ========================================
    DAY EVENTS PAGINATION
