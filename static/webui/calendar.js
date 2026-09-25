@@ -348,31 +348,28 @@ function setActiveMainNav(sectionName) {
 function showMainSection(sectionName) {
 
     /*
-        Сначала скрываем все три
-        верхнеуровневых раздела.
+        Сначала физически убираем
+        все верхнеуровневые экраны
+        из layout.
     */
-    calendarSection.classList.add(
-        'hidden'
-    );
+    calendarSection.style.display =
+        'none';
 
-    myRacesSection.classList.add(
-        'hidden'
-    );
+    myRacesSection.style.display =
+        'none';
 
-    searchSection.classList.add(
-        'hidden'
-    );
+    searchSection.style.display =
+        'none';
 
 
     if (sectionName === 'calendar') {
 
-        calendarSection.classList.remove(
-            'hidden'
-        );
+        calendarSection.style.display =
+            '';
 
         /*
-            Центральная кнопка всегда
-            возвращает календарь на HOME.
+            Календарь всегда открываем
+            с HOME-состояния.
         */
         selectedDate = null;
         selectedDayEvents = [];
@@ -380,19 +377,18 @@ function showMainSection(sectionName) {
         currentEventIndex = 0;
 
         showBrandState();
+
         renderCalendar();
 
     } else if (sectionName === 'my-races') {
 
-        myRacesSection.classList.remove(
-            'hidden'
-        );
+        myRacesSection.style.display =
+            '';
 
     } else if (sectionName === 'search') {
 
-        searchSection.classList.remove(
-            'hidden'
-        );
+        searchSection.style.display =
+            '';
     }
 
 
@@ -400,11 +396,13 @@ function showMainSection(sectionName) {
         sectionName
     );
 
-    /*
-        Новый раздел всегда открываем
-        с его начала.
-    */
-    window.scrollTo(
+
+    const mainWorkspace =
+        document.querySelector(
+            '.main-workspace'
+        );
+
+    mainWorkspace.scrollTo(
         0,
         0
     );
