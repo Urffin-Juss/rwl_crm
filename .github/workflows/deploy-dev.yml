@@ -37,31 +37,63 @@ jobs:
           
           chmod 700 ~/.ssh
           
-          echo "${{ secrets.DEV_SSH_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.BASTION_SSH_KEY }}" > ~/.ssh/github_actions_bastion
           
-          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.DEV_SSH_KEY }}" > ~/.ssh/github_actions_dev
           
-          echo "[${{ secrets.DEV_HOST }}]:${{ secrets.DEV_PORT }} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBnVi2TXGVUEBFbXaWnaZc6htfpOQL2EDeUAsjCNF/46" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/github_actions_bastion
           
-          chmod 644 ~/.ssh/known_hosts 
+          chmod 600 ~/.ssh/github_actions_dev
+          
+          cat > ~/.ssh/config <<EOF
+          
+          Host rwl-bastion
+          
+              HostName ${{ secrets.BASTION_HOST }}
+          
+              Port ${{ secrets.BASTION_PORT }}
+          
+              User ${{ secrets.BASTION_USER }}
+          
+              IdentityFile ~/.ssh/github_actions_bastion
+          
+              IdentitiesOnly yes
+          
+          Host rwl-dev
+          
+              HostName ${{ secrets.DEV_HOST }}
+          
+              Port ${{ secrets.DEV_PORT }}
+          
+              User ${{ secrets.DEV_USER }}
+          
+              IdentityFile ~/.ssh/github_actions_dev
+          
+              IdentitiesOnly yes
+          
+              ProxyJump rwl-bastion
+          
+          EOF
+          
+          chmod 600 ~/.ssh/config
+          
+          echo "[${{ secrets.BASTION_HOST }}]:${{ secrets.BASTION_PORT }} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBI/PGxBXZP7zArDTKQPwd58E2/ANnXvsXgf61TqfGXA" > ~/.ssh/known_hosts
+          
+          echo "${{ secrets.DEV_HOST }} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBnVi2TXGVUEBFbXaWnaZc6htfpOQL2EDeUAsjCNF/46" >> ~/.ssh/known_hosts
+          
+          chmod 644 ~/.ssh/known_hosts
           
       - name: Copy DEV deployment files
         run: |
           scp \
-            -i ~/.ssh/id_ed25519 \
-            -P "${{ secrets.DEV_PORT }}" \
             docker-compose.yml \
             docker-compose.dev.yml \
-            "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}:/opt/rwl/deploy/"  
+            rwl-dev:/opt/rwl/deploy/  
 
 
       - name: Deploy to DEV with rollback
         run: |
-          ssh \
-            -i ~/.ssh/id_ed25519 \
-            -p "${{ secrets.DEV_PORT }}" \
-            "${{ secrets.DEV_USER }}@${{ secrets.DEV_HOST }}" \
-            'bash -s' <<'REMOTE'
+          ssh rwl-dev 'bash -s' <<'REMOTE'
 
           set -e
 
