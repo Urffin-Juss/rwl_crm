@@ -14,7 +14,7 @@ body {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
-    padding: 20px 16px 50px;
+    padding: 20px 16px 100px;
 }
 
 /* =========================
@@ -1062,9 +1062,9 @@ body {
 .bottom-nav {
     position: fixed;
 
-    left: 0;
-    right: 0;
+    left: 50%;
     bottom: 0;
+    transform: translateX(-50%);
 
     z-index: 100;
 
@@ -1072,6 +1072,7 @@ body {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 
     width: 100%;
+    max-width: 500px;
 
     padding-bottom: env(safe-area-inset-bottom);
 
