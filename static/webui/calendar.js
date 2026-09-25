@@ -1867,11 +1867,7 @@ function renderCurrentEvent() {
     }
 
 
-        middle.appendChild(
-        distancesContainer
-    );
 
-    }
     /*
         URL События
     */
@@ -2221,24 +2217,24 @@ function renderCurrentEvent() {
     );
 
     card.appendChild(removeButton);
-}
+    }
 
 
-eventCardContainer.appendChild(
-    card
-);
+    eventCardContainer.appendChild(
+        card
+    );
 
-eventPrevButton.classList.add(
-    'hidden'
-);
+    eventPrevButton.classList.add(
+        'hidden'
+    );
 
-eventNextButton.classList.add(
-    'hidden'
-);
+    eventNextButton.classList.add(
+        'hidden'
+    );
 
-eventCounter.classList.add(
-    'hidden'
-);
+    eventCounter.classList.add(
+        'hidden'
+    );
 
 }
 
