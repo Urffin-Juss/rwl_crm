@@ -19,6 +19,7 @@ body {
 #calendar-app {
     height: 100dvh;
     overflow: hidden;
+    background: #111111;
 }
 
 .app {
