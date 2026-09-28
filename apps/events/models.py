@@ -14,6 +14,8 @@ class Event(models.Model):
 
     name = models.CharField(max_length=200, verbose_name="Название")
     city = models.CharField(max_length=200, verbose_name="Город")
+    location = models.CharField(max_length=500, blank=True, default='', verbose_name="Место проведения")
+    address = models.CharField(max_length=500, blank=True, default='', verbose_name="Адрес")
     date = models.DateField(verbose_name="Дата")
     begin_datetime = models.DateTimeField(null=True, blank=True, verbose_name="Начало события")
     end_datetime = models.DateTimeField(null=True, blank=True, verbose_name="Окончание события")
