@@ -221,8 +221,47 @@
         Поиск
     </h2>
 
-    <div class="main-section-placeholder">
-        Здесь будет поиск и фильтрация забегов
+    <div class="search-controls">
+
+        <div class="search-input-wrapper">
+            <span class="search-input-icon">
+                🔎
+            </span>
+
+            <input
+                class="search-input"
+                type="search"
+                placeholder="Название, город, забег..."
+                autocomplete="off"
+            >
+        </div>
+
+        <div class="search-filters">
+
+            <button
+                class="search-filter-button"
+                type="button"
+            >
+                Город
+            </button>
+
+            <button
+                class="search-filter-button"
+                type="button"
+            >
+                Дата
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="search-results">
+
+        <div class="search-empty">
+            Начните вводить название забега или город
+        </div>
+
     </div>
 
 </section>
