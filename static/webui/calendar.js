@@ -2683,10 +2683,6 @@ function searchEvents(query) {
     const normalizedQuery =
         query.trim().toLowerCase();
 
-    if (!normalizedQuery) {
-        return [];
-    }
-
     return events.filter(event => {
 
         const name =
@@ -2695,9 +2691,18 @@ function searchEvents(query) {
         const city =
             (event.city || '').toLowerCase();
 
-        return (
+        const matchesQuery =
+            !normalizedQuery ||
             name.includes(normalizedQuery) ||
-            city.includes(normalizedQuery)
+            city.includes(normalizedQuery);
+
+        const matchesCity =
+            !selectedSearchCity ||
+            event.city === selectedSearchCity;
+
+        return (
+            matchesQuery &&
+            matchesCity
         );
     });
 }
@@ -2740,6 +2745,8 @@ function renderSearchResults(foundEvents) {
 
                 eventCardSource = 'search';
 
+                let selectedSearchCity = null;
+
                 searchSection.style.display =
                     'none';
 
@@ -2767,11 +2774,14 @@ searchInput.addEventListener(
         const query =
             event.target.value;
 
-        if (!query.trim()) {
+        if (
+            !query.trim() &&
+            !selectedSearchCity
+        ) {
 
             searchResults.innerHTML = `
                 <div class="search-empty">
-                    Начните вводить название забега или город
+                    Начните вводить название забега или выберите город
                 </div>
             `;
 
@@ -2805,6 +2815,49 @@ function renderSearchCityOptions() {
 
     searchCityOptions.innerHTML = '';
 
+    const allCitiesButton =
+        document.createElement('button');
+
+    allCitiesButton.type =
+        'button';
+
+    allCitiesButton.className =
+        'search-city-option';
+
+    allCitiesButton.textContent =
+        'Все города';
+
+    allCitiesButton.addEventListener(
+        'click',
+        function () {
+
+            selectedSearchCity = null;
+
+            searchCityButton.textContent =
+                'Город';
+
+            searchCityOptions.classList.add(
+                'hidden'
+            );
+
+            const foundEvents =
+                searchEvents(
+                    searchInput.value
+                );
+
+            renderSearchResults(
+                foundEvents
+            );
+        }
+    );
+
+    searchCityOptions.appendChild(
+        allCitiesButton
+    );
+
+
+
+
     cities.forEach(city => {
 
         const button =
@@ -2818,6 +2871,31 @@ function renderSearchCityOptions() {
 
         button.textContent =
             city;
+
+        button.addEventListener(
+            'click',
+            function () {
+
+                selectedSearchCity =
+                    city;
+
+                searchCityButton.textContent =
+                    city;
+
+                searchCityOptions.classList.add(
+                    'hidden'
+                );
+
+                const foundEvents =
+                    searchEvents(
+                        searchInput.value
+                    );
+
+                renderSearchResults(
+                    foundEvents
+                );
+            }
+        );
 
         searchCityOptions.appendChild(
             button
