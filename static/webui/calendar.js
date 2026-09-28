@@ -2785,7 +2785,7 @@ searchInput.addEventListener(
 
 /*
     ========================================
-    START
+    START (for commit)
     ========================================
 */
 async function startApp() {
