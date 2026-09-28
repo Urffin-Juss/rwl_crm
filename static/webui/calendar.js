@@ -80,6 +80,12 @@ const myRacesSection =
 const searchSection =
     document.querySelector('.search-section');
 
+const searchInput =
+    document.querySelector('#search-input');
+
+const searchResults =
+    document.querySelector('#search-results');
+
 /*
     ========================================
     TELEGRAM (for commit)
@@ -2630,6 +2636,94 @@ function showMembershipGate() {
         membershipError
     );
 }
+
+/*
+    ========================================
+    SEARCH
+    ========================================
+*/
+
+function searchEvents(query) {
+
+    const normalizedQuery =
+        query.trim().toLowerCase();
+
+    if (!normalizedQuery) {
+        return [];
+    }
+
+    return events.filter(event => {
+
+        const name =
+            (event.name || '').toLowerCase();
+
+        const city =
+            (event.city || '').toLowerCase();
+
+        return (
+            name.includes(normalizedQuery) ||
+            city.includes(normalizedQuery)
+        );
+    });
+}
+function renderSearchResults(foundEvents) {
+
+    searchResults.innerHTML = '';
+
+    if (foundEvents.length === 0) {
+
+        searchResults.innerHTML = `
+            <div class="search-empty">
+                Ничего не найдено
+            </div>
+        `;
+
+        return;
+    }
+
+    foundEvents.forEach(event => {
+
+        const item =
+            document.createElement('div');
+
+        item.className =
+            'search-result-item';
+
+        item.textContent =
+            `${event.name} · ${event.city || 'Город не указан'}`;
+
+        searchResults.appendChild(item);
+    });
+}
+
+searchInput.addEventListener(
+    'input',
+    event => {
+
+        const query =
+            event.target.value;
+
+        if (!query.trim()) {
+
+            searchResults.innerHTML = `
+                <div class="search-empty">
+                    Начните вводить название забега или город
+                </div>
+            `;
+
+            return;
+        }
+
+        const foundEvents =
+            searchEvents(query);
+
+        renderSearchResults(
+            foundEvents
+        );
+    }
+);
+
+
 
 /*
     ========================================

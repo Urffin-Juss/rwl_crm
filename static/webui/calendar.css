@@ -1331,3 +1331,9 @@ body {
 
     text-align: center;
 }
+
+.search-result-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #2d2d2d;
+    color: #ffffff;
+}
