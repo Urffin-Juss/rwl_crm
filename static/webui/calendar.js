@@ -106,6 +106,16 @@ function renderDevUiDebug() {
             '#dev-ui-debug'
         );
 
+    const calendarSection =
+        document.querySelector('.calendar-section');
+
+    const calendarBackground =
+        calendarSection
+            ? getComputedStyle(calendarSection).backgroundColor
+            : 'missing';
+
+
+
     if (!debugElement) {
         return;
     }
@@ -138,6 +148,7 @@ function renderDevUiDebug() {
         `prefers-dark: ${prefersDark}`,
         `body: ${bodyBackground}`,
         `app: ${appBackground}`
+        `calendar: ${calendarBackground}`
     ].join('<br>');
 }
 
