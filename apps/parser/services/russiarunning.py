@@ -119,6 +119,8 @@ def parse_event(
         "external_id": event.get("id"),
         "name": event.get("title"),
         "city": event.get("cityName") or event.get("place") or "",
+        "location": event.get("place") or "",
+        "address": event.get("address") or "",
         "date": event.get("beginDate"),
         "begin_datetime": event.get("beginDate"),
         "end_datetime": event.get("endDate"),
