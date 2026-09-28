@@ -99,60 +99,7 @@ if (tg) {
     console.log('Telegram WebApp не найден');
 }
 
-function renderDevUiDebug() {
 
-    const debugElement =
-        document.querySelector(
-            '#dev-ui-debug'
-        );
-
-    const calendarSection =
-        document.querySelector('.calendar-section');
-
-    const calendarBackground =
-        calendarSection
-            ? getComputedStyle(calendarSection).backgroundColor
-            : 'missing';
-
-
-
-    if (!debugElement) {
-        return;
-    }
-
-    const appElement =
-        document.querySelector(
-            '#calendar-app'
-        );
-
-    const bodyBackground =
-        getComputedStyle(
-            document.body
-        ).backgroundColor;
-
-    const appBackground =
-        appElement
-            ? getComputedStyle(
-                appElement
-            ).backgroundColor
-            : 'missing';
-
-    const prefersDark =
-        window.matchMedia(
-            '(prefers-color-scheme: dark)'
-        ).matches;
-
-    debugElement.innerHTML = [
-        `platform: ${tg?.platform || 'browser'}`,
-        `scheme: ${tg?.colorScheme || 'unknown'}`,
-        `prefers-dark: ${prefersDark}`,
-        `body: ${bodyBackground}`,
-        `app: ${appBackground}`,
-        `calendar: ${calendarBackground}`
-    ].join('<br>');
-}
-
-renderDevUiDebug();
 
 
 /*
