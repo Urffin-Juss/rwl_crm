@@ -1,5 +1,7 @@
 {% load static %}
 
+{% with ui_version="9" %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -10,10 +12,14 @@
 
 
     <link
-        rel="stylesheet"
-        href="{% static 'webui/calendar.css' %}?v=8"
+
+    rel="stylesheet"
+
+    href="{% static 'webui/calendar.css' %}?v={{ ui_version }}"
+
     >
 </head>
+<body>
 
 <div id="consent-gate" class="consent-gate" style="display: none;">
 
@@ -106,17 +112,16 @@
     </div>
 
 
-    <div style="
-    position: fixed;
-    top: 4px;
-    left: 4px;
-    z-index: 99999;
-    font-size: 10px;
-    color: #ff3333;
-    pointer-events: none;
-    ">
-        DEV v8
+    {% if debug %}
+    <div
+    id="dev-ui-version"
+    class="dev-ui-version"
+    >
+    <div>DEV · UI {{ ui_version }}</div>
+    <div id="dev-ui-debug"></div>
     </div>
+    {% endif %}
+
 
     <div class="weekdays">
         <div>ПН</div>
@@ -127,6 +132,7 @@
         <div>СБ</div>
         <div>ВС</div>
     </div>
+
 
     <div class="calendar-grid"></div>
 
@@ -273,7 +279,9 @@
 
 
 
-<script src="{% static 'webui/calendar.js' %}?v=8"></script>
+<script src="{% static 'webui/calendar.js' %}?v={{ ui_version }}"></script>
+
+{% endwith %}
 
 </body>
 </html>
