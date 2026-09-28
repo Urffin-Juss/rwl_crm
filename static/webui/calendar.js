@@ -457,6 +457,8 @@ const DAY_EVENTS_PAGE_SIZE = 9;
 
 let currentEventIndex = 0;
 
+let eventCardSource = 'calendar';
+
 
 /*
     ========================================
@@ -1375,6 +1377,9 @@ function renderDayEventsGrid() {
                     currentEventIndex =
                         pageStart + index;
 
+                    eventCardSource =
+                        'calendar';
+
                     renderCurrentEvent();
                 }
             );
@@ -1707,15 +1712,39 @@ function renderCurrentEvent() {
     backButton.className =
         'event-back-button';
 
-    backButton.textContent =
-        '← Все забеги дня';
+    if (eventCardSource === 'search') {
 
-    backButton.addEventListener(
-        'click',
-        function () {
-            renderDayEventsGrid();
-        }
-    );
+        backButton.textContent =
+            '← К поиску';
+
+        backButton.addEventListener(
+            'click',
+            function () {
+
+                calendarSection.style.display =
+                    'none';
+
+                searchSection.style.display =
+                    '';
+
+                setActiveMainNav(
+                    'search'
+                );
+            }
+        );
+
+    } else {
+
+        backButton.textContent =
+            '← Все забеги дня';
+
+        backButton.addEventListener(
+            'click',
+            function () {
+                renderDayEventsGrid();
+            }
+        );
+    }
 
     eventCardContainer.appendChild(
         backButton
@@ -2702,6 +2731,8 @@ function renderSearchResults(foundEvents) {
 
                 currentEventIndex = 0;
                 currentDayEventsPage = 0;
+
+                eventCardSource = 'search';
 
                 searchSection.style.display =
                     'none';
