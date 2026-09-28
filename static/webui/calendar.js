@@ -2713,6 +2713,8 @@ function renderSearchResults(foundEvents) {
                     'calendar'
                 );
 
+                showEventState();
+
                 renderCurrentEvent();
             }
         );
