@@ -88,7 +88,7 @@ const searchResults =
 
 /*
     ========================================
-    TELEGRAM (for commit)
+    TELEGRAM
     ========================================
 */
 
@@ -2691,6 +2691,31 @@ function renderSearchResults(foundEvents) {
 
         item.textContent =
             `${event.name} · ${event.city || 'Город не указан'}`;
+
+        item.addEventListener(
+            'click',
+            function () {
+
+                selectedDayEvents = [
+                    event
+                ];
+
+                currentEventIndex = 0;
+                currentDayEventsPage = 0;
+
+                searchSection.style.display =
+                    'none';
+
+                calendarSection.style.display =
+                    '';
+
+                setActiveMainNav(
+                    'calendar'
+                );
+
+                renderCurrentEvent();
+            }
+        );
 
         searchResults.appendChild(item);
     });
