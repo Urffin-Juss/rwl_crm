@@ -3,8 +3,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.shortcuts import render
-
+from django.conf import settings
 from apps.orders.models import Order
 from apps.tasks.models import Task
 
@@ -12,7 +11,13 @@ from apps.tasks.models import Task
 
 def calendar_view(request):
 
-    return render(request, 'webui/calendar.html')
+    return render(
+        request,
+        'webui/calendar.html',
+        {
+            'ui_debug': settings.UI_DEBUG,
+        },
+    )
 
 
 def _has_full_access(user):
