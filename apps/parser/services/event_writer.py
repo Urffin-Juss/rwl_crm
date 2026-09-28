@@ -44,6 +44,8 @@ def save_event(clean_event: Dict[str, Any]):
         defaults={
             "name": clean_event.get("name"),
             "city": clean_event.get("city"),
+            "location": clean_event.get("location"),
+            "address": clean_event.get("address"),
             "source_code": clean_event.get("source_code", ""),
             "date": normalize_event_date(clean_event.get("date")),
             "begin_datetime": normalize_event_datetime(
