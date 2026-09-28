@@ -99,6 +99,50 @@ if (tg) {
     console.log('Telegram WebApp не найден');
 }
 
+function renderDevUiDebug() {
+
+    const debugElement =
+        document.querySelector(
+            '#dev-ui-debug'
+        );
+
+    if (!debugElement) {
+        return;
+    }
+
+    const appElement =
+        document.querySelector(
+            '#calendar-app'
+        );
+
+    const bodyBackground =
+        getComputedStyle(
+            document.body
+        ).backgroundColor;
+
+    const appBackground =
+        appElement
+            ? getComputedStyle(
+                appElement
+            ).backgroundColor
+            : 'missing';
+
+    const prefersDark =
+        window.matchMedia(
+            '(prefers-color-scheme: dark)'
+        ).matches;
+
+    debugElement.innerHTML = [
+        `platform: ${tg?.platform || 'browser'}`,
+        `scheme: ${tg?.colorScheme || 'unknown'}`,
+        `prefers-dark: ${prefersDark}`,
+        `body: ${bodyBackground}`,
+        `app: ${appBackground}`
+    ].join('<br>');
+}
+
+renderDevUiDebug();
+
 
 /*
     ========================================
@@ -307,7 +351,6 @@ async function handleConsentAccept() {
          * Все документы из текущего набора приняты.
          * Проверяем backend ещё раз.
          */
-        await authenticateTelegramUser();
 
         await authenticateTelegramUser();
 
