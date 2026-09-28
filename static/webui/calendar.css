@@ -1183,6 +1183,38 @@ body {
     padding: 8px 0 24px;
 }
 
+.my-races-section,
+.search-section {
+    position: relative;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+.my-races-section::before,
+.search-section::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255, 255, 255, 0.035),
+            transparent 58%
+        );
+
+    pointer-events: none;
+    z-index: 0;
+}
+
+.my-races-section > *,
+.search-section > * {
+    position: relative;
+    z-index: 1;
+}
+
+
 .main-section-title {
     margin: 0 0 18px;
 
@@ -1193,13 +1225,9 @@ body {
 }
 
 .main-section-placeholder {
-    padding: 24px 16px;
+    padding: 8px 0;
 
-    border: 1px solid #2d2d2d;
-    border-radius: 16px;
-
-    background: #1d1d1d;
-    color: #888888;
+    color: #777777;
 
     font-size: 14px;
     line-height: 1.4;
