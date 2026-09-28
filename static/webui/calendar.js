@@ -147,7 +147,7 @@ function renderDevUiDebug() {
         `scheme: ${tg?.colorScheme || 'unknown'}`,
         `prefers-dark: ${prefersDark}`,
         `body: ${bodyBackground}`,
-        `app: ${appBackground}`
+        `app: ${appBackground}`,
         `calendar: ${calendarBackground}`
     ].join('<br>');
 }
