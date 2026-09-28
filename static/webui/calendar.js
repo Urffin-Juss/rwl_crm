@@ -86,6 +86,12 @@ const searchInput =
 const searchResults =
     document.querySelector('#search-results');
 
+const searchCityButton =
+    document.querySelector('#search-city-button');
+
+const searchCityOptions =
+    document.querySelector('#search-city-options');
+
 /*
     ========================================
     TELEGRAM
@@ -2781,6 +2787,56 @@ searchInput.addEventListener(
     }
 );
 
+function renderSearchCityOptions() {
+
+    const cities = [
+        ...new Set(
+            events
+                .map(event => event.city)
+                .filter(city => city)
+        )
+    ].sort(
+        (a, b) =>
+            a.localeCompare(
+                b,
+                'ru'
+            )
+    );
+
+    searchCityOptions.innerHTML = '';
+
+    cities.forEach(city => {
+
+        const button =
+            document.createElement('button');
+
+        button.type =
+            'button';
+
+        button.className =
+            'search-city-option';
+
+        button.textContent =
+            city;
+
+        searchCityOptions.appendChild(
+            button
+        );
+    });
+}
+
+
+searchCityButton.addEventListener(
+    'click',
+    function () {
+
+        renderSearchCityOptions();
+
+        searchCityOptions.classList.toggle(
+            'hidden'
+        );
+    }
+);
 
 
 /*
