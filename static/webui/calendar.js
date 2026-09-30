@@ -18,6 +18,8 @@ let membershipStatus = null;
 
 let membershipError = null;
 
+let selectedSearchCity = null;
+
 
 /*
     ========================================
