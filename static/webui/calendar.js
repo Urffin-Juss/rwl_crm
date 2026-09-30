@@ -2745,8 +2745,6 @@ function renderSearchResults(foundEvents) {
 
                 eventCardSource = 'search';
 
-                let selectedSearchCity = null;
-
                 searchSection.style.display =
                     'none';
 
@@ -2908,9 +2906,22 @@ searchCityButton.addEventListener(
     'click',
     function () {
 
+        const isOpen =
+            !searchCityOptions.classList.contains(
+                'hidden'
+            );
+
+        if (isOpen) {
+            searchCityOptions.classList.add(
+                'hidden'
+            );
+
+            return;
+        }
+
         renderSearchCityOptions();
 
-        searchCityOptions.classList.toggle(
+        searchCityOptions.classList.remove(
             'hidden'
         );
     }
