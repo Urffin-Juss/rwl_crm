@@ -2816,46 +2816,6 @@ function renderSearchCityOptions() {
     const allCitiesButton =
         document.createElement('button');
 
-    allCitiesButton.type =
-        'button';
-
-    allCitiesButton.className =
-        'search-city-option';
-
-    allCitiesButton.textContent =
-        'Все города';
-
-    allCitiesButton.addEventListener(
-        'click',
-        function () {
-
-            selectedSearchCity = null;
-
-            searchCityButton.textContent =
-                'Город';
-
-            searchCityOptions.classList.add(
-                'hidden'
-            );
-
-            const foundEvents =
-                searchEvents(
-                    searchInput.value
-                );
-
-            renderSearchResults(
-                foundEvents
-            );
-        }
-    );
-
-    searchCityOptions.appendChild(
-        allCitiesButton
-    );
-
-
-
-
     cities.forEach(city => {
 
         const button =
@@ -2867,22 +2827,57 @@ function renderSearchCityOptions() {
         button.className =
             'search-city-option';
 
-        button.textContent =
-            city;
+        searchCityButton.textContent =
+            `${city} ×`;
 
-        button.addEventListener(
+        searchCityButton.addEventListener(
             'click',
             function () {
 
-                selectedSearchCity =
-                    city;
+                if (selectedSearchCity) {
 
-                searchCityButton.textContent =
-                    city;
+                    selectedSearchCity = null;
 
-                searchCityOptions.classList.add(
+                    searchCityButton.textContent =
+                        'Город';
+
+                    searchCityOptions.classList.add(
+                        'hidden'
+                    );
+
+                    const foundEvents =
+                        searchEvents(
+                            searchInput.value
+                        );
+
+                    renderSearchResults(
+                        foundEvents
+                    );
+
+                    return;
+                }
+
+                const isOpen =
+                    !searchCityOptions.classList.contains(
+                        'hidden'
+                    );
+
+                if (isOpen) {
+
+                    searchCityOptions.classList.add(
+                        'hidden'
+                    );
+
+                    return;
+                }
+
+                renderSearchCityOptions();
+
+                searchCityOptions.classList.remove(
                     'hidden'
                 );
+            }
+        );
 
                 const foundEvents =
                     searchEvents(
