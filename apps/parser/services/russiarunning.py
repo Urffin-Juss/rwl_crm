@@ -1,8 +1,7 @@
 import requests
 from typing import Any, Dict, List
 from apps.parser.services.event_writer import save_event
-from datetime import datetime
-
+from apps.parser.services.location_normalizer import normalize_settlement
 
 
 def fetch_events(
@@ -114,11 +113,16 @@ def parse_event(
     в формат, который нужен нашему приложению.
     """
 
+    address = event.get("address") or ""
+
+
     clean_event = {
         "source": 'russiarunning',
         "external_id": event.get("id"),
         "name": event.get("title"),
-        "city": event.get("cityName") or event.get("place") or "",
+        "city": normalize_settlement(address),
+        "location": event.get("place") or "",
+        "address": address,
         "date": event.get("beginDate"),
         "begin_datetime": event.get("beginDate"),
         "end_datetime": event.get("endDate"),

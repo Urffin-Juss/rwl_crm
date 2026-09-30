@@ -2919,7 +2919,7 @@ searchCityButton.addEventListener(
 
 /*
     ========================================
-    START (for commit)
+    START
     ========================================
 */
 async function startApp() {
