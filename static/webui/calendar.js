@@ -2813,9 +2813,6 @@ function renderSearchCityOptions() {
 
     searchCityOptions.innerHTML = '';
 
-    const allCitiesButton =
-        document.createElement('button');
-
     cities.forEach(city => {
 
         const button =
@@ -2827,57 +2824,22 @@ function renderSearchCityOptions() {
         button.className =
             'search-city-option';
 
-        searchCityButton.textContent =
-            `${city} ×`;
+        button.textContent =
+            city;
 
-        searchCityButton.addEventListener(
+        button.addEventListener(
             'click',
             function () {
 
-                if (selectedSearchCity) {
+                selectedSearchCity =
+                    city;
 
-                    selectedSearchCity = null;
+                searchCityButton.textContent =
+                    `${city} ×`;
 
-                    searchCityButton.textContent =
-                        'Город';
-
-                    searchCityOptions.classList.add(
-                        'hidden'
-                    );
-
-                    const foundEvents =
-                        searchEvents(
-                            searchInput.value
-                        );
-
-                    renderSearchResults(
-                        foundEvents
-                    );
-
-                    return;
-                }
-
-                const isOpen =
-                    !searchCityOptions.classList.contains(
-                        'hidden'
-                    );
-
-                if (isOpen) {
-
-                    searchCityOptions.classList.add(
-                        'hidden'
-                    );
-
-                    return;
-                }
-
-                renderSearchCityOptions();
-
-                searchCityOptions.classList.remove(
+                searchCityOptions.classList.add(
                     'hidden'
                 );
-            }
-        );
 
                 const foundEvents =
                     searchEvents(
@@ -2901,12 +2863,36 @@ searchCityButton.addEventListener(
     'click',
     function () {
 
+        if (selectedSearchCity) {
+
+            selectedSearchCity = null;
+
+            searchCityButton.textContent =
+                'Город';
+
+            searchCityOptions.classList.add(
+                'hidden'
+            );
+
+            const foundEvents =
+                searchEvents(
+                    searchInput.value
+                );
+
+            renderSearchResults(
+                foundEvents
+            );
+
+            return;
+        }
+
         const isOpen =
             !searchCityOptions.classList.contains(
                 'hidden'
             );
 
         if (isOpen) {
+
             searchCityOptions.classList.add(
                 'hidden'
             );
@@ -2921,9 +2907,6 @@ searchCityButton.addEventListener(
         );
     }
 );
-
-
-/*
     ========================================
     START
     ========================================
