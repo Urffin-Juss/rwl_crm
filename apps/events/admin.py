@@ -15,7 +15,17 @@ class EventAdmin(admin.ModelAdmin):
     search_fields = ('name', 'city', 'status')
     date_hierarchy = 'date'
 
+    actions = ('move_to_archive', 'restore_from_archive')
+
     inlines = [EventActivityInline]
+
+    @admin.action(description='Перевести выбранные ивенты в архив')
+    def move_to_archive(self, request, queryset):
+        queryset.update(status='CLOSED')
+
+    @admin.action(description='Вернуть выбранные ивенты из архива')
+    def restore_from_archive(self, request, queryset):
+        queryset.update(status='OPEN')
 
 
 @admin.register(EventParticipation)
@@ -39,6 +49,7 @@ class EventParticipationAdmin(admin.ModelAdmin):
         'member__last_name',
         'event__name',
     )
+
 
 
 
