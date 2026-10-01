@@ -371,10 +371,69 @@ function renderMyRaces() {
                 event.current_member_status
         );
 
-    console.log(
-        'My races:',
-        myEvents
-    );
+    myRacesList.innerHTML = '';
+
+    if (myEvents.length === 0) {
+
+        myRacesList.innerHTML = `
+            <div class="main-section-placeholder">
+                Здесь появятся ваши забеги
+            </div>
+        `;
+
+        return;
+    }
+
+    myEvents.forEach(event => {
+
+        const item =
+            document.createElement('div');
+
+        item.className =
+            'my-race-item';
+
+        const date =
+            document.createElement('div');
+
+        date.className =
+            'my-race-date';
+
+        date.textContent =
+            formatEventDateRange(
+                event.activity_dates?.length
+                    ? event.activity_dates
+                    : [event.date]
+            );
+
+        const name =
+            document.createElement('div');
+
+        name.className =
+            'my-race-name';
+
+        name.textContent =
+            event.name;
+
+        const meta =
+            document.createElement('div');
+
+        meta.className =
+            'my-race-meta';
+
+        const status =
+            event.current_member_status === 'GOING'
+                ? 'Еду'
+                : 'Думаю';
+
+        meta.textContent =
+            `${event.city || 'Город не указан'} · ${status}`;
+
+        item.appendChild(date);
+        item.appendChild(name);
+        item.appendChild(meta);
+
+        myRacesList.appendChild(item);
+    });
 }
 
 function showMainSection(sectionName) {
