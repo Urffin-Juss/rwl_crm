@@ -114,14 +114,19 @@ def parse_event(
     """
 
     address = event.get("address") or ""
+    location = event.get("place") or ""
+    city = (
+            normalize_settlement(address)
+            or normalize_settlement(location)
+    )
 
 
     clean_event = {
         "source": 'russiarunning',
         "external_id": event.get("id"),
         "name": event.get("title"),
-        "city": normalize_settlement(address),
-        "location": event.get("place") or "",
+        "city": city,
+        "location": location,
         "address": address,
         "date": event.get("beginDate"),
         "begin_datetime": event.get("beginDate"),
