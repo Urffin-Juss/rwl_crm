@@ -12,7 +12,7 @@ from apps.events.serializers import EventParticipantSerializer
 
 
 class EventListAPIView(ListAPIView):
-    queryset = Event.objects.all()
+    queryset = Event.objects.filter(status="OPEN")
     serializer_class = EventSerializer
 
 
