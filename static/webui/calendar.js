@@ -2817,6 +2817,31 @@ function renderSearchCityOptions() {
 
     searchCityOptions.innerHTML = '';
 
+    const closeButton =
+        document.createElement('button');
+
+    closeButton.type =
+        'button';
+
+    closeButton.className =
+        'search-city-option search-city-close';
+
+    closeButton.textContent =
+        '✕ Закрыть';
+
+    closeButton.addEventListener(
+        'click',
+        function () {
+            searchCityOptions.classList.add(
+                'hidden'
+            );
+        }
+    );
+
+    searchCityOptions.appendChild(
+        closeButton
+    );
+
     const allCitiesButton =
         document.createElement('button');
 
