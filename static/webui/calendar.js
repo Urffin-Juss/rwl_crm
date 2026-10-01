@@ -1819,6 +1819,27 @@ function renderCurrentEvent() {
             }
         );
 
+    } else if (eventCardSource === 'my-races') {
+
+        backButton.textContent =
+            '← К моим забегам';
+
+        backButton.addEventListener(
+            'click',
+            function () {
+
+                calendarSection.style.display =
+                    'none';
+
+                myRacesSection.style.display =
+                    '';
+
+                setActiveMainNav(
+                    'my-races'
+                );
+            }
+        );
+
     } else {
 
         backButton.textContent =
