@@ -1375,3 +1375,7 @@ body {
 .search-city-option:last-child {
     border-bottom: 0;
 }
+
+.search-city-close {
+    color: #aaaaaa;
+}
