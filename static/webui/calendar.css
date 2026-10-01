@@ -1348,6 +1348,10 @@ body {
     background: #1d1d1d;
 }
 
+.search-city-options.hidden {
+    display: none;
+}
+
 .search-city-option {
     display: block;
 
@@ -1366,6 +1370,7 @@ body {
 
     cursor: pointer;
 }
+
 
 .search-city-option:last-child {
     border-bottom: 0;
