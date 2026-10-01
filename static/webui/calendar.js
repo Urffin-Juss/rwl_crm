@@ -94,6 +94,15 @@ const searchCityButton =
 const searchCityOptions =
     document.querySelector('#search-city-options');
 
+const myRacesSection =
+    document.querySelector('.my-races-section');
+
+const myRacesList =
+    document.querySelector('#my-races-list');
+
+const searchSection =
+    document.querySelector('.search-section');
+
 /*
     ========================================
     TELEGRAM
@@ -358,7 +367,19 @@ function setActiveMainNav(sectionName) {
     );
 }
 
+function renderMyRaces() {
 
+    const myEvents =
+        events.filter(
+            event =>
+                event.current_member_status
+        );
+
+    console.log(
+        'My races:',
+        myEvents
+    );
+}
 
 function showMainSection(sectionName) {
 
@@ -399,6 +420,8 @@ function showMainSection(sectionName) {
 
         myRacesSection.style.display =
             '';
+
+        renderMyRaces();
 
     } else if (sectionName === 'search') {
 
