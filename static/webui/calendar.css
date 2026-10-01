@@ -1379,3 +1379,46 @@ body {
 .search-city-close {
     color: #aaaaaa;
 }
+
+.my-races-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.my-race-item {
+    padding: 16px;
+
+    border: 1px solid #2d2d2d;
+    border-radius: 16px;
+
+    background: #1d1d1d;
+
+    cursor: pointer;
+}
+
+.my-race-date {
+    margin-bottom: 6px;
+
+    color: #8f8f8f;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.my-race-name {
+    margin-bottom: 10px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.my-race-meta {
+    color: #aaaaaa;
+
+    font-size: 14px;
+    line-height: 1.3;
+}
