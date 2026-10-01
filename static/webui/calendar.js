@@ -432,6 +432,37 @@ function renderMyRaces() {
         item.appendChild(name);
         item.appendChild(meta);
 
+        item.addEventListener(
+            'click',
+            function () {
+
+                selectedDayEvents = [
+                    event
+                ];
+
+                currentEventIndex = 0;
+                currentDayEventsPage = 0;
+
+                eventCardSource =
+                    'my-races';
+
+                myRacesSection.style.display =
+                    'none';
+
+                calendarSection.style.display =
+                    '';
+
+                setActiveMainNav(
+                    'calendar'
+                );
+
+                showEventState();
+
+                renderCurrentEvent();
+            }
+        );
+
+
         myRacesList.appendChild(item);
     });
 }
