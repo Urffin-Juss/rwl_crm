@@ -2747,8 +2747,6 @@ function renderSearchResults(foundEvents) {
 
                 eventCardSource = 'search';
 
-                let selectedSearchCity = null;
-
                 searchSection.style.display =
                     'none';
 
@@ -2867,10 +2865,25 @@ function renderSearchCityOptions() {
                 'hidden'
             );
 
+            if (!searchInput.value.trim()) {
+
+                searchResults.innerHTML = `
+                    <div class="search-empty">
+                        Начните вводить название забега или выберите город
+                    </div>
+                `;
+
+                return;
+            }
+
             const foundEvents =
                 searchEvents(
                     searchInput.value
                 );
+
+            renderSearchResults(
+                foundEvents
+            );
 
             renderSearchResults(
                 foundEvents
