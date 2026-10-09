@@ -85,10 +85,16 @@ jobs:
           
       - name: Copy DEV deployment files
         run: |
+          ssh rwl-dev 'mkdir -p /opt/rwl/deploy/deploy'
+
           scp \
             docker-compose.yml \
             docker-compose.dev.yml \
-            rwl-dev:/opt/rwl/deploy/  
+            rwl-dev:/opt/rwl/deploy/
+
+          scp \
+            deploy/nginx.conf \
+            rwl-dev:/opt/rwl/deploy/deploy/nginx.conf  
 
 
       - name: Deploy to DEV with rollback
