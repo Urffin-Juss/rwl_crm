@@ -122,6 +122,18 @@ jobs:
             -f docker-compose.yml \
             -f docker-compose.dev.yml \
             up -d
+          
+          docker compose \
+            -p rwl_crm \
+            -f docker-compose.yml \
+            -f docker-compose.dev.yml \
+            up -d --force-recreate nginx
+          
+          docker compose \
+            -p rwl_crm \
+            -f docker-compose.yml \
+            -f docker-compose.dev.yml \
+            exec -T nginx nginx -t
 
           echo "Waiting for DEV..."
 
