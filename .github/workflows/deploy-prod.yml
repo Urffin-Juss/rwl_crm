@@ -192,6 +192,31 @@ jobs:
           cd /opt/crm/rwl_crm
 
           OLD_IMAGE=$(docker inspect --format '{{.Config.Image}}' rwl_crm-web-1)
+          
+          
+          rollback() {
+            echo "================================"
+            echo "Deployment failed. Starting rollback..."
+            echo "Restoring image: $OLD_IMAGE"
+          
+            trap - ERR
+          
+            export RWL_IMAGE="$OLD_IMAGE"
+          
+            if docker compose -p rwl_crm up -d \
+              --no-deps \
+              web celery_worker celery_beat bot; then
+          
+              echo "Previous containers restored."
+            else
+              echo "CRITICAL: Automatic rollback failed!"
+            fi
+          
+            echo "WARNING: Database migrations are NOT rolled back."
+            exit 1
+          }
+          
+          trap rollback ERR
 
           echo "================================"
           echo "Previous image: $OLD_IMAGE"
