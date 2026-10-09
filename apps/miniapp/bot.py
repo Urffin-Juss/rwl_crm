@@ -58,6 +58,18 @@ feedback_keyboard = InlineKeyboardMarkup(
 )
 
 
+donate_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="❤️ Поддержать проект",
+                url=DONATE_URL,
+            )
+        ]
+    ]
+)
+
+
 @dp.message(CommandStart())
 async def start_handler(message: Message):
     keyboard = InlineKeyboardMarkup(
@@ -131,6 +143,17 @@ async def feedback_handler(message: Message):
         reply_markup=feedback_keyboard,
     )
 
+
+
+@dp.message(Command("donate"))
+async def donate_handler(message: Message):
+    await message.answer(
+        "❤️ Поддержать Бегалендарь\n\n"
+        "Бегалендарь — некоммерческий проект, который развивается для сообщества Run With Love.\n\n"
+        "Если проект оказался полезным и вам хочется поддержать его развитие — это можно сделать по кнопке ниже.\n\n"
+        "Спасибо ❤️",
+        reply_markup=donate_keyboard,
+    )
 
 @dp.message(Command("delete_my_data"))
 async def delete_my_data_handler(message: Message):
