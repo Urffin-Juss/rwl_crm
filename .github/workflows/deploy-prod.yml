@@ -1,0 +1,205 @@
+name: Deploy PROD
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Prepare checks or deploy application"
+        required: true
+        type: choice
+        default: prepare
+        options:
+          - prepare
+          - deploy
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rwl-prod-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare SSH
+        shell: bash
+        env:
+          BASTION_KEY: ${{ secrets.BASTION_SSH_KEY }}
+          DEV_KEY: ${{ secrets.DEV_SSH_KEY }}
+          PROD_KEY: ${{ secrets.PROD_SSH_KEY }}
+          BASTION_HOST: ${{ secrets.BASTION_HOST }}
+          BASTION_PORT: ${{ secrets.BASTION_PORT }}
+          BASTION_USER: ${{ secrets.BASTION_USER }}
+          DEV_HOST: ${{ secrets.DEV_HOST }}
+          DEV_PORT: ${{ secrets.DEV_PORT }}
+          DEV_USER: ${{ secrets.DEV_USER }}
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+        run: |
+          set -euo pipefail
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$BASTION_KEY" > ~/.ssh/bastion_key
+          printf '%s\n' "$DEV_KEY" > ~/.ssh/dev_key
+          printf '%s\n' "$PROD_KEY" > ~/.ssh/prod_key
+          chmod 600 ~/.ssh/*_key
+
+          cat > ~/.ssh/config <<EOF
+          Host rwl-bastion
+              HostName ${BASTION_HOST}
+              Port ${BASTION_PORT}
+              User ${BASTION_USER}
+              IdentityFile ~/.ssh/bastion_key
+              IdentitiesOnly yes
+
+          Host rwl-dev
+              HostName ${DEV_HOST}
+              Port ${DEV_PORT}
+              User ${DEV_USER}
+              IdentityFile ~/.ssh/dev_key
+              IdentitiesOnly yes
+              ProxyJump rwl-bastion
+
+          Host rwl-prod
+              HostName ${PROD_HOST}
+              Port ${PROD_PORT}
+              User ${PROD_USER}
+              IdentityFile ~/.ssh/prod_key
+              IdentitiesOnly yes
+          EOF
+
+          chmod 600 ~/.ssh/config
+
+          printf '[%s]:%s ssh-ed25519 %s\n' \
+            "$BASTION_HOST" "$BASTION_PORT" \
+            'AAAAC3NzaC1lZDI1NTE5AAAAIBI/PGxBXZP7zArDTKQPwd58E2/ANnXvsXgf61TqfGXA' \
+            > ~/.ssh/known_hosts
+
+          printf '%s ssh-ed25519 %s\n' \
+            "$DEV_HOST" \
+            'AAAAC3NzaC1lZDI1NTE5AAAAIBnVi2TXGVUEBFbXaWnaZc6htfpOQL2EDeUAsjCNF/46' \
+            >> ~/.ssh/known_hosts
+
+          printf '[%s]:%s ssh-ed25519 %s\n' \
+            "$PROD_HOST" "$PROD_PORT" \
+            'AAAAC3NzaC1lZDI1NTE5AAAAIAV8uca3Sm3G4PbDEkkj77DiObNFZ3pbbWEUxrvyocHE' \
+            >> ~/.ssh/known_hosts
+
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Read running DEV image
+        id: dev
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          IMAGE=$(ssh -o BatchMode=yes rwl-dev \
+            "docker inspect --format '{{.Config.Image}}' rwl_crm-web-1")
+
+          case "$IMAGE" in
+            ghcr.io/urffin-juss/rwl_crm:*) ;;
+            *)
+              echo "Unexpected DEV image: $IMAGE"
+              exit 1
+              ;;
+          esac
+
+          echo "DEV image: $IMAGE"
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Check PROD readiness
+        shell: bash
+        env:
+          NEW_IMAGE: ${{ steps.dev.outputs.image }}
+        run: |
+          ssh -o BatchMode=yes rwl-prod \
+            "NEW_IMAGE='$NEW_IMAGE' bash -s" <<'REMOTE'
+          set -euo pipefail
+
+          cd /opt/crm/rwl_crm
+
+          echo "Current PROD image:"
+          docker inspect --format '{{.Config.Image}}' rwl_crm-web-1
+
+          echo "Target image:"
+          echo "$NEW_IMAGE"
+
+          echo "Checking Compose..."
+          docker compose config --quiet
+
+          echo "Checking GHCR manifest..."
+          docker manifest inspect "$NEW_IMAGE" > /dev/null
+
+          echo "Checking application containers..."
+          docker compose ps web bot celery_worker celery_beat
+
+          echo "Prepare checks passed"
+          REMOTE
+
+      - name: Deploy application
+        if: ${{ inputs.mode == 'deploy' }}
+        shell: bash
+        env:
+          NEW_IMAGE: ${{ steps.dev.outputs.image }}
+        run: |
+          ssh -o BatchMode=yes rwl-prod \
+            "NEW_IMAGE='$NEW_IMAGE' bash -s" <<'REMOTE'
+          set -euo pipefail
+
+          cd /opt/crm/rwl_crm
+
+          OLD_IMAGE=$(docker inspect --format '{{.Config.Image}}' rwl_crm-web-1)
+
+          echo "Previous image: $OLD_IMAGE"
+          echo "New image:      $NEW_IMAGE"
+
+          docker pull "$NEW_IMAGE"
+
+          export RWL_IMAGE="$NEW_IMAGE"
+
+          docker compose -p rwl_crm up -d \
+            --no-deps \
+            web celery_worker celery_beat bot
+
+          echo "Waiting for Django..."
+
+          HEALTHY=0
+
+          for i in {1..20}; do
+            if curl -fsS \
+              --resolve runwithlove.site:443:127.0.0.1 \
+              https://runwithlove.site/calendar \
+              > /dev/null; then
+              HEALTHY=1
+              break
+            fi
+
+            sleep 3
+          done
+
+          if [ "$HEALTHY" -ne 1 ]; then
+            echo "Smoke test failed. Restoring previous application image..."
+
+            export RWL_IMAGE="$OLD_IMAGE"
+
+            docker compose -p rwl_crm up -d \
+              --no-deps \
+              web celery_worker celery_beat bot
+
+            echo "Application rollback attempted."
+            echo "Database migrations are NOT rolled back."
+            exit 1
+          fi
+
+          sed -i \
+            "s|^RWL_IMAGE=.*|RWL_IMAGE=$NEW_IMAGE|" \
+            .env
+
+          echo "PROD deployment successful: $NEW_IMAGE"
+          REMOTE
