@@ -27,8 +27,8 @@ from apps.users.models import ClubMember
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 MINI_APP_URL = os.getenv('MINI_APP_URL')
 BOT_PROXY = os.getenv('BOT_PROXY')
-FEEDBACK_URL = "https://runwithlove.site/feedback"
-DONATE_URL = "https://runwithlove.site/donate"
+FEEDBACK_URL = os.getenv('FEEDBACK_URL')
+DONATE_URL = os.getenv('DONATE_URL')
 
 
 session = AiohttpSession(
