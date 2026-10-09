@@ -72,28 +72,25 @@ donate_keyboard = InlineKeyboardMarkup(
 
 @dp.message(CommandStart())
 async def start_handler(message: Message):
+    if message.chat.type == "private":
+        button = InlineKeyboardButton(
+            text="🏃 Открыть календарь",
+            web_app=WebAppInfo(url=MINI_APP_URL),
+        )
+    else:
+        bot_info = await message.bot.get_me()
+
+        button = InlineKeyboardButton(
+            text="🏃 Открыть календарь",
+            url=f"https://t.me/{bot_info.username}?start=calendar",
+        )
+
     keyboard = InlineKeyboardMarkup(
-
-        inline_keyboard=[
-
-            [
-
-                InlineKeyboardButton(
-
-                    text="🏃 Открыть календарь",
-
-                    web_app=WebAppInfo(url=MINI_APP_URL),
-
-                )
-
-            ]
-
-        ]
-
+        inline_keyboard=[[button]]
     )
 
     await message.answer(
-        'Календарь стартов Run With Love',
+        "Календарь стартов Run With Love",
         reply_markup=keyboard,
     )
 
