@@ -45,7 +45,7 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
-          printf '%s\n' "$BASTION_KEY" > ~/.ssh/bastion_key
+          printf '[%s\n]' "$BASTION_KEY" > ~/.ssh/bastion_key
           printf '%s\n' "$DEV_KEY" > ~/.ssh/dev_key
           printf '%s\n' "$PROD_KEY" > ~/.ssh/prod_key
           chmod 600 ~/.ssh/*_key
@@ -86,7 +86,7 @@ jobs:
             'AAAAC3NzaC1lZDI1NTE5AAAAIBnVi2TXGVUEBFbXaWnaZc6htfpOQL2EDeUAsjCNF/46' \
             >> ~/.ssh/known_hosts
 
-          printf '[%s]:%s ssh-ed25519 %s\n' \
+          printf '%s:%s ssh-ed25519 %s\n' \
             "$PROD_HOST" "$PROD_PORT" \
             'AAAAC3NzaC1lZDI1NTE5AAAAIAV8uca3Sm3G4PbDEkkj77DiObNFZ3pbbWEUxrvyocHE' \
             >> ~/.ssh/known_hosts
