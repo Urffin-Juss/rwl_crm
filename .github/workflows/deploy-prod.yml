@@ -76,7 +76,7 @@ jobs:
 
           chmod 600 ~/.ssh/config
 
-          printf '[%s]:%s ssh-ed25519 %s\n' \
+          printf '%s:%s ssh-ed25519 %s\n' \
             "$BASTION_HOST" "$BASTION_PORT" \
             'AAAAC3NzaC1lZDI1NTE5AAAAIBI/PGxBXZP7zArDTKQPwd58E2/ANnXvsXgf61TqfGXA' \
             > ~/.ssh/known_hosts
