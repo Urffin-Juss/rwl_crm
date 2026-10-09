@@ -206,9 +206,24 @@ jobs:
 
           export RWL_IMAGE="$NEW_IMAGE"
 
-          docker compose -p rwl_crm up -d \
+          if ! docker compose -p rwl_crm up -d \
             --no-deps \
-            web celery_worker celery_beat bot
+            web celery_worker celery_beat bot; then
+          
+            echo "ERROR: Application deployment failed."
+            echo "Restoring previous image..."
+          
+            export RWL_IMAGE="$OLD_IMAGE"
+          
+            docker compose -p rwl_crm up -d \
+              --no-deps \
+              web celery_worker celery_beat bot
+          
+            echo "Rollback attempted."
+            echo "WARNING: Database migrations are NOT rolled back."
+          
+            exit 1
+          fi
 
           echo "================================"
           echo "Checking container states..."
