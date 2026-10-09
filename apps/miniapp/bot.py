@@ -27,6 +27,9 @@ from apps.users.models import ClubMember
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 MINI_APP_URL = os.getenv('MINI_APP_URL')
 BOT_PROXY = os.getenv('BOT_PROXY')
+FEEDBACK_URL = "https://runwithlove.site/feedback"
+DONATE_URL = "https://runwithlove.site/donate"
+
 
 session = AiohttpSession(
 
@@ -43,7 +46,16 @@ bot = Bot(
 )
 dp = Dispatcher()
 
-
+feedback_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="💬 Открыть форму обратной связи",
+                url=FEEDBACK_URL,
+            )
+        ]
+    ]
+)
 
 
 @dp.message(CommandStart())
@@ -75,6 +87,49 @@ async def start_handler(message: Message):
 
 
 
+
+@dp.message(Command("rules"))
+async def rules_handler(message: Message):
+    await message.answer(
+        "📌 Правила нашего чата\n\n"
+        "Мы здесь, чтобы общаться, бегать и делать добрые дела вместе. "
+        "Чтобы в чате всем было комфортно, договоримся о нескольких простых правилах.\n\n"
+
+        "1. Взаимоуважение — самое важное\n\n"
+        "• Без личных оскорблений, унижения, грубости, троллинга и провокаций на конфликт.\n"
+        "• Не устраиваем политические, религиозные и национальные споры.\n"
+        "• Критикуем идеи и поступки, а не людей — и только конструктивно.\n\n"
+
+        "2. Не используем жалобы Telegram для решения конфликтов\n\n"
+        "Не жалуйтесь на сообщения участников через встроенную функцию Telegram — "
+        "это может привести к ограничениям или блокировке человека со стороны платформы.\n\n"
+
+        "3. Если возник конфликт — пишите администрации\n\n"
+        "Если вам кажется, что кто-то нарушает правила или ситуация требует вмешательства, "
+        "напишите администратору в личные сообщения.\n"
+        "Разбор конфликтов в общем чате не устраиваем.\n\n"
+
+        "4. Реклама — только по согласованию с администрацией\n\n"
+        "Рекламные публикации без предварительного согласования запрещены.\n\n"
+
+        "⚠️ За нарушение правил администрация может ограничить участие в чате "
+        "или заблокировать пользователя.\n\n"
+
+        "❤️ И главное: относитесь к другим так, как хотите, чтобы относились к вам.\n\n"
+
+        "Давайте вместе беречь атмосферу Run With Love. "
+        "Мы всё-таки здесь, чтобы помогать другим. 🐾"
+    )
+
+
+@dp.message(Command("feedback"))
+async def feedback_handler(message: Message):
+    await message.answer(
+        "💬 Обратная связь\n\n"
+        "Нашли ошибку, есть идея или хотите предложить улучшение?\n\n"
+        "Расскажите об этом через форму обратной связи ❤️",
+        reply_markup=feedback_keyboard,
+    )
 
 
 @dp.message(Command("delete_my_data"))
