@@ -243,7 +243,8 @@ jobs:
 
             if [[ "$STATE" != "running" ]]; then
               echo "ERROR: $SERVICE is not running"
-              exit 1
+              HEALTHY=0
+              break
             fi
           done
 
