@@ -6,9 +6,12 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 
 from apps.webui import views as webui_views
+from django.views.generic import RedirectView
 
 
 urlpatterns = [
+    path("favicon.ico", RedirectView.as_view(url="/static/images/favicon.ico", permanent=False), ),
+
     path('admin/', admin.site.urls),
 
     path('', webui_views.landing, name='landing'),
