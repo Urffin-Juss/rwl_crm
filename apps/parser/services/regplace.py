@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from datetime import datetime
 from apps.parser.services.event_writer import save_event
 import re
+import hashlib
 
 
 BASE_URL = "https://reg.place"
@@ -164,7 +165,12 @@ def parse_event_external_id(event_url):
 
 
 def build_activity_external_id(name, distance):
-    return f"{name}:{distance}"
+    value = f"{name}:{distance}"
+
+    if len(value) <= 100:
+        return value
+
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
 
@@ -204,24 +210,39 @@ def parse_event_dates(value):
     if not value:
         return None, None
 
+    value = value.strip()
+
     if "–" not in value:
         start_date = datetime.strptime(
-            value,
-            "%d.%m.%Y",
+            value, "%d.%m.%Y"
         ).date()
-
         return start_date, None
 
     start_value, end_value = value.split("–", 1)
 
+    start_value = start_value.strip()
+    end_value = end_value.strip()
+
     end_date = datetime.strptime(
-        end_value,
-        "%d.%m.%Y",
+        end_value, "%d.%m.%Y"
     ).date()
 
-    start_date = datetime.strptime(
-        f"{start_value}.{end_date.year}",
-        "%d.%m.%Y",
+    if "." in start_value:
+        # 30.10–01.11.2026
+        day, month = map(int, start_value.split("."))
+    else:
+        # 5–06.12.2026
+        day = int(start_value)
+        month = end_date.month
+
+    year = end_date.year
+
+    # Диапазон пересекает границу года
+    if month > end_date.month:
+        year -= 1
+
+    start_date = datetime(
+        year, month, day
     ).date()
 
     return start_date, end_date
