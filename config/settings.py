@@ -148,9 +148,21 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
+
     "import-russiarunning-daily": {
         "task": "apps.parser.tasks.import_russiarunning_task",
         "schedule": crontab(hour=4, minute=0),
     },
+
+    "import-regplace-daily": {
+        "task": "apps.parser.tasks.import_regplace_task",
+        "schedule": crontab(hour=4, minute=20),
+    },
+
+    "import-myrace-daily": {
+        "task": "apps.parser.tasks.import_myrace_task",
+        "schedule": crontab(hour=4, minute=40),
+    },
+
 }
 
