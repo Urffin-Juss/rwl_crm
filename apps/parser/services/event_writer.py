@@ -43,10 +43,10 @@ def save_event(clean_event: Dict[str, Any]):
         external_id=external_id,
         defaults={
             "name": clean_event.get("name"),
-            "city": clean_event.get("city"),
-            "location": clean_event.get("location"),
-            "address": clean_event.get("address"),
-            "source_code": clean_event.get("source_code", ""),
+            "city": clean_event.get("city") or "",
+            "location": clean_event.get("location") or "",
+            "address": clean_event.get("address") or "",
+            "source_code": clean_event.get("source_code", "") or "",
             "date": normalize_event_date(clean_event.get("date")),
             "begin_datetime": normalize_event_datetime(
             clean_event.get("begin_datetime") ),
