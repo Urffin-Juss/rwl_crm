@@ -2,7 +2,10 @@ import requests
 from typing import Any, Dict, List
 from apps.parser.services.event_writer import save_event
 from apps.parser.services.location_normalizer import normalize_settlement
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 def fetch_events(
     take: int = 12,
@@ -180,6 +183,10 @@ def run_import() -> None:
     all_events = fetch_all_events()
     import_events(all_events)
 
+    logger.warning(
+        "RussiaRunning import completed: %s events",
+        len(all_events),
+    )
 
 
 """
