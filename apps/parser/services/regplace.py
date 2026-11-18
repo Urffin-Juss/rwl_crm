@@ -5,9 +5,12 @@ from datetime import datetime
 from apps.parser.services.event_writer import save_event
 import re
 import hashlib
+import logging
 
 
 BASE_URL = "https://reg.place"
+
+logger = logging.getLogger(__name__)
 
 
 def fetch_events_page(page_url="/events"):
@@ -278,8 +281,17 @@ def import_events():
     imported = []
 
     for event_card in event_cards:
-        html = fetch_event_page(event_card["url"])
-        clean_event = parse_event_page(event_card, html)
+        try:
+            html = fetch_event_page(event_card["url"])
+            clean_event = parse_event_page(event_card, html)
+
+        except (ValueError, TypeError, AttributeError) as exc:
+            logger.warning(
+                "RegPlace: пропущено мероприятие %s: %s",
+                event_card["url"],
+                exc,
+            )
+            continue
 
         event = save_event(clean_event)
         imported.append(event)
